@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente
+from .models import Cliente, Email, Telefone
 
 
 class ClienteForm(forms.ModelForm):
@@ -45,4 +45,45 @@ class ClienteForm(forms.ModelForm):
                 'autocomplete': 'off'
             }),
 
+        }
+
+class EmailForm(forms.ModelForm):
+    class Meta:
+        model = Email
+        fields = [
+            'email',
+            'tipo',
+        ]
+        widgets = {
+            'email': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'tipo': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+class TelefoneForm(forms.ModelForm):
+    class Meta:
+        model = Telefone
+        fields = [
+            'telefone',
+            'tipo',
+            'whats_app'
+        ]
+        SIM_NAO = (
+            (True, 'Sim'),
+            (False, 'Não')
+        )
+        widgets = {
+            'telefone': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'tipo': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'whats_app': forms.Select(
+                choices = SIM_NAO,
+                attrs = {'class': 'form-control'}
+            ),
         }
