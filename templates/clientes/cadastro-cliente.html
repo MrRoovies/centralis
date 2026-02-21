@@ -1,0 +1,72 @@
+{% extends "menu.html" %}
+{% load static %}
+{% load admin_urls %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h2 class="page-title">Cadastro de Novo Cliente</h2>
+            
+            <!-- Formulário de Cadastro -->
+            <div class="cliente-form">
+                <h3>Preencha os dados do cliente</h3>
+                <form id="clienteForm">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo Pessoa *</label>
+                            {{ form.tipo_pessoa }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nome Completo *</label>
+                            {{ form.nome }}
+                        </div>
+                    </div>
+                    <!-- CPF e Nascimento -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>CPF/CNPJ *</label>
+                            {{ form.documento }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nascimento *</label>
+                            {{ form.data_nascimento }}
+                        </div>
+                    </div>
+
+                    <!-- Civil -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Estado Civil *</label>
+                            {{ form.estado_civil }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nome da Mãe *</label>
+                            {{ form.nome_mae }}
+                        </div>
+                    </div>
+
+                    <!-- Telefone -->
+                    <div class="form-row">
+
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="form-buttons">
+                        <button type="submit" class="btn btn-primary bt-cadastrar-cli">
+                            Cadastrar Cliente
+                        </button>
+                    </div>
+
+                    <p class="form-hint">* Campos obrigatórios</p>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="{% static 'js/cadastro-cliente.js' %}"></script>
+    <script src="{% static 'js/formHandler.js' %}"></script>
+{% endblock %}

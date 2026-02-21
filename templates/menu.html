@@ -1,0 +1,59 @@
+{% load static %}
+{% load admin_urls %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Sistema de Vendas</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <div class="menu-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <h1 class="header-title"></h1>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <input type="text" id="searchCliente" placeholder="Pesquisar cliente...">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="logout-btn">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <img class="logo" src="{% static 'img/Logo_unificado.png' %}">
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{% url 'home' %}">
+                    <span class="menu-icon-item">🏠</span>
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'clientes:cliente_novo' %}">
+                    <span class="menu-icon-item">🏠</span>
+                    Cadastrar Cliente
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+<script src="{% static 'js/menu.js' %}"></script>
+</html>

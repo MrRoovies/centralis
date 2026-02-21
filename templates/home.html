@@ -1,0 +1,39 @@
+{% extends "menu.html" %}
+{% load static %}
+{% load admin_urls %}
+{% block content %}
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h2 class="page-title">Painel de Vendas - Resultado do Dia</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Vendas do Dia</h3>
+                    <div class="value" id="vendasDia">R$ 0,00</div>
+                    <div class="change">↑ +15% vs ontem</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Total de Vendas</h3>
+                    <div class="value" id="totalVendas">0</div>
+                    <div class="change">Meta: 50 vendas</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Ticket Médio</h3>
+                    <div class="value" id="ticketMedio">R$ 0,00</div>
+                    <div class="change">↑ +8% vs média</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Novos Clientes</h3>
+                    <div class="value" id="novosClientes">0</div>
+                    <div class="change">Hoje</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="{% static 'js/vendas.js' %}"></script>
+
+{% endblock %}

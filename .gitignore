@@ -1,0 +1,6 @@
+/config
+/venv
+/staticfiles
+manage.py
+*.pdf
+*.sqlite3
