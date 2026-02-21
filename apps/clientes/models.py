@@ -86,8 +86,8 @@ class Email(models.Model):
         related_name="emails"
     )
 
-    email = models.EmailField(max_length=255, db_index=True)
-    tipo = models.CharField(max_length=11, choices=EMAIL_CHOICES)
+    email = models.EmailField(max_length=255, db_index=True, blank=True)
+    tipo = models.CharField(max_length=11, choices=EMAIL_CHOICES, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     ativo = models.BooleanField(default=True)
 
@@ -108,8 +108,8 @@ class Telefone(models.Model):
         related_name="telefones"
     )
 
-    telefone = models.CharField(max_length=11, db_index=True)
-    tipo = models.CharField(max_length=15, choices=TELEFONE_CHOICES)
+    telefone = models.CharField(max_length=11, db_index=True, blank=True)
+    tipo = models.CharField(max_length=15, choices=TELEFONE_CHOICES, blank=True)
     whats_app = models.BooleanField(default=False)
 
     def clean(self):

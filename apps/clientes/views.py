@@ -33,8 +33,13 @@ def cliente_novo(request):
 
                 email = email_form.save(commit=False)
                 email.cliente = cliente
+                if email.email:
+                    email.save()
+
                 telefone = telefone_form.save(commit=False)
                 telefone.cliente = cliente
+                if telefone.telefone:
+                    telefone.save()
 
             return JsonResponse({"success": True, 'message': 'Cliente cadastrado com sucesso'})
 
