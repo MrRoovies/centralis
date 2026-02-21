@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .models import Cliente
-from .forms import ClienteForm
+from .forms import ClienteForm, EmailForm, TelefoneForm
 import json
 
 # Create your views here.
@@ -29,5 +29,9 @@ def cliente_novo(request):
 
         return JsonResponse({"success": False, "errors": cliente_form.errors}, status=400)
 
-    form = ClienteForm()
-    return render(request, 'clientes/cadastro-cliente.html', {"form": form})
+    forms = {
+        'cliente_form' : ClienteForm(),
+        'email_form' : EmailForm(),
+        'telefone_form' : TelefoneForm()
+    }
+    return render(request, 'clientes/cadastro-cliente.html', forms)
