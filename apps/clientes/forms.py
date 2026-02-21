@@ -12,7 +12,7 @@ class ClienteForm(forms.ModelForm):
             'documento',
             'data_nascimento',
             'estado_civil',
-            'nome_mae'
+            'nome_mae',
         ]
 
         widgets = {

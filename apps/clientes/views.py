@@ -22,12 +22,12 @@ def search_cliente(request):
 @login_required
 def cliente_novo(request):
     if request.method == "POST":
-        form = ClienteForm(request.POST)
-        if form.is_valid():
-            form.save()
+        cliente_form = ClienteForm(request.POST)
+        if cliente_form.is_valid():
+            cliente_form.save()
             return JsonResponse({"success": True, 'message': 'Cliente cadastrado com sucesso'})
 
-        return JsonResponse({"success": False, "errors": form.errors}, status=400)
+        return JsonResponse({"success": False, "errors": cliente_form.errors}, status=400)
 
     form = ClienteForm()
     return render(request, 'clientes/cadastro-cliente.html', {"form": form})
