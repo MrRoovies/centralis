@@ -16,24 +16,24 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Tipo Pessoa *</label>
-                            {{ form.tipo_pessoa }}
+                            {{ cliente_form.tipo_pessoa }}
                         </div>
 
                         <div class="form-group">
                             <label>Nome Completo *</label>
-                            {{ form.nome }}
+                            {{ cliente_form.nome }}
                         </div>
                     </div>
                     <!-- CPF e Nascimento -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>CPF/CNPJ *</label>
-                            {{ form.documento }}
+                            {{ cliente_form.documento }}
                         </div>
 
                         <div class="form-group">
                             <label>Nascimento *</label>
-                            {{ form.data_nascimento }}
+                            {{ cliente_form.data_nascimento }}
                         </div>
                     </div>
 
@@ -41,18 +41,44 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Estado Civil *</label>
-                            {{ form.estado_civil }}
+                            {{ cliente_form.estado_civil }}
                         </div>
 
                         <div class="form-group">
                             <label>Nome da Mãe *</label>
-                            {{ form.nome_mae }}
+                            {{ cliente_form.nome_mae }}
                         </div>
                     </div>
 
                     <!-- Telefone -->
                     <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo *</label>
+                            {{ telefone_form.tipo }}
+                        </div>
 
+                        <div class="form-group">
+                            <label>Telefone *</label>
+                            {{ telefone_form.telefone }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>WhatsApp *</label>
+                            {{ telefone_form.whats_app }}
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo *</label>
+                            {{ email_form.tipo }}
+                        </div>
+
+                        <div class="form-group">
+                            <label>E-Mail *</label>
+                            {{ email_form.email }}
+                        </div>
                     </div>
 
                     <!-- Botões -->
