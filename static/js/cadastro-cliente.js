@@ -18,7 +18,19 @@ form.addEventListener('submit', function(e) {
         form.reset();
     })
     .catch( error => {
-        console.log("Erro ", error);
-        renderFormErrors(form, error.errors);
+
+        const allErrors = {};
+        const groupedErrors = error.errors;
+
+        for (let formName in groupedErrors) {
+            let formErrors = groupedErrors[formName];
+
+            for (let field in formErrors) {
+                allErrors[field] = formErrors[field];
+            }
+        }
+
+        renderFormErrors(form, allErrors);
+
     })
 })

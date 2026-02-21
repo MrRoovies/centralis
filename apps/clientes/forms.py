@@ -7,6 +7,7 @@ class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = [
+            'empresa',
             'tipo_pessoa',
             'nome',
             'documento',
@@ -16,6 +17,10 @@ class ClienteForm(forms.ModelForm):
         ]
 
         widgets = {
+            'empresa': forms.Select(attrs={
+                'class': 'form-control',
+                'required': True
+            }),
             'tipo_pessoa': forms.Select(attrs={
                 'class': 'form-control',
                 'required': True

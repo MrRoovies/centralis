@@ -20,7 +20,7 @@ function renderFormErrors(form, errors) {
 
             } else {
 
-                const input = form.querySelector(`[name="${field}"]`);
+                const input = form.querySelector(`[name$="-${field}"]`);
 
                 if (input) {
 
