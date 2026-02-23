@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 
 # Create your models here.
@@ -27,7 +29,6 @@ class Cliente(models.Model):
 
     rg = models.CharField('RG', max_length=20, blank=True, null=True)
     data_nascimento = models.DateField('Nascimento', blank=True, null=True)
-
     nome_mae = models.CharField('Nome da Mãe', max_length=255, blank=True, null=True)
     nome_pai = models.CharField('Nome do Pai', max_length=255, blank=True, null=True)
 
@@ -52,6 +53,19 @@ class Cliente(models.Model):
         verbose_name = "Cliente"
         verbose_name_plural = "Clientes"
         ordering = ['nome']
+
+    def idade(self):
+        hoje = date.today()
+        if not self.data_nascimento:
+            return None
+
+        idade = hoje.year - self.data_nascimento.year
+
+        # Se ainda não fez aniversário esse ano
+        if (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day):
+            idade -= 1
+
+        return idade
 
     def clean(self):
         import re
