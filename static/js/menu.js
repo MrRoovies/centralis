@@ -31,10 +31,12 @@ document.querySelector(".search-icon").addEventListener('click', function(){
         return data;
     })
     .then( data => {
-        console.log(data.data);
+        console.log(data);
+        window.location.href = `/clientes/cliente/${data.data}`;
     })
     .catch( error => {
         alert( error.message );
+        window.location.href = "/clientes/cliente_novo";
     })
 })
 
