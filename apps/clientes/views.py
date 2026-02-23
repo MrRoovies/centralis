@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .models import Cliente
-from django.db import transaction
+from django.db import transaction, DatabaseError
 from .forms import ClienteForm, EmailForm, TelefoneForm
 import json
 
@@ -14,10 +14,10 @@ def search_cliente(request):
     if request.body:
         data = json.loads(request.body)
         documento = data.get("documento")
-        cliente = Cliente.objects.filter(documento=documento)
-        if cliente:
-            return JsonResponse({'status': 'success', 'data': cliente }, status=200)
-        else:
+        try:
+            cliente = Cliente.objects.get(documento=documento)
+            return JsonResponse({'status': 'success', 'data': cliente.id }, status=200)
+        except:
             return JsonResponse({'status': 'error', 'message': "Cliente não existe"}, status=404)
 
 @login_required
@@ -55,4 +55,11 @@ def cliente_novo(request):
         'email_form' : EmailForm(prefix="email"),
         'telefone_form' : TelefoneForm(prefix="telefone")
     }
-    return render(request, 'clientes/cadastro-cliente.html', forms)
+    return render(request, 'clientes/criar-cliente.html', forms)
+
+
+@login_required
+def cliente(request, id):
+    cliente = Cliente.objects.prefetch_related('emails', 'telefones', 'enderecos').get(id=id)
+    context = { "cliente": cliente }
+    return render(request, 'clientes/cliente.html', context)
