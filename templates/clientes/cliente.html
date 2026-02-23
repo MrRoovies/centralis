@@ -1,0 +1,53 @@
+{% extends "menu.html" %}
+{% load static %}
+{% load admin_urls %}
+{% block content %}
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h2 class="page-title">Dados do Cliente</h2>
+            <!-- Lista de Clientes -->
+            <div class="clientes-lista" id="clientesLista">
+                <div class="cliente-card">
+                    <div class="cliente-header">
+                        <div class="cliente-nome">{{cliente.nome}}</div>
+                        <div class="btn-actions">
+                            <button class="btn-small btn-edit" onclick="editarCliente(${cliente.id})">Editar</button>
+                        </div>
+                    </div>
+                    <div class="cliente-info">
+                        <div class="info-item">
+                            <span class="info-label">CPF</span>
+                            <span class="info-value">{{cliente.documento}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Data de Nascimento</span>
+                            <span class="info-value">{{cliente.data_nascimento|date:"d/m/Y"}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Idade</span>
+                            <span class="info-value">{{cliente.idade}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">E-mail</span>
+                            <span class="info-value">{{cliente.emails}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Telefone</span>
+                            <span class="info-value">{{cliente.telefones.telefone}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Data de Cadastro</span>
+                            <span class="info-value">{{cliente.criado_em}}</span>
+                        </div>
+                    </div>
+                    <div class="historico">
+                        <h4>HISTÓRICO DE ATENDIMENTOS</h4>
+                        <div class="historico-item">${cliente.historico}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+<script src="{% static 'js/clientes.js' %}"></script>
+{% endblock %}
