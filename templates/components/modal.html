@@ -1,0 +1,20 @@
+<div class="modal-overlay" id="sys-modal-overlay"></div>
+
+<div class="modal" id="sys-modal">
+    <div class="modal-body">
+        <div class="cliente-form">
+            <h3 id="sys-modal-title">{{ title }}</h3>
+
+            <form id="modal_form">
+                {% csrf_token %}
+                <input type="hidden" name="cliente_id" value="{{ cliente_id }}">
+                {{ form.as_table }}
+                <button class="save-form btn-small btn-edit">Cadastrar Novo</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-footer" id="sys-modal-footer">
+        <button class="btn-small btn-delete" onclick="SystemModal.close()">Fechar</button>
+    </div>
+</div>

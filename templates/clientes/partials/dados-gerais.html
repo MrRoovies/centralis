@@ -1,0 +1,24 @@
+<div class="cliente-header">
+    <div class="cliente-nome">{{cliente.nome}}</div>
+</div>
+<div class="btn-actions">
+    <button class="btn-small btn-edit" onclick="editarCliente({{cliente.id}})">Editar</button>
+</div>
+<div class="cliente-info">
+    <div class="info-item">
+        <span class="info-label">CPF</span>
+        <span class="info-value">{{cliente.documento}}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Data de Nascimento</span>
+        <span class="info-value">{{cliente.data_nascimento|date:"d/m/Y"}}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Idade</span>
+        <span class="info-value">{{cliente.idade}}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Data de Cadastro</span>
+        <span class="info-value">{{cliente.criado_em}}</span>
+    </div>
+</div>

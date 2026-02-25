@@ -4,7 +4,7 @@ form.addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(form);
 
-    fetch("cliente_novo", {
+    fetch("/clientes/cliente_novo", {
         method: "POST",
         body: new FormData(form)
     })

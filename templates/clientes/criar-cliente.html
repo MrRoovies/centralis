@@ -1,8 +1,10 @@
 {% extends "menu.html" %}
 {% load static %}
 {% load admin_urls %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/cliente.css' %}">
+{% endblock %}
 {% block content %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
@@ -99,5 +101,7 @@
         </div>
     </main>
     <script src="{% static 'js/cadastro-cliente.js' %}"></script>
+{% endblock %}
+{% block extra_js %}
     <script src="{% static 'js/formHandler.js' %}"></script>
 {% endblock %}

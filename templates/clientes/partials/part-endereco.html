@@ -1,0 +1,26 @@
+{% load static %}
+<div class="btn-actions">
+    <button class="btn-small btn-edit" onclick="editarCliente({{cliente.id}})">Editar</button>
+</div>
+<div class="cliente-info endereco">
+    <div class="info-item">
+        <span class="info-label">Endereço</span>
+        {% for endereco in cliente.enderecos.all %}
+        <table>
+            <tr>
+                <td><span class="info-value">Tipo: {{ endereco.tipo|title }}</span></td>
+                <td><span class="info-value">Logr.: {{ endereco.logradouro }}</span></td>
+                <td><span class="info-value">N°: {{ endereco.numero }}</span></td>
+            </tr>
+            <tr>
+                <td><span class="info-value">Bairro: {{ endereco.bairro }}</span></td>
+                <td><span class="info-value">Cidade: {{ endereco.cidade }}</span></td>
+                <td><span class="info-value">UF: {{ endereco.uf }}</span></td>
+            </tr>
+            <tr>
+                <td><span class="info-value">Cep: {{ endereco.cep }}</span></td>
+            </tr>
+        </table>
+        {% endfor %}
+    </div>
+</div>

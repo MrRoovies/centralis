@@ -1,10 +1,15 @@
 from django.urls import path
-from . import views
+from .views import cliente, email
 
 app_name = 'clientes'
 
 urlpatterns = [
-    path('search_cliente', views.search_cliente, name='search_cliente'),
-    path('cliente_novo', views.cliente_novo, name='cliente_novo'),
-    path('cliente/<int:id>', views.cliente, name='cliente'),
+    path(r'search_cliente', cliente.search_cliente, name='search_cliente'),
+    path('cliente_novo', cliente.cliente_novo, name='cliente_novo'),
+    path('cliente/<int:id>', cliente.cliente, name='cliente'),
+
+    path('cliente/edita-cliente/<int:id>', cliente.edita_cliente, name='edita_cliente'),
+
+    path('email/<int:id>/delete', email.deleta_email, name='deleta-email'),
+    path('email/<int:cliente_id>/create', email.novo_email, name='novo_email')
 ]

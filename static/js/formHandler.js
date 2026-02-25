@@ -1,15 +1,33 @@
-function renderFormErrors(form, errors) {
+function renderFormMessage(form, errors) {
 
     // Remove erros antigos
     form.querySelectorAll(".error-message").forEach(el => el.remove());
+    form.querySelectorAll(".warning-message").forEach(el => el.remove());
     form.querySelectorAll(".success-message").forEach(el => el.remove());
     form.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
 
     Object.entries(errors).forEach(([field, messages]) => {
 
         messages.forEach(message => {
+            if (field === "warning") {
+                const warningBox = document.createElement("div");
+                warningBox.classList.add("warning-message");
+                warningBox.style.display = "block";
+                warningBox.innerText = message;
 
-            if (field === "__all__") {
+                form.prepend(warningBox);
+            }
+
+            else if (field === "success") {
+                const successgBox = document.createElement("div");
+                successgBox.classList.add("success-message");
+                successgBox.style.display = "block";
+                successgBox.innerText = message;
+
+                form.prepend(successgBox);
+            }
+
+            else if (field === "__all__") {
 
                 const errorBox = document.createElement("div");
                 errorBox.classList.add("error-message");
@@ -37,25 +55,4 @@ function renderFormErrors(form, errors) {
 
         });
     });
-}
-
-function renderFormMessage(form, message, type = "error") {
-
-    // Remove mensagens antigas
-    form.querySelectorAll(".error-message, .success-message")
-        .forEach(el => el.remove());
-
-    const box = document.createElement("div");
-
-    if (type === "success") {
-        box.classList.add("success-message");
-        box.style.display = "block";
-    } else {
-        box.classList.add("error-message");
-        box.style.display = "block";
-    }
-
-    box.innerText = message;
-
-    form.prepend(box);
 }

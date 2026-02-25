@@ -105,6 +105,22 @@ class Email(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     ativo = models.BooleanField(default=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['cliente', 'email', 'tipo'],
+                name='unique_email_cliente'
+            )
+        ]
+
+    @classmethod
+    def get_existente(cls, cliente_id, email, tipo):
+        return cls.objects.filter(
+            cliente_id=cliente_id,
+            email=email,
+            tipo=tipo
+        ).first()
+
     def __str__(self):
         return self.email
 
@@ -125,6 +141,14 @@ class Telefone(models.Model):
     telefone = models.CharField(max_length=11, db_index=True, blank=True)
     tipo = models.CharField(max_length=15, choices=TELEFONE_CHOICES, blank=True)
     whats_app = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['cliente', 'telefone'],
+                name='unique_telefone_cliente'
+            )
+        ]
 
     def clean(self):
         import re
@@ -153,7 +177,7 @@ class Endereco(models.Model):
     logradouro = models.CharField('Logra.', max_length=100)
     numero = models.CharField('Numero', max_length=10)
     bairro = models.CharField('Bairro', max_length=255)
-    cidade = models.CharField('Cidade', max_length=10)
+    cidade = models.CharField('Cidade', max_length=200)
     uf = models.CharField('UF', max_length=2)
     cep = models.CharField('Cep', max_length=10)
     tipo = models.CharField('Tipo Endereco', max_length=15, choices=ENDERECO_CHOICES)

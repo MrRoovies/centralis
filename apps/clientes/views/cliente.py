@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from .models import Cliente
+from django.db.models import Prefetch
+from ..models import Cliente, Email
 from django.db import transaction, DatabaseError
-from .forms import ClienteForm, EmailForm, TelefoneForm
+from ..forms import ClienteForm, EmailForm, TelefoneForm
 import json
 
 # Create your views here.
@@ -60,6 +61,12 @@ def cliente_novo(request):
 
 @login_required
 def cliente(request, id):
-    cliente = Cliente.objects.prefetch_related('emails', 'telefones', 'enderecos').get(id=id)
+    cliente = Cliente.objects.prefetch_related(
+        Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+        'telefones', 'enderecos').get(id=id)
     context = { "cliente": cliente }
     return render(request, 'clientes/cliente.html', context)
+
+@login_required
+def edita_cliente(request, id):
+    return render(request, 'clientes/editar-cliente.html')

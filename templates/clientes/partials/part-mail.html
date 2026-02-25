@@ -1,0 +1,26 @@
+{% load static %}
+<div class="btn-actions">
+    <button class="btn-small btn-edit" onclick="SystemModal.open('/clientes/email/{{ cliente.id }}/create')">
+    Novo Email
+</button>
+</div>
+<div class="cliente-info mail">
+    <div class="info-item">
+        <span class="info-label">E-mail</span>
+        <form id="form_del_mail">
+            {% csrf_token %}
+            <table>
+            {% for email in cliente.emails.all %}
+                <tr>
+                    <td>
+                        <span class="info-value">{{ email.tipo|title }}: {{ email.email }}</span>
+                    </td>
+                    <td>
+                        <button class="action-btn btn-small btn-delete" data-type="email" data-action="delete" data-cliente="{{ email.id }}">Excluir</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        </form>
+    </div>
+</div>

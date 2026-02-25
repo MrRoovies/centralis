@@ -1,0 +1,22 @@
+{% load static %}
+<div class="btn-actions">
+    <button class="btn-small btn-edit" onclick="editarCliente({{cliente.id}})">Editar</button>
+</div>
+<div class="cliente-info fones">
+    <div class="info-item">
+        <span class="info-label">Telefone</span>
+        <table>
+            <tr>
+                {% for telefone in cliente.telefones.all %}
+                <td>
+                    <span class="info-value">
+                        {% if telefone.whats_app == True %}
+                        <img src="{% static 'img/whatsapp16x16.png' %}">
+                        {% endif %}
+                        {{ telefone.telefone }}</span>
+                </td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+</div>

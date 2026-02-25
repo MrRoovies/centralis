@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Sistema de Vendas</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 </head>
 <body>
     <!-- Header -->
@@ -55,5 +57,6 @@
     </nav>
     {% block content %}{% endblock %}
 </body>
+
 <script src="{% static 'js/menu.js' %}"></script>
 </html>
