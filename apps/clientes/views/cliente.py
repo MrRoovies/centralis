@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
-from ..models import Cliente, Email, Telefone
+from ..models import Cliente, Email, Telefone, Endereco
 from django.db import transaction, DatabaseError
 from ..forms import ClienteForm, EmailForm, TelefoneForm
 import json
@@ -64,7 +64,8 @@ def cliente(request, id):
     cliente = Cliente.objects.prefetch_related(
         Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
         Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
-        'enderecos').get(id=id)
+        Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
+    ).get(id=id)
     context = { "cliente": cliente }
     return render(request, 'clientes/cliente.html', context)
 
