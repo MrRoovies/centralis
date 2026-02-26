@@ -125,8 +125,7 @@ class EnderecoForm(forms.ModelForm):
             'cidade',
             'uf',
             'cep',
-            'tipo',
-            'ativo'
+            'tipo'
         ]
 
         widgets = {
@@ -142,7 +141,7 @@ class EnderecoForm(forms.ModelForm):
             'cidade': forms.TextInput(attrs={
                 'class': 'form-control'
             }),
-            'uf': forms.TextInput(attrs={
+            'uf': forms.Select(attrs={
                 'class': 'form-control'
             }),
             'cep': forms.TextInput(attrs={

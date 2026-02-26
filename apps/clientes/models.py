@@ -1,6 +1,7 @@
 from datetime import date
 
 from django.db import models
+from ..core.choices import UF_CHOICES
 
 # Create your models here.
 class Cliente(models.Model):
@@ -187,7 +188,7 @@ class Endereco(models.Model):
     numero = models.CharField('Numero', max_length=10)
     bairro = models.CharField('Bairro', max_length=255)
     cidade = models.CharField('Cidade', max_length=200)
-    uf = models.CharField('UF', max_length=2)
+    uf = models.CharField('UF', max_length=2, choices=UF_CHOICES)
     cep = models.CharField('Cep', max_length=10)
     tipo = models.CharField('Tipo Endereco', max_length=15, choices=ENDERECO_CHOICES)
     ativo = models.BooleanField(default=True)
