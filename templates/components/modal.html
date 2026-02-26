@@ -6,10 +6,19 @@
             <h3 id="sys-modal-title">{{ title }}</h3>
 
             <form id="modal_form">
-                {% csrf_token %}
-                <input type="hidden" name="cliente_id" value="{{ cliente_id }}">
-                {{ form.as_table }}
-                <button class="save-form btn-small btn-edit">Cadastrar Novo</button>
+                    {% csrf_token %}
+                    <input type="hidden" name="cliente_id" value="{{ cliente_id }}">
+                        <div class="form-row">
+                            {% for boundfield in form %}
+                            <div class="form-group">
+                                <label for="{{ boundfield.id_for_label }}">
+                                    {{ boundfield.label }}
+                                </label>
+                                {{ boundfield }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    <button type="submit" class="save-form btn-small btn-edit">Salvar</button>
             </form>
         </div>
     </div>
