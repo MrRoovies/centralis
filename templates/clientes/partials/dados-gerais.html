@@ -2,7 +2,9 @@
     <div class="cliente-nome">{{cliente.nome}}</div>
 </div>
 <div class="btn-actions">
-    <button class="btn-small btn-edit" onclick="editarCliente({{cliente.id}})">Editar</button>
+    <button class="btn-small btn-edit" onclick="SystemModal.open('/clientes/cliente/{{ cliente.id }}/edit')">
+    Edita Cliente
+    </button>
 </div>
 <div class="cliente-info">
     <div class="info-item">
