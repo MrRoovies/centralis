@@ -1,10 +1,13 @@
 {% load static %}
 <div class="btn-actions">
-    <button class="btn-small btn-edit" onclick="editarCliente({{cliente.id}})">Editar</button>
+    <button class="btn-small btn-edit" onclick="SystemModal.open('/clientes/telefone/{{ cliente.id }}/create')">
+        Novo Telefone
+    </button>
 </div>
 <div class="cliente-info fones">
     <div class="info-item">
-        <span class="info-label">Telefone</span>
+        <span class="info-label">Telefone
+        <form id="form_del_telefone">
         <table>
             <tr>
                 {% for telefone in cliente.telefones.all %}
@@ -15,8 +18,12 @@
                         {% endif %}
                         {{ telefone.telefone }}</span>
                 </td>
+                <td>
+                    <button class="action-btn btn-small btn-delete" data-type="telefone" data-action="delete" data-cliente="{{ telefone.id }}">Excluir</button>
+                </td>
                 {% endfor %}
             </tr>
         </table>
+        </form>
     </div>
 </div>
