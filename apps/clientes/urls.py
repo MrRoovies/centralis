@@ -12,5 +12,6 @@ urlpatterns = [
     path('email/<int:id>/delete', email.deleta_email, name='deleta-email'),
     path('email/<int:cliente_id>/create', email.novo_email, name='novo_email'),
 
-    path('telefone/<int:id>/delete', telefone.deleta_telefone, name='deleta-telefone')
+    path('telefone/<int:id>/delete', telefone.deleta_telefone, name='deleta-telefone'),
+    path('telefone/<int:cliente_id>/create', telefone.novo_telefone, name='novo_telefone')
 ]
