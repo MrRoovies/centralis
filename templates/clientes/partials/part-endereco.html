@@ -1,10 +1,13 @@
 {% load static %}
 <div class="btn-actions">
-    <button class="btn-small btn-edit" onclick="editarCliente({{cliente.id}})">Editar</button>
+    <button class="btn-small btn-edit" onclick="SystemModal.open('/clientes/endereco/{{ cliente.id }}/create')">
+        Novo Endereco
+    </button>
 </div>
 <div class="cliente-info endereco">
     <div class="info-item">
         <span class="info-label">Endereço</span>
+        <form id="form_del_endereco">
         {% for endereco in cliente.enderecos.all %}
         <table>
             <tr>
@@ -19,8 +22,12 @@
             </tr>
             <tr>
                 <td><span class="info-value">Cep: {{ endereco.cep }}</span></td>
+                <td>
+                    <button class="action-btn btn-small btn-delete" data-type="endereco" data-action="delete" data-cliente="{{ endereco.id }}">Excluir</button>
+                </td>
             </tr>
         </table>
         {% endfor %}
+        </form>
     </div>
 </div>

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente, Email, Telefone
+from .models import Cliente, Email, Telefone, Endereco
 
 
 class ClienteForm(forms.ModelForm):
@@ -113,4 +113,43 @@ class TelefoneForm(forms.ModelForm):
                 choices = SIM_NAO,
                 attrs = {'class': 'form-control'}
             ),
+        }
+
+class EnderecoForm(forms.ModelForm):
+    class Meta:
+        model = Endereco
+        fields = [
+            'cliente',
+            'logradouro',
+            'numero',
+            'bairro',
+            'cidade',
+            'uf',
+            'cep',
+            'tipo',
+            'ativo'
+        ]
+
+        widgets = {
+            'logradouro': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'numero': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'bairrro': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'cidade': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'uf': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'cep': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'tipo': forms.Select(attrs={
+                'class': 'form-control'
+            }),
         }

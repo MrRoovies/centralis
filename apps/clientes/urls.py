@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import cliente, email, telefone
+from .views import cliente, email, telefone, endereco
 
 app_name = 'clientes'
 
@@ -13,5 +13,8 @@ urlpatterns = [
     path('email/<int:cliente_id>/create', email.novo_email, name='novo_email'),
 
     path('telefone/<int:id>/delete', telefone.deleta_telefone, name='deleta-telefone'),
-    path('telefone/<int:cliente_id>/create', telefone.novo_telefone, name='novo_telefone')
+    path('telefone/<int:cliente_id>/create', telefone.novo_telefone, name='novo_telefone'),
+
+    path('endereco/<int:id>/delete', endereco.delete_endereco, name='delete-endereco'),
+
 ]
