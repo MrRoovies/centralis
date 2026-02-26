@@ -49,8 +49,30 @@ class ClienteForm(forms.ModelForm):
                 'maxlength': '255',
                 'autocomplete': 'off'
             }),
-
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Se já existe no banco → estamos editando
+        if self.instance and self.instance.pk:
+            self.fields['documento'].disabled = True
+            self.fields['empresa'].disabled = True
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+
+        # 🔒 Blindagem absoluta
+        if self.instance.pk:
+            original = type(self.instance).objects.get(pk=self.instance.pk)
+
+            instance.documento = original.documento
+            instance.empresa = original.empresa
+
+        if commit:
+            instance.save()
+
+        return instance
+
 
 class EmailForm(forms.ModelForm):
     class Meta:
