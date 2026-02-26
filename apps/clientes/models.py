@@ -160,6 +160,14 @@ class Telefone(models.Model):
         if len(self.telefone) not in [10, 11]:
             raise ValidationError("Telefone deve ter 10 ou 11 dígitos.")
 
+    @classmethod
+    def get_existente(cls, cliente_id, telefone, tipo):
+        return cls.objects.filter(
+            cliente_id=cliente_id,
+            telefone=telefone,
+            tipo=tipo
+        ).first()
+
     def __str__(self):
         return self.telefone
 
