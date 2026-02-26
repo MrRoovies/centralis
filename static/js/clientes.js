@@ -16,7 +16,7 @@ document.addEventListener('click', function(e){
     const id = btn.dataset.cliente;
     const target = btn.dataset.target;
 
-    const delete_form = document.querySelector('#form_del_mail');
+    const delete_form = document.querySelector(`#form_del_${type}`);
 
     // Fluxo específico para ação de DELETE
     if (action === "delete") {

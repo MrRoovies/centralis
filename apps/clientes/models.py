@@ -141,6 +141,7 @@ class Telefone(models.Model):
     telefone = models.CharField(max_length=11, db_index=True, blank=True)
     tipo = models.CharField(max_length=15, choices=TELEFONE_CHOICES, blank=True)
     whats_app = models.BooleanField(default=False)
+    ativo = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
