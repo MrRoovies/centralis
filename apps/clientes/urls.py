@@ -8,7 +8,7 @@ urlpatterns = [
     path('cliente_novo', cliente.cliente_novo, name='cliente_novo'),
     path('cliente/<int:id>', cliente.cliente, name='cliente'),
 
-    path('cliente/edita-cliente/<int:id>', cliente.edita_cliente, name='edita_cliente'),
+    path('cliente/<int:cliente_id>/edit', cliente.edita_cliente, name='edita_cliente'),
 
     path('email/<int:id>/delete', email.deleta_email, name='deleta-email'),
     path('email/<int:cliente_id>/create', email.novo_email, name='novo_email')
