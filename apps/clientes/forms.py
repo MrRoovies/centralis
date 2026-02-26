@@ -119,7 +119,6 @@ class EnderecoForm(forms.ModelForm):
     class Meta:
         model = Endereco
         fields = [
-            'cliente',
             'logradouro',
             'numero',
             'bairro',
@@ -148,8 +147,5 @@ class EnderecoForm(forms.ModelForm):
             }),
             'cep': forms.TextInput(attrs={
                 'class': 'form-control'
-            }),
-            'tipo': forms.Select(attrs={
-                'class': 'form-control'
-            }),
+            })
         }
