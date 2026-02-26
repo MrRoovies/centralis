@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -68,5 +68,34 @@ def cliente(request, id):
     return render(request, 'clientes/cliente.html', context)
 
 @login_required
-def edita_cliente(request, id):
-    return render(request, 'clientes/editar-cliente.html')
+def edita_cliente(request, cliente_id):
+    cliente = get_object_or_404(Cliente, pk=cliente_id)
+    if request.method == 'POST':
+        # IMPORTANTE: passar instance aqui também
+        cliente_form = ClienteForm(request.POST, instance=cliente, prefix="cliente")
+        if cliente_form.is_valid():
+            with transaction.atomic():
+                edita_cli = cliente_form.save(commit=False)
+                edita_cli.save()
+
+            return JsonResponse({
+                "success": True,
+                "message": {
+                    "cliente": {"success": ["Cliente alterado com Sucesso!"]}
+                }
+            }, status=200)
+
+        form_errors = {
+            "cliente": cliente_form.errors,
+        }
+        return JsonResponse({"success": False, "errors": form_errors}, status=400)
+
+
+    form = ClienteForm(prefix="cliente", instance=cliente)
+    context = {
+        'title': "Editar Info's. Cliente",
+        'action': "edit_client",
+        'form': form,
+        'cliente_id': cliente_id
+    }
+    return render(request, 'components/modal.html', context)
