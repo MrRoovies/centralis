@@ -38,10 +38,12 @@ def novo_telefone(request, cliente_id):
                         "telefone": {"__all__": ["Telefone já está cadastrado e ativo."]}
                     }
                 }, status=400)
-                # CASO 2 — Existe mas está inativo
+
+            # CASO 2 — Existe mas está inativo
             if existente and not existente.ativo:
                 if force == "true":
                     existente.ativo = True
+                    existente.whats_app = telefone_data['whats_app']
                     existente.save()
                     return JsonResponse({"success": True})
 
