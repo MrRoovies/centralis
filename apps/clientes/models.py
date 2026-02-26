@@ -190,6 +190,7 @@ class Endereco(models.Model):
     uf = models.CharField('UF', max_length=2)
     cep = models.CharField('Cep', max_length=10)
     tipo = models.CharField('Tipo Endereco', max_length=15, choices=ENDERECO_CHOICES)
+    ativo = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
@@ -208,3 +209,11 @@ class Endereco(models.Model):
 
         if len(self.cep) != 8:
             raise ValidationError("Cep Incorreto.")
+
+    @classmethod
+    def get_existente(cls, cliente_id, cep, tipo):
+        return cls.objects.filter(
+            cliente_id=cliente_id,
+            cep=cep,
+            tipo=tipo
+        ).first()
