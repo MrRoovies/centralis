@@ -62,29 +62,6 @@ class Agenda(models.Model):
             self.perfil_nome = self.perfil.codigo
         if self.carteira:
             self.carteira_nome = self.carteira.nome
-        super().save(*args, **kwargs)
-
-# ========================
-# MODEL ACIONAMENTO
-# ========================
-class Acionamento(models.Model):
-    agenda = models.ForeignKey("Agenda", on_delete=models.CASCADE)
-    data_acionamento = models.DateTimeField("Data Acionamento", auto_now_add=True)
-    data_finalizado = models.DateTimeField("Data Finalizado", null=True, blank=True)
-    situacao = models.ForeignKey("Situacao", on_delete=models.CASCADE)
-    comentario = models.TextField("Comentario", max_length=1024, null=True, blank=True)
-
-    class Meta:
-        ordering = ['-data_acionamento']
-
-    def save(self, *args, **kwargs):
-        # Atualiza snapshot
-        if self.equipe:
-            self.equipe_nome = self.equipe.nome
-        if self.perfil:
-            self.perfil_nome = self.perfil.codigo
-        if self.carteira:
-            self.carteira_nome = self.carteira.nome
 
         # Atualiza agenda_ativa automaticamente
         if self.situacao and self.situacao.tipo != "AGENDA":
@@ -120,6 +97,21 @@ class Acionamento(models.Model):
             raise ValidationError(
                 f"Este cliente já possui uma agenda ativa na mesma carteira."
             )
+
+# ========================
+# MODEL ACIONAMENTO
+# ========================
+class Acionamento(models.Model):
+    agenda = models.ForeignKey("Agenda", on_delete=models.CASCADE)
+    data_acionamento = models.DateTimeField("Data Acionamento", auto_now_add=True)
+    data_finalizado = models.DateTimeField("Data Finalizado", null=True, blank=True)
+    situacao = models.ForeignKey("Situacao", on_delete=models.CASCADE)
+    comentario = models.TextField("Comentario", max_length=1024, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-data_acionamento']
+
+
 
     def __str__(self):
         return f"{self.agenda} - {self.situacao.nome} ({self.data_acionamento.strftime('%d/%m/%Y %H:%M')})"
