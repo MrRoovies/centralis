@@ -17,7 +17,7 @@ class AcionamentoInline(admin.TabularInline):
 @admin.register(Agenda)
 class AgendaAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'usuario', 'equipe', 'perfil', 'carteira',
+        'id', 'cliente', 'usuario', 'equipe', 'perfil', 'carteira',
         'telefone', 'situacao', 'agenda_ativa', 'data_entrada', 'data_hora_retorno', 'data_finalizado'
     )
     list_filter = ('usuario', 'equipe', 'perfil', 'carteira', 'agenda_ativa', 'situacao')

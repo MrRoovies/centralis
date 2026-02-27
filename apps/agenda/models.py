@@ -1,11 +1,19 @@
 from django.db import models
 from django.conf import settings
 from ..usuarios.models import Carteira, Perfil, Equipe
+from ..clientes.models import Cliente
 
 # ========================
 # MODEL AGENDA
 # ========================
 class Agenda(models.Model):
+    cliente = models.ForeignKey(
+        Cliente,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        related_name='agendas'
+    )
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
@@ -85,6 +93,7 @@ class Agenda(models.Model):
         bloqueio_tipos = ["AGENDA"]  # "Em Atendimento"/"Agendado" é do tipo "AGENDA"
 
         qs = Agenda.objects.filter(
+            cliente=self.cliente_id,
             usuario=self.usuario,
             carteira=self.carteira,
             agenda_ativa=True,
