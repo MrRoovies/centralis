@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.db import models
 from django.conf import settings
 from ..usuarios.models import Carteira, Perfil, Equipe
@@ -120,7 +122,41 @@ class Acionamento(models.Model):
     class Meta:
         ordering = ['-data_acionamento']
 
+    @property
+    def tempo_tela(self):
+        """
+        Retorna um timedelta bruto (bom para cálculos e relatórios).
+        """
+        if not self.data_finalizado:
+            return timezone.now() - self.data_acionamento
+        else:
+            return self.data_finalizado - self.data_acionamento
 
+    @property
+    def tempo_tela_formatado(self):
+        """
+        Retorna string formatada: Xd Xh Xm Xs
+        """
+        if not self.tempo_tela:
+            return "-"
+
+        total_segundos = int(self.tempo_tela.total_seconds())
+
+        dias, resto = divmod(total_segundos, 86400)
+        horas, resto = divmod(resto, 3600)
+        minutos, segundos = divmod(resto, 60)
+
+        partes = []
+        if dias:
+            partes.append(f"{dias}d")
+        if horas:
+            partes.append(f"{horas}h")
+        if minutos:
+            partes.append(f"{minutos}m")
+        if segundos or not partes:
+            partes.append(f"{segundos}s")
+
+        return " ".join(partes)
 
     def __str__(self):
         return f"{self.agenda} - {self.situacao.nome} ({self.data_acionamento.strftime('%d/%m/%Y %H:%M')})"

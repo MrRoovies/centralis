@@ -1,0 +1,27 @@
+{% load static %}
+{% load admin_urls %}
+<div class="historico">
+    <h4>HISTÓRICO DE ATENDIMENTOS</h4>
+
+    <div class="historico-item">
+        {% for agenda in agendas %}
+        <p>{{ agenda.carteira.nome }} - {{ agenda.usuario.first_name }} {{ agenda.usuario.last_name }}</p>
+        <p>Primeiro Contato: {{ agenda.data_entrada|date:"d/m/Y H:m:i" }}</p>
+        <p>Situacao Atual: {{ agenda.situacao.nome }}</p>
+
+            <h4>Acionamentos da Agenda:</h4>
+            {% for acionamento in agenda.acionamento_set.all %}
+                <div class="historico-item acionamento">
+                    <h3>
+                        {{ acionamento.situacao }} -
+                        {{ acionamento.data_acionamento|date:"d/m/Y H:m:i" }}
+                        {{ acionamento.data_finalizado|date:"d/m/Y H:m:i" }} -
+                        Tempo de tela: {{ acionamento.tempo_tela_formatado }}
+                    </h3>
+                    <p class="comentario">{{ acionamento.comentario }}</p>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+

@@ -9,7 +9,6 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <h2 class="page-title">Dados do Cliente</h2>
             <!-- Lista de Clientes -->
             <div class="clientes-lista" id="clientesLista">
                 <div class="cliente-card">
@@ -22,10 +21,11 @@
 
                     {% include 'clientes/partials/part-endereco.html' %}
 
-                    <div class="historico">
-                        <h4>HISTÓRICO DE ATENDIMENTOS</h4>
-                        <div class="historico-item">${cliente.historico}</div>
-                    </div>
+                    <div id="historico-agendas"></div>
+                    <script>
+                        carrega_agenda({{cliente.id}});
+                    </script>
+
                 </div>
             </div>
         </div>

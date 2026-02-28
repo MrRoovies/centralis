@@ -193,3 +193,17 @@ function flattenGroupedMessages(groupedErrors) {
 
     return allErrors;
 }
+
+function carrega_agenda(cliente_id){
+    /* CARREGA OS DADOS DE AGENDA DO CLIENTE CASO EXISTA */
+    fetch(`/agenda/historico/${cliente_id}/`)
+        .then(response => response.text())
+        .then(html => {
+            console.log(html);
+            document.getElementById("historico-agendas").innerHTML = html;
+        })
+        .catch(error => {
+            document.getElementById("historico-agendas").innerHTML =
+                "<p>Erro ao carregar histórico.</p>";
+        });
+}
