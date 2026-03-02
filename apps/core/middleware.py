@@ -7,6 +7,8 @@ class EmpresaMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if request.path.startswith("/admin/"):
+            return self.get_response(request)
 
         host = request.get_host().split(":")[0]
         partes = host.split(".")
