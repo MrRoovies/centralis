@@ -16,7 +16,7 @@ def login_view(request):
         username = data.get('text_user')
         password = data.get('text_pass')
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=username, password=password, empresa=request.empresa)
 
         if user is None:
             return JsonResponse({'status': 'error', 'message': 'Usuário ou senha incorretos'}, status=403)

@@ -11,19 +11,19 @@ class EmpresaMiddleware:
         host = request.get_host().split(":")[0]
         partes = host.split(".")
 
-        if len(partes) > 1:
-            subdominio = partes[0]
-        else:
-            subdominio = None
+        # Precisa ter pelo menos 3 partes: subdominio.dominio.tld
+        if len(partes) < 2:
+            raise Http404("Subdomínio obrigatório")
 
-        if subdominio and subdominio != "localhost":
-            try:
-                empresa = Empresa.objects.get(subdominio=subdominio)
-                request.empresa = empresa
-            except Empresa.DoesNotExist:
-                raise Http404("Empresa não encontrada")
-        else:
-            request.empresa = None
+        subdominio = partes[0]
 
-        response = self.get_response(request)
-        return response
+        try:
+            empresa = Empresa.objects.get(
+                subdominio=subdominio,
+                ativa=True
+            )
+            request.empresa = empresa
+        except Empresa.DoesNotExist:
+            raise Http404("Empresa não encontrada")
+
+        return self.get_response(request)
