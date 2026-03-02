@@ -5,9 +5,11 @@
 
     <div class="historico-item">
         {% for agenda in agendas %}
-        <p>{{ agenda.carteira.nome }} - {{ agenda.usuario.first_name }} {{ agenda.usuario.last_name }}</p>
-        <p>Primeiro Contato: {{ agenda.data_entrada|date:"d/m/Y H:m:i" }}</p>
+        <p>{{ agenda.carteira.nome }} - {{ agenda.usuario.first_name }} {{ agenda.usuario.last_name }} -
+            {{ agenda.data_entrada|date:"d/m/Y H:m:i" }}</p>
         <p>Situacao Atual: {{ agenda.situacao.nome }}</p>
+        <p>Modo Contato: {{ agenda.modo }}</p>
+        <p>Canal: {{ agenda.canal }}</p>
 
             <h4>Acionamentos da Agenda:</h4>
             {% for acionamento in agenda.acionamento_set.all %}
