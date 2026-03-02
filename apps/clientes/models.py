@@ -4,8 +4,20 @@ from django.db import models
 from ..core.choices import UF_CHOICES
 
 # Create your models here.
-class Cliente(models.Model):
+class ClienteQuerySet(models.QuerySet):
+    def for_empresa(self, empresa):
+        return self.filter(empresa=empresa)
 
+
+class ClienteManager(models.Manager):
+    def get_queryset(self):
+        return ClienteQuerySet(self.model, using=self._db)
+
+    def for_request(self, request):
+        return self.get_queryset().for_empresa(request.empresa)
+
+
+class Cliente(models.Model):
     TIPO_PESSOA = [
         ('PF', 'Pessoa Física'),
         ('PJ', 'Pessoa Jurídica'),
@@ -21,7 +33,7 @@ class Cliente(models.Model):
     empresa = models.ForeignKey("core.Empresa", on_delete=models.CASCADE, related_name="clientes")
     nome = models.CharField('Nome', max_length=255)
     tipo_pessoa = models.CharField('Tipo Pessoa', max_length=2, choices=TIPO_PESSOA)
-
+    objects = ClienteManager()
     documento = models.CharField(
         'Documento',
         max_length=14,

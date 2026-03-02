@@ -7,7 +7,6 @@ class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = [
-            'empresa',
             'tipo_pessoa',
             'nome',
             'documento',
@@ -17,10 +16,6 @@ class ClienteForm(forms.ModelForm):
         ]
 
         widgets = {
-            'empresa': forms.Select(attrs={
-                'class': 'form-control',
-                'required': True
-            }),
             'tipo_pessoa': forms.Select(attrs={
                 'class': 'form-control',
                 'required': True
@@ -51,12 +46,12 @@ class ClienteForm(forms.ModelForm):
             }),
         }
     def __init__(self, *args, **kwargs):
+        self.empresa = kwargs.pop("empresa", None)
         super().__init__(*args, **kwargs)
 
         # Se já existe no banco → estamos editando
         if self.instance and self.instance.pk:
             self.fields['documento'].disabled = True
-            self.fields['empresa'].disabled = True
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -66,12 +61,23 @@ class ClienteForm(forms.ModelForm):
             original = type(self.instance).objects.get(pk=self.instance.pk)
 
             instance.documento = original.documento
-            instance.empresa = original.empresa
 
         if commit:
             instance.save()
 
         return instance
+
+    def clean_documento(self):
+        from django.core.exceptions import ValidationError
+        documento = self.cleaned_data['documento']
+
+        if Cliente.objects.filter(
+            empresa=self.empresa,
+            documento=documento
+        ).exists():
+            raise ValidationError("Já existe um cliente com esse documento.")
+
+        return documento
 
 
 class EmailForm(forms.ModelForm):
