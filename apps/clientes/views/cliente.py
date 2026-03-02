@@ -1,6 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from ..models import Cliente, Email, Telefone, Endereco
@@ -15,21 +15,24 @@ def search_cliente(request):
     if request.body:
         data = json.loads(request.body)
         documento = data.get("documento")
+
         try:
-            cliente = Cliente.objects.get(documento=documento)
+            cliente = Cliente.objects.for_request(request).filter(documento=documento).first()
             return JsonResponse({'status': 'success', 'data': cliente.id }, status=200)
-        except:
+        except Exception as e:
             return JsonResponse({'status': 'error', 'message': "Cliente não existe"}, status=404)
 
 @login_required
 def cliente_novo(request):
     if request.method == "POST":
-        cliente_form = ClienteForm(request.POST, prefix="cliente")
+        cliente_form = ClienteForm(request.POST, prefix="cliente", empresa=request.empresa)
         email_form = EmailForm(request.POST, prefix="email")
         telefone_form = TelefoneForm(request.POST, prefix="telefone")
 
         if cliente_form.is_valid() and email_form.is_valid() and telefone_form.is_valid():
             with transaction.atomic():
+                cliente = cliente_form.save(commit=False)
+                cliente.empresa = request.empresa
                 cliente = cliente_form.save()
 
                 email = email_form.save(commit=False)
@@ -42,7 +45,12 @@ def cliente_novo(request):
                 if telefone.telefone:
                     telefone.save()
 
-            return JsonResponse({"success": True, 'message': 'Cliente cadastrado com sucesso'})
+            return JsonResponse({
+                "success": True,
+                "message": {
+                    "cliente": {"success": ["Cliente criado com sucesso!"]}
+                }
+            }, status=200)
 
         form_errors = {
             "cliente": cliente_form.errors,
@@ -65,9 +73,12 @@ def cliente(request, id):
         Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
         Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
         Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
-    ).get(id=id)
+    ).get(id=id, empresa=request.user.agente.carteira.empresa)
+    if not cliente:
+        return redirect("/home/", status=404)
     context = { "cliente": cliente }
     return render(request, 'clientes/cliente.html', context)
+
 
 @login_required
 def edita_cliente(request, cliente_id):
@@ -101,3 +112,22 @@ def edita_cliente(request, cliente_id):
         'cliente_id': cliente_id
     }
     return render(request, 'components/modal.html', context)
+
+
+@require_GET
+@login_required
+def atendimento_cliente(request, cliente_id):
+    usuario = request.user
+    from projetopratico.apps.clientes.services.agenda_services import NovaAgenda
+    novo_agendamento = NovaAgenda(cliente_id, usuario, usuario.agente.carteira)
+
+    print(novo_agendamento)
+
+    cliente = Cliente.objects.prefetch_related(
+        Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+        Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
+        Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
+    ).get(id=id)
+
+    context = {"cliente": cliente}
+    return render(request, 'clientes/cliente.html', context)
