@@ -1,5 +1,5 @@
 from django.utils import timezone
-
+from django.db.models import Q
 from django.db import models
 from django.conf import settings
 from ..usuarios.models import Carteira, Perfil, Equipe
@@ -59,6 +59,13 @@ class Agenda(models.Model):
 
     class Meta:
         ordering = ['-data_entrada']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['cliente', 'carteira'],
+                condition=Q(agenda_ativa=True),
+                name='unique_active_agenda_per_carteira'
+            )
+        ]
 
     def __str__(self):
         situ = self.situacao.nome if self.situacao else 'Sem Situação'
@@ -82,31 +89,18 @@ class Agenda(models.Model):
         super().save(*args, **kwargs)
 
     def clean(self):
-        """
-        Impede múltiplas agendas ativas para o mesmo cliente na mesma carteira
-        enquanto a situação estiver "Em Atendimento" ou "Agendado".
-        """
         from django.core.exceptions import ValidationError
 
-        if not self.agenda_ativa or not self.carteira:
+        if not self.agenda_ativa:
             return
 
-        # Situações que bloqueiam outro usuário da mesma carteira
-        bloqueio_tipos = ["AGENDA"]  # "Em Atendimento"/"Agendado" é do tipo "AGENDA"
-
-        qs = Agenda.objects.filter(
-            cliente=self.cliente_id,
-            usuario=self.usuario,
-            carteira=self.carteira,
-            agenda_ativa=True,
-            situacao__tipo__in=bloqueio_tipos
-        )
-        if self.pk:
-            qs = qs.exclude(pk=self.pk)
-
-        if qs.exists():
+        if Agenda.objects.filter(
+                cliente=self.cliente,
+                carteira=self.carteira,
+                agenda_ativa=True
+            ).exclude(pk=self.pk).exists():
             raise ValidationError(
-                f"Este cliente já possui uma agenda ativa na mesma carteira."
+                "Já existe uma agenda ativa para este cliente nesta carteira."
             )
 
 # ========================
@@ -167,6 +161,7 @@ class Acionamento(models.Model):
 class Situacao(models.Model):
     TIPO_CHOICES = [
         ('INICIAL', 'Inicial'),
+        ('AGENDA', 'Em Atendimento'),
         ('AGENDA', 'Agendamento'),
         ('INSUCESSO', 'Insucesso'),
         ('SUCESSO', 'Sucesso')

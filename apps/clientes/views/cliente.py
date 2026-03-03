@@ -69,13 +69,15 @@ def cliente_novo(request):
 
 @login_required
 def cliente(request, id):
-    cliente = Cliente.objects.prefetch_related(
-        Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
-        Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
-        Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
-    ).get(id=id, empresa=request.user.agente.carteira.empresa)
-    if not cliente:
-        return redirect("/home/", status=404)
+    cliente = get_object_or_404(
+        Cliente.objects.for_request(request)
+        .prefetch_related(
+            Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+            Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
+            Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
+        ),
+        id=id
+    )
     context = { "cliente": cliente }
     return render(request, 'clientes/cliente.html', context)
 
@@ -114,20 +116,22 @@ def edita_cliente(request, cliente_id):
     return render(request, 'components/modal.html', context)
 
 
-@require_GET
 @login_required
 def atendimento_cliente(request, cliente_id):
-    usuario = request.user
-    from projetopratico.apps.clientes.services.agenda_services import NovaAgenda
-    novo_agendamento = NovaAgenda(cliente_id, usuario, usuario.agente.carteira)
+    if request.method == "GET":
+        from apps.clientes.services.agenda_services import Agendamento_service
+        usuario = request.user
 
-    print(novo_agendamento)
+        nova_agenda = Agendamento_service(cliente_id, usuario).executar()
 
-    cliente = Cliente.objects.prefetch_related(
-        Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
-        Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
-        Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
-    ).get(id=id)
-
-    context = {"cliente": cliente}
-    return render(request, 'clientes/cliente.html', context)
+        cliente = get_object_or_404(
+            Cliente.objects.for_request(request)
+            .prefetch_related(
+                Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+                Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
+                Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
+            ),
+            id=cliente_id
+        )
+        context = {"cliente": cliente}
+        return render(request, 'clientes/cliente.html', context)

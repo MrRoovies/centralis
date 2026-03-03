@@ -3,8 +3,8 @@
 <div class="historico">
     <h4>HISTÓRICO DE ATENDIMENTOS</h4>
 
+    {% for agenda in agendas %}
     <div class="historico-item">
-        {% for agenda in agendas %}
         <p>{{ agenda.carteira.nome }} - {{ agenda }}</p>
         <p>Modo Contato: {{ agenda.modo }}</p>
         <p>Canal: {{ agenda.canal }}</p>
@@ -21,7 +21,7 @@
                     <p class="comentario">{{ acionamento.comentario }}</p>
                 </div>
             {% endfor %}
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
 
