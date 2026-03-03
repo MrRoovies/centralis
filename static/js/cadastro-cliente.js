@@ -30,7 +30,7 @@ form.addEventListener('submit', function(e) {
             }
         }
 
-        renderFormErrors(form, allErrors);
+        renderFormMessage(form, allErrors);
 
     })
 })
