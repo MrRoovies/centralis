@@ -119,7 +119,7 @@ def edita_cliente(request, cliente_id):
 @login_required
 def atendimento_cliente(request, cliente_id):
     if request.method == "GET":
-        from apps.clientes.services.agenda_services import Agendamento_service
+        from apps.agenda.services.agenda_services import Agendamento_service
         usuario = request.user
 
         nova_agenda = Agendamento_service(cliente_id, usuario).executar()
