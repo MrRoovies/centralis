@@ -114,7 +114,14 @@ class Acionamento(models.Model):
     comentario = models.TextField("Comentario", max_length=1024, null=True, blank=True)
 
     class Meta:
-        ordering = ['-data_acionamento']
+        ordering = ['-data_acionamento'],
+        constraints = [
+            models.UniqueConstraint(
+                fields=['agenda'],
+                condition=models.Q(data_finalizado__isnull=True),
+                name='unique_open_acionamento_per_agenda'
+            )
+        ]
 
     @property
     def tempo_tela(self):
