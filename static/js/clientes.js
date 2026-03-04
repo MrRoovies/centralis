@@ -199,11 +199,16 @@ function carrega_agenda(cliente_id){
     fetch(`/agenda/historico/${cliente_id}/`)
         .then(response => response.text())
         .then(html => {
-            console.log(html);
             document.getElementById("historico-agendas").innerHTML = html;
         })
         .catch(error => {
             document.getElementById("historico-agendas").innerHTML =
                 "<p>Erro ao carregar histórico.</p>";
         });
+}
+
+// Toggle Dropdown
+function dropdownhandler(){
+    dropdownHeader.classList.toggle('active');
+    dropdownBody.classList.toggle('active');
 }
