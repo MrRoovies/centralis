@@ -134,4 +134,4 @@ def atendimento_cliente(request, cliente_id):
             id=cliente_id
         )
         context = {"cliente": cliente}
-        return render(request, 'clientes/cliente.html', context)
+        return render(request, 'clientes/atendimento_cliente.html', context)
