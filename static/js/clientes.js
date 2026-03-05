@@ -225,10 +225,12 @@ function dropdownhandler(){
 
 function registrar(){
     const form = document.querySelector("#atendimentoForm");
+    if (!form){ return; }
     const inputs = form.querySelectorAll("input, select, textarea");
     const dados = {}
-    inputs.forEach( input => { dados[input.name] = input.value; });
-
+    inputs.forEach( input => {
+        dados[input.name] = input.value;
+    });
     fetch("/agenda/registrar", {
         method: 'POST',
         headers: {'X-CSRFToken': getCookie('csrftoken'),  // Token CSRF (Django)
@@ -236,13 +238,13 @@ function registrar(){
         body: JSON.stringify(dados)
     })
     .then(async response => {
-        const r = response.json();
+        const r = await response.json();
         if(!response.ok){ throw r; }
         return r;
     })
     .then( r => {
         // Junta erros de múltiplos forms em um único objeto
-        const groupedMessages = data.messages;
+        const groupedMessages = r.messages;
         const allMessages = flattenGroupedMessages(groupedMessages);
 
         // Renderiza mensagens no formulário
@@ -254,6 +256,5 @@ function registrar(){
         let allErrors = flattenGroupedMessages(groupedErrors);
         renderFormMessage(form, allErrors);
     })
-
 }
 

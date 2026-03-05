@@ -34,7 +34,7 @@ def registrar_atendimento(request):
             comentario
         )
         if not agendamento['success']:
-            return JsonResponse(agendamento, status=404)
+            return JsonResponse(agendamento, status=400)
 
         else:
             return JsonResponse(agendamento, status=200)

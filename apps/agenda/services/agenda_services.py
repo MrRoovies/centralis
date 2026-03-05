@@ -111,7 +111,7 @@ class AgendamentoService:
                 if not agenda:
                     return {
                         "success": False,
-                        "messages": {
+                        "errors": {
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
                         }
                     }
@@ -122,7 +122,7 @@ class AgendamentoService:
                 if not acionamento:
                     return {
                         "success": False,
-                        "messages": {
+                        "errors": {
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
                         }
                     }
@@ -130,6 +130,14 @@ class AgendamentoService:
                 sit = Situacao.objects.get(pk=situacao)
 
                 if sit.tipo == "AGENDA":
+                    if dataAgenda == "":
+                        return {
+                            "success": False,
+                            "errors": {
+                                "agenda": {"__all__": ["Data não pode ser vazio para Agendamento"]}
+                            }
+                        }
+
                     agenda.data_hora_retorno = dataAgenda
                 else:
                     agenda.data_finalizado = timezone.now()
@@ -150,9 +158,9 @@ class AgendamentoService:
             }
         except Exception as e:
             return {
-                    "success": False,
-                    "messages": {
-                        "agenda": {"error": ["Algo deu errado", f"{e}"]}
-                    }
+                "success": False,
+                "errors": {
+                    "agenda": {"__all__": ["Algo deu errado", f"{str(e)}"]}
                 }
+            }
 
