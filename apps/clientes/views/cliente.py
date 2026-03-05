@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from ..models import Cliente, Email, Telefone, Endereco
-from django.db import transaction, DatabaseError
+from django.db import transaction
 from ..forms import ClienteForm, EmailForm, TelefoneForm
 import json
 
@@ -116,22 +116,31 @@ def edita_cliente(request, cliente_id):
     return render(request, 'components/modal.html', context)
 
 
+@require_GET
 @login_required
 def atendimento_cliente(request, cliente_id):
-    if request.method == "GET":
-        from apps.agenda.services.agenda_services import Agendamento_service
-        usuario = request.user
+    from apps.agenda.services.agenda_services import AgendamentoService
+    from apps.agenda.models import Situacao
+    usuario = request.user
 
-        nova_agenda = Agendamento_service(cliente_id, usuario).executar()
+    nova_agenda = AgendamentoService().criar_ou_atualizar(cliente_id, usuario)
+    if not nova_agenda['success']:
+        return redirect(f'/clientes/cliente/{cliente_id}')
 
-        cliente = get_object_or_404(
-            Cliente.objects.for_request(request)
-            .prefetch_related(
-                Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
-                Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
-                Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
-            ),
-            id=cliente_id
-        )
-        context = {"cliente": cliente}
-        return render(request, 'clientes/atendimento_cliente.html', context)
+
+    cliente = get_object_or_404(
+        Cliente.objects.for_request(request)
+        .prefetch_related(
+            Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+            Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
+            Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
+        ),
+        id=cliente_id
+    )
+    situacoes = Situacao.objects.exclude(ativo=False)
+    context = {
+        "cliente": cliente,
+        "situacoes": situacoes,
+        "nova_agenda": nova_agenda
+    }
+    return render(request, 'clientes/atendimento_cliente.html', context)

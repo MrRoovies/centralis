@@ -18,11 +18,9 @@
                     </label>
                     <select id="situacao" name="situacao" required>
                         <option value="">Selecione...</option>
-                        <option value="agendado">Agendado</option>
-                        <option value="em_andamento">Em Andamento</option>
-                        <option value="concluido">Concluído</option>
-                        <option value="cancelado">Cancelado</option>
-                        <option value="reagendado">Reagendado</option>
+                        {% for situacao in situacoes %}
+                        <option value="{{situacao.id}}" data-tipe="{{ situacao.tipo }}">{{ situacao.nome }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -68,10 +66,10 @@
 
             <!-- Botões -->
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" onclick="registrar()">
                     Salvar Atendimento
                 </button>
-                <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                <button type="submit" class="btn btn-secondary" onclick="limparFormulario()">
                     Limpar
                 </button>
             </div>

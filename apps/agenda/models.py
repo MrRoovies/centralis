@@ -81,7 +81,7 @@ class Agenda(models.Model):
             self.carteira_nome = self.carteira.nome
 
         # Atualiza agenda_ativa automaticamente
-        if self.situacao and self.situacao.tipo != "AGENDA":
+        if self.situacao and self.situacao.tipo not in ["AGENDA", "CURSO"]:
             self.agenda_ativa = False
 
         # Validação antes de salvar
@@ -114,10 +114,10 @@ class Acionamento(models.Model):
     comentario = models.TextField("Comentario", max_length=1024, null=True, blank=True)
 
     class Meta:
-        ordering = ['-data_acionamento'],
+        ordering = ['-data_acionamento']
         constraints = [
             models.UniqueConstraint(
-                fields=['agenda'],
+                fields='agenda',
                 condition=models.Q(data_finalizado__isnull=True),
                 name='unique_open_acionamento_per_agenda'
             )
@@ -168,7 +168,7 @@ class Acionamento(models.Model):
 class Situacao(models.Model):
     TIPO_CHOICES = [
         ('INICIAL', 'Inicial'),
-        ('AGENDA', 'Em Atendimento'),
+        ('CURSO', 'Em Atendimento'),
         ('AGENDA', 'Agendamento'),
         ('INSUCESSO', 'Insucesso'),
         ('SUCESSO', 'Sucesso')
@@ -180,7 +180,7 @@ class Situacao(models.Model):
 
     class Meta:
         unique_together = ('nome', 'carteira')
-        ordering = ['nome']
+        ordering = ['tipo']
 
     def __str__(self):
         return f"{self.nome} ({self.tipo})"

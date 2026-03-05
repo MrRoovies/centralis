@@ -1,17 +1,16 @@
 from apps.agenda.models import Agenda, Acionamento, Situacao
 from apps.clientes.models import Cliente
 from django.db import transaction
+from django.utils import timezone
 
-class Agendamento_service:
+class AgendamentoService:
 
-    def __init__(self, cliente_id, usuario):
-        self.cliente = Cliente.objects.get(pk=cliente_id)
-        self.usuario = usuario
-        self.carteira = usuario.agente.carteira
-        self.equipe = usuario.agente.equipe
-        self.perfil = usuario.agente.perfil
-
-    def executar(self):
+    def criar_ou_atualizar(self, cliente_id, usuario):
+        cliente = Cliente.objects.get(pk=cliente_id)
+        usuario = usuario
+        carteira = usuario.agente.carteira
+        equipe = usuario.agente.equipe
+        perfil = usuario.agente.perfil
 
         with transaction.atomic():
 
@@ -19,8 +18,8 @@ class Agendamento_service:
                 Agenda.objects
                 .select_for_update()
                 .filter(
-                    cliente=self.cliente,
-                    carteira=self.carteira,
+                    cliente=cliente,
+                    carteira=carteira,
                     agenda_ativa=True
                 )
                 .first()
@@ -34,7 +33,7 @@ class Agendamento_service:
             if agenda:
 
                 # Mesmo usuário → retoma
-                if agenda.usuario == self.usuario:
+                if agenda.usuario == usuario:
                     agenda.situacao = situacao_atendimento
                     agenda.save()
 
@@ -56,11 +55,11 @@ class Agendamento_service:
 
             # 🔹 Caso 2: Não existe agenda ativa → cria nova
             nova_agenda = Agenda.objects.create(
-                cliente=self.cliente,
-                usuario=self.usuario,
-                carteira=self.carteira,
-                equipe=self.equipe,
-                perfil=self.perfil,
+                cliente=cliente,
+                usuario=usuario,
+                carteira=carteira,
+                equipe=equipe,
+                perfil=perfil,
                 modo="Ativo",
                 canal="Campanha da sorte",
                 situacao=situacao_atendimento
@@ -79,10 +78,10 @@ class Agendamento_service:
         """
         Atualiza ou cria um acionamento para a agenda.
         """
-        acionamento = Acionamento.objects.filter(
+        acionamento = Acionamento.objects.get(
             agenda=agenda,
             data_finalizado__isnull=True
-        ).first()
+        )
 
         if acionamento:
             # Atualiza a situação e mantém data_acionamento original
@@ -95,4 +94,55 @@ class Agendamento_service:
                 situacao=agenda.situacao
             )
 
+    def registrar_situacao(self, id_agenda, situacao, dataAgenda, telefone, comentario):
+        try:
+            with transaction.atomic():
+                agenda = Agenda.objects.filter(pk=id_agenda, agenda_ativa=True).first()
+                if not agenda:
+                    return {
+                        "success": False,
+                        "messages": {
+                            "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
+                        }
+                    }
+                acionamento = Acionamento.objects.get(
+                    agenda=agenda,
+                    data_finalizado__isnull=True
+                )
+                if not acionamento:
+                    return {
+                        "success": False,
+                        "messages": {
+                            "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
+                        }
+                    }
+
+                sit = Situacao.objects.get(pk=situacao)
+
+                if sit.tipo == "AGENDA":
+                    agenda.data_hora_retorno = dataAgenda
+                else:
+                    agenda.data_finalizado = timezone.now()
+
+                agenda.situacao = sit
+                agenda.telefone = telefone
+                agenda.save()
+
+                acionamento.situacao = sit
+                acionamento.data_finalizado = timezone.now()
+                acionamento.comentario = comentario
+                acionamento.save()
+            return {
+                "success": True,
+                "messages": {
+                    "agenda": {"success": ["Situacao registrada com sucesso!"]}
+                }
+            }
+        except Exception as e:
+            return {
+                    "success": False,
+                    "messages": {
+                        "agenda": {"error": ["Algo deu errado", f"{e}"]}
+                    }
+                }
 
