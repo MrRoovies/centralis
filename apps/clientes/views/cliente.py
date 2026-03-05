@@ -127,7 +127,6 @@ def atendimento_cliente(request, cliente_id):
     if not nova_agenda['success']:
         return redirect(f'/clientes/cliente/{cliente_id}')
 
-
     cliente = get_object_or_404(
         Cliente.objects.for_request(request)
         .prefetch_related(

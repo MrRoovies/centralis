@@ -241,10 +241,18 @@ function registrar(){
         return r;
     })
     .then( r => {
-        console.log(r);
+        // Junta erros de múltiplos forms em um único objeto
+        const groupedMessages = data.messages;
+        const allMessages = flattenGroupedMessages(groupedMessages);
+
+        // Renderiza mensagens no formulário
+        renderFormMessage(form, allMessages);
     })
     .catch( error => {
-        console.log(error);
+        // Caso erro de validação retornado via throw
+        const groupedErrors = error.errors;
+        let allErrors = flattenGroupedMessages(groupedErrors);
+        renderFormMessage(form, allErrors);
     })
 
 }
