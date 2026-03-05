@@ -194,6 +194,15 @@ function flattenGroupedMessages(groupedErrors) {
     return allErrors;
 }
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    const container = document.getElementById("historico-agendas");
+    if (container) {
+        const clienteId = container.dataset.clienteId;
+        carrega_agenda(clienteId);
+    }
+});
+
 function carrega_agenda(cliente_id){
     /* CARREGA OS DADOS DE AGENDA DO CLIENTE CASO EXISTA */
     fetch(`/agenda/historico/${cliente_id}/`)
@@ -212,3 +221,31 @@ function dropdownhandler(){
     dropdownHeader.classList.toggle('active');
     dropdownBody.classList.toggle('active');
 }
+
+
+function registrar(){
+    const form = document.querySelector("#atendimentoForm");
+    const inputs = form.querySelectorAll("input, select, textarea");
+    const dados = {}
+    inputs.forEach( input => { dados[input.name] = input.value; });
+
+    fetch("/agenda/registrar", {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'),  // Token CSRF (Django)
+                'Content-Type': 'application/json'},
+        body: JSON.stringify(dados)
+    })
+    .then(async response => {
+        const r = response.json();
+        if(!response.ok){ throw r; }
+        return r;
+    })
+    .then( r => {
+        console.log(r);
+    })
+    .catch( error => {
+        console.log(error);
+    })
+
+}
+
