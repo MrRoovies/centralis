@@ -12,76 +12,86 @@ class AgendamentoService:
         equipe = usuario.agente.equipe
         perfil = usuario.agente.perfil
 
-        with transaction.atomic():
+        try:
+            with transaction.atomic():
 
-            agenda = (
-                Agenda.objects
-                .select_for_update()
-                .filter(
-                    cliente=cliente,
-                    carteira=carteira,
-                    agenda_ativa=True
+                agenda = (
+                    Agenda.objects
+                    .select_for_update()
+                    .filter(
+                        cliente=cliente,
+                        carteira=carteira,
+                        agenda_ativa=True
+                    )
+                    .first()
                 )
-                .first()
-            )
 
-            situacao_atendimento = Situacao.objects.filter(
-                nome="Atendimento"
-            ).first()
+                situacao_atendimento = Situacao.objects.filter(
+                    nome="Atendimento"
+                ).first()
 
-            # 🔹 Caso 1: Existe agenda ativa
-            if agenda:
+                # 🔹 Caso 1: Existe agenda ativa
+                if agenda:
 
-                # Mesmo usuário → retoma
-                if agenda.usuario == usuario:
-                    agenda.situacao = situacao_atendimento
-                    agenda.save()
+                    # Mesmo usuário → retoma
+                    if agenda.usuario == usuario:
+                        agenda.situacao = situacao_atendimento
+                        agenda.save()
 
-                    # Atualiza ou cria acionamento
-                    self._criar_ou_atualizar_acionamento(agenda)
+                        # Atualiza ou cria acionamento
+                        self._criar_ou_atualizar_acionamento(agenda)
 
-                    return {
-                        "success": True,
-                        "message": "Retomando Atendimento!",
-                        "agenda": agenda
-                    }
+                        return {
+                            "success": True,
+                            "message": "Retomando Atendimento!",
+                            "agenda": agenda
+                        }
 
-                # Outro usuário da mesma carteira
-                else:
-                    return {
-                        "success": False,
-                        "message": "Cliente já está em atendimento por outro agente."
-                    }
+                    # Outro usuário da mesma carteira
+                    else:
+                        return {
+                            "success": False,
+                            "error": {
+                                "agenda": {"warning": [f"Cliente agendado com outro agente"]}
+                            }
+                        }
 
-            # 🔹 Caso 2: Não existe agenda ativa → cria nova
-            nova_agenda = Agenda.objects.create(
-                cliente=cliente,
-                usuario=usuario,
-                carteira=carteira,
-                equipe=equipe,
-                perfil=perfil,
-                modo="Ativo",
-                canal="Campanha da sorte",
-                situacao=situacao_atendimento
-            )
+                # 🔹 Caso 2: Não existe agenda ativa → cria nova
+                nova_agenda = Agenda.objects.create(
+                    cliente=cliente,
+                    usuario=usuario,
+                    carteira=carteira,
+                    equipe=equipe,
+                    perfil=perfil,
+                    modo="Ativo",
+                    canal="Campanha da sorte",
+                    situacao=situacao_atendimento
+                )
 
-            # Cria acionamento para a nova agenda
-            self._criar_ou_atualizar_acionamento(nova_agenda)
+                # Cria acionamento para a nova agenda
+                self._criar_ou_atualizar_acionamento(nova_agenda)
 
+                return {
+                    "success": True,
+                    "message": "Novo atendimento iniciado!",
+                    "agenda": nova_agenda
+                }
+        except Exception as e:
             return {
-                "success": True,
-                "message": "Novo atendimento iniciado!",
-                "agenda": nova_agenda
+                "success": False,
+                "messages": {
+                    "agenda": {"warning": [f"{e}"]}
+                }
             }
 
     def _criar_ou_atualizar_acionamento(self, agenda):
         """
         Atualiza ou cria um acionamento para a agenda.
         """
-        acionamento = Acionamento.objects.get(
+        acionamento = Acionamento.objects.filter(
             agenda=agenda,
             data_finalizado__isnull=True
-        )
+        ).first()
 
         if acionamento:
             # Atualiza a situação e mantém data_acionamento original
