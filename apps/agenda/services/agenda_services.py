@@ -51,9 +51,7 @@ class AgendamentoService:
                     else:
                         return {
                             "success": False,
-                            "error": {
-                                "agenda": {"warning": [f"Cliente agendado com outro agente"]}
-                            }
+                            "error": f"Cliente agendado com outro agente"
                         }
 
                 # 🔹 Caso 2: Não existe agenda ativa → cria nova
@@ -79,9 +77,7 @@ class AgendamentoService:
         except Exception as e:
             return {
                 "success": False,
-                "messages": {
-                    "agenda": {"warning": [f"{e}"]}
-                }
+                "error": f"{str(e)}"
             }
 
     def _criar_ou_atualizar_acionamento(self, agenda):

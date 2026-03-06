@@ -6,6 +6,7 @@ from django.db.models import Prefetch
 from ..models import Cliente, Email, Telefone, Endereco
 from django.db import transaction
 from ..forms import ClienteForm, EmailForm, TelefoneForm
+from django.contrib import messages
 import json
 
 # Create your views here.
@@ -125,6 +126,7 @@ def atendimento_cliente(request, cliente_id):
 
     nova_agenda = AgendamentoService().criar_ou_atualizar(cliente_id, usuario)
     if not nova_agenda['success']:
+        messages.error(request, nova_agenda['errors'])
         return redirect(f'/clientes/cliente/{cliente_id}')
 
     cliente = get_object_or_404(
@@ -137,6 +139,7 @@ def atendimento_cliente(request, cliente_id):
         id=cliente_id
     )
     situacoes = Situacao.objects.exclude(ativo=False)
+    messages.success(request, nova_agenda['message'])
     context = {
         "cliente": cliente,
         "situacoes": situacoes,

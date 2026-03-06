@@ -1,0 +1,19 @@
+{% if messages %}
+<div class="modal-overlay" id="sys-modal-overlay"></div>
+
+<div class="modal" id="sys-modal">
+    <div class="modal-body">
+        {% for message in messages %}
+            <div class="cliente-form {{ message.tags }}-message" style="display: block">
+                <div class="alert">
+                    {{ message }}
+                </div>
+           </div>
+        {% endfor %}
+    </div>
+
+    <div class="modal-footer" id="sys-modal-footer">
+        <button class="btn-small btn-delete" onclick="SystemModal.close()">Fechar</button>
+    </div>
+</div>
+{% endif %}
