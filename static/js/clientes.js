@@ -246,7 +246,6 @@ function registrar(){
         // Junta erros de múltiplos forms em um único objeto
         const groupedMessages = r.messages;
         const allMessages = flattenGroupedMessages(groupedMessages);
-
         // Renderiza mensagens no formulário
         renderFormMessage(form, allMessages);
     })
