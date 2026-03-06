@@ -101,14 +101,15 @@ class AgendamentoService:
             )
 
     def registrar_situacao(self, id_agenda, situacao, dataAgenda, telefone, comentario):
-        import re
-        if not re.match(r'^[1-9]{2}(?:9\d{8}|[2-8]\d{7})$', telefone):
+        from apps.core.validacoes import Validar
+        if Validar.valida_Fone(telefone):
             return {
                 "success": False,
                 "errors": {
                     "agenda": {"warning": ["Telefone Não pode ser vazio, e deve conter apenas números!"]}
                 }
             }
+
         try:
             with transaction.atomic():
                 agenda = Agenda.objects.filter(pk=id_agenda, agenda_ativa=True).first()
@@ -150,7 +151,7 @@ class AgendamentoService:
                             }
                         }
 
-                    agenda.data_hora_retorno = agenda.data_hora_retorno = parse_datetime(dataAgenda)
+                    agenda.data_hora_retorno = parse_datetime(dataAgenda)
                 else:
                     agenda.data_finalizado = timezone.now()
 
