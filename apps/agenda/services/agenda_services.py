@@ -2,12 +2,12 @@ from apps.agenda.models import Agenda, Acionamento, Situacao
 from apps.clientes.models import Cliente
 from django.db import transaction
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 class AgendamentoService:
 
     def criar_ou_atualizar(self, cliente_id, usuario):
         cliente = Cliente.objects.get(pk=cliente_id)
-        usuario = usuario
         carteira = usuario.agente.carteira
         equipe = usuario.agente.equipe
         perfil = usuario.agente.perfil
@@ -113,7 +113,6 @@ class AgendamentoService:
                     "agenda": {"warning": ["Telefone Não pode ser vazio, e deve conter apenas números!"]}
                 }
             }
-
         try:
             with transaction.atomic():
                 agenda = Agenda.objects.filter(pk=id_agenda, agenda_ativa=True).first()
@@ -124,10 +123,10 @@ class AgendamentoService:
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
                         }
                     }
-                acionamento = Acionamento.objects.get(
+                acionamento = Acionamento.objects.filter(
                     agenda=agenda,
                     data_finalizado__isnull=True
-                )
+                ).first()
                 if not acionamento:
                     return {
                         "success": False,
@@ -147,7 +146,15 @@ class AgendamentoService:
                             }
                         }
 
-                    agenda.data_hora_retorno = dataAgenda
+                    if comentario.strip() == "":
+                        return {
+                            "success": False,
+                            "errors": {
+                                "agenda": {"warning": ["Comentário não pode ser vazio"]}
+                            }
+                        }
+
+                    agenda.data_hora_retorno = agenda.data_hora_retorno = parse_datetime(dataAgenda)
                 else:
                     agenda.data_finalizado = timezone.now()
 
@@ -172,4 +179,3 @@ class AgendamentoService:
                     "agenda": {"__all__": ["Algo deu errado", f"{str(e)}"]}
                 }
             }
-
