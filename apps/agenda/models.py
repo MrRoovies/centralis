@@ -107,7 +107,7 @@ class Agenda(models.Model):
 # MODEL ACIONAMENTO
 # ========================
 class Acionamento(models.Model):
-    agenda = models.ForeignKey("Agenda", on_delete=models.CASCADE)
+    agenda = models.ForeignKey(Agenda, on_delete=models.CASCADE)
     data_acionamento = models.DateTimeField("Data Acionamento", auto_now_add=True)
     data_finalizado = models.DateTimeField("Data Finalizado", null=True, blank=True)
     situacao = models.ForeignKey("Situacao", on_delete=models.CASCADE)
@@ -117,7 +117,7 @@ class Acionamento(models.Model):
         ordering = ['-data_acionamento']
         constraints = [
             models.UniqueConstraint(
-                fields='agenda',
+                fields=["agenda"],
                 condition=models.Q(data_finalizado__isnull=True),
                 name='unique_open_acionamento_per_agenda'
             )
