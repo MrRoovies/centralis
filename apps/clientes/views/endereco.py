@@ -51,7 +51,7 @@ def novo_endereco(request, cliente_id):
                 return JsonResponse({
                     "success": False,
                     "state": "reactivate",
-                    "email_id": existente.id,
+                    "endereco_id": existente.id,
                     "messages": {
                         "endereco": {"warning": ["Este endereco já existe, mas está inativo. Deseja reativar?"]}
                     }
@@ -70,7 +70,7 @@ def novo_endereco(request, cliente_id):
                 }
             }, status=201)
 
-        form_errors = {"email": endereco_form.errors}
+        form_errors = {"endereco": endereco_form.errors}
         return JsonResponse({"success": False, "errors": form_errors}, status=400)
 
     form = EnderecoForm(prefix="endereco")

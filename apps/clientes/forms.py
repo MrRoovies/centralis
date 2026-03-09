@@ -141,7 +141,7 @@ class EnderecoForm(forms.ModelForm):
             'numero': forms.TextInput(attrs={
                 'class': 'form-control'
             }),
-            'bairrro': forms.TextInput(attrs={
+            'bairro': forms.TextInput(attrs={
                 'class': 'form-control'
             }),
             'cidade': forms.TextInput(attrs={

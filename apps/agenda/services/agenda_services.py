@@ -33,7 +33,7 @@ class AgendamentoService:
                 if not situacao_atendimento:
                     return {
                         "success": False,
-                        "error": "Nenhuma situação de atendimento configurada para esta carteira."
+                        "errors": "Nenhuma situação de atendimento configurada para esta carteira."
                     }
 
                 # 🔹 Caso 1: Existe agenda ativa
@@ -57,7 +57,7 @@ class AgendamentoService:
                     else:
                         return {
                             "success": False,
-                            "error": f"Cliente agendado com outro agente"
+                            "errors": f"Cliente agendado com outro agente"
                         }
 
                 # 🔹 Caso 2: Não existe agenda ativa → cria nova
@@ -83,7 +83,7 @@ class AgendamentoService:
         except Exception as e:
             return {
                 "success": False,
-                "error": f"{str(e)}"
+                "errors": f"{str(e)}"
             }
 
     def _criar_ou_atualizar_acionamento(self, agenda):
