@@ -12,8 +12,8 @@
                 <div class="historico-item acionamento">
                     <h3>
                         {{ acionamento.situacao }} -
-                        {{ acionamento.data_acionamento|date:"d/m/Y H:m:i" }}
-                        {{ acionamento.data_finalizado|date:"d/m/Y H:m:i" }} -
+                        {{ acionamento.data_acionamento|date:"d/m/Y H:m:s" }}
+                        {{ acionamento.data_finalizado|date:"d/m/Y H:m:s" }} -
                         Tempo de tela: {{ acionamento.tempo_tela_formatado }}
                     </h3>
                     <p class="comentario">{{ acionamento.comentario }}</p>
