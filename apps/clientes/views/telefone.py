@@ -9,7 +9,7 @@ from ..forms import TelefoneForm
 @require_POST
 @login_required
 def deleta_telefone(request, id):
-    telefone = get_object_or_404(Telefone, id=id)
+    telefone = get_object_or_404(Telefone, id=id, cliente__empresa=request.empresa)
     telefone.ativo = False
     telefone.save()
     return JsonResponse({

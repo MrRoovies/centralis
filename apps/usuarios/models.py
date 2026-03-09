@@ -29,17 +29,16 @@ class Agente(models.Model):
     )
     equipe = models.ForeignKey(
         "Equipe",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        on_delete=models.PROTECT,
+        null=False, blank=False
     )
     perfil = models.ForeignKey(
         "Perfil",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False # Perfil ativo do agente. Para multi-perfil futuro, ver AgentePerfil.
     )
-    carteira = models.ForeignKey("Carteira", on_delete=models.SET_NULL, null=True)
+    carteira = models.ForeignKey("Carteira", on_delete=models.PROTECT, null=False, blank=False)
     email = models.EmailField('E-mail', max_length=200, null=True, blank=True)
     nascimento = models.DateField('Nascimento')
     cpf = models.CharField('Cpf', max_length=11, blank=False, null=False)

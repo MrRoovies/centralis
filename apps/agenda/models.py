@@ -81,6 +81,8 @@ class Agenda(models.Model):
             self.carteira_nome = self.carteira.nome
 
         # Atualiza agenda_ativa automaticamente
+        # AVISO: faz query para carregar situacao.tipo se não estiver em cache
+
         if self.situacao and self.situacao.tipo not in ["AGENDA", "CURSO"]:
             self.agenda_ativa = False
 
@@ -88,20 +90,6 @@ class Agenda(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def clean(self):
-        from django.core.exceptions import ValidationError
-
-        if not self.agenda_ativa:
-            return
-
-        if Agenda.objects.filter(
-                cliente=self.cliente,
-                carteira=self.carteira,
-                agenda_ativa=True
-            ).exclude(pk=self.pk).exists():
-            raise ValidationError(
-                "Já existe uma agenda ativa para este cliente nesta carteira."
-            )
 
 # ========================
 # MODEL ACIONAMENTO
@@ -174,7 +162,7 @@ class Situacao(models.Model):
         ('SUCESSO', 'Sucesso')
     ]
     nome = models.CharField('Situacao', max_length=50, blank=False, null=False)
-    tipo = models.CharField('Tipo', choices=TIPO_CHOICES, blank=False, null=False)
+    tipo = models.CharField('Tipo', max_length=15, choices=TIPO_CHOICES, blank=False, null=False)
     carteira = models.ForeignKey(Carteira, on_delete=models.SET_NULL, null=True, blank=True)
     ativo = models.BooleanField(default=True)
 

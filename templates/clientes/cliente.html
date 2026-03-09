@@ -21,11 +21,7 @@
 
                     {% include 'clientes/partials/part-endereco.html' %}
 
-                    <div id="historico-agendas"></div>
-                    <script>
-                        carrega_agenda({{cliente.id}});
-                    </script>
-
+                    <div id="historico-agendas" data-cliente-id="{{ cliente.id }}"></div>
                 </div>
             </div>
         </div>

@@ -69,6 +69,9 @@ class ClienteForm(forms.ModelForm):
 
     def clean_documento(self):
         from django.core.exceptions import ValidationError
+        if self.instance and self.instance.pk:
+            return self.instance.documento
+
         documento = self.cleaned_data['documento']
 
         if Cliente.objects.filter(

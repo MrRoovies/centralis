@@ -85,12 +85,12 @@ function initMenu() {
 
 // Marca o menu ativo
 function setActiveMenu() {
-    const currentPage = window.location.pathname.split('/').pop();
+    const currentPath = window.location.pathname;
     const menuLinks = document.querySelectorAll('.sidebar-menu a');
-    
+
     menuLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (href && href.includes(currentPage)) {
+        if (href && currentPath.startsWith(href)) {
             link.classList.add('active');
         }
     });

@@ -9,7 +9,7 @@ from ..forms import EnderecoForm
 @require_POST
 @login_required
 def delete_endereco(request, id):
-    endereco = get_object_or_404(Endereco, id=id)
+    endereco = get_object_or_404(Endereco, id=id, cliente__empresa=request.empresa)
     endereco.ativo = False
     endereco.save()
     return JsonResponse({

@@ -1,3 +1,4 @@
+/*
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -45,3 +46,6 @@ document.querySelector('.btn').addEventListener('click', function(){
         document.getElementById("errorMessage").innerText = error.message;
     })
 })
+
+Sem necessidade de uso após mudança para form
+*/

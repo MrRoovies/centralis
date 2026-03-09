@@ -55,12 +55,18 @@ const SystemModal = {
     // Abre modal carregando HTML via fetch
     open(url){
         fetch(url)
-        .then(res => res.text())
+        .then(res => {
+            if(!res.ok){ throw new Error("Erro ao carregar formulário"); }
+            return res.text();
+        })
         // Injeta o HTML do modal no final do body
-        .then(async data => {
+        .then(data => {
             document.body.insertAdjacentHTML('beforeend', data);
             // Faz bind do formulário dentro do modal
             this.bindForm(url);
+        })
+            .catch(error => {
+            alert(error.message); // ou um feedback mais elegante
         });
     },
 
@@ -225,13 +231,15 @@ function dropdownhandler(){
 
 
 function registrar(){
+
     const form = document.querySelector("#atendimentoForm");
     if (!form){ return; }
-    const inputs = form.querySelectorAll("input, select, textarea");
-    const dados = {}
-    inputs.forEach( input => {
-        dados[input.name] = input.value;
-    });
+
+    const formData = new FormData(form);
+    formData.delete('csrfmiddlewaretoken'); // ← remove do body
+
+    const dados = Object.fromEntries(formData);
+
     fetch("/agenda/registrar", {
         method: 'POST',
         headers: {'X-CSRFToken': getCookie('csrftoken'),  // Token CSRF (Django)

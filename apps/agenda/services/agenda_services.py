@@ -18,6 +18,7 @@ class AgendamentoService:
                 agenda = (
                     Agenda.objects
                     .select_for_update()
+                    .select_related('situacao')
                     .filter(
                         cliente=cliente,
                         carteira=carteira,
@@ -106,7 +107,7 @@ class AgendamentoService:
                 situacao=agenda.situacao
             )
 
-    def registrar_situacao(self, id_agenda, situacao, dataAgenda, telefone, comentario):
+    def registrar_situacao(self, id_agenda, situacao, dataAgenda, telefone, comentario, usuario):
         from apps.core.validacoes import Validar
         if not Validar().valida_Fone(telefone):
             return {
@@ -118,7 +119,7 @@ class AgendamentoService:
 
         try:
             with transaction.atomic():
-                agenda = Agenda.objects.filter(pk=id_agenda, agenda_ativa=True).first()
+                agenda = Agenda.objects.select_related('situacao').filter(pk=id_agenda, agenda_ativa=True).first()
                 if not agenda:
                     return {
                         "success": False,
@@ -135,6 +136,15 @@ class AgendamentoService:
                         "success": False,
                         "errors": {
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
+                        }
+                    }
+
+                # ← verifica se o usuário é o dono da agenda
+                if agenda.usuario != usuario:
+                    return {
+                        "success": False,
+                        "errors": {
+                            "agenda": {"warning": ["Você não tem permissão para registrar nesta agenda"]}
                         }
                     }
 
