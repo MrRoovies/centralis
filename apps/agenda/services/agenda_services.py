@@ -1,13 +1,15 @@
 from apps.agenda.models import Agenda, Acionamento, Situacao
 from apps.clientes.models import Cliente
+from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 class AgendamentoService:
 
     def criar_ou_atualizar(self, cliente_id, usuario):
-        cliente = Cliente.objects.get(pk=cliente_id)
+        cliente = get_object_or_404(Cliente, pk=cliente_id, empresa=usuario.agente.carteira.empresa)
         carteira = usuario.agente.carteira
         equipe = usuario.agente.equipe
         perfil = usuario.agente.perfil
@@ -184,6 +186,11 @@ class AgendamentoService:
                 "messages": {
                     "agenda": {"success": ["Situacao registrada com sucesso!"]}
                 }
+            }
+        except ValidationError as e:
+            return {
+                "success": False,
+                "errors": e.message_dict  # já vem formatado por campo
             }
         except Exception as e:
             return {

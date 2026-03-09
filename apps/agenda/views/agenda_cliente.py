@@ -9,7 +9,7 @@ import json
 @require_GET
 @login_required
 def hist_agenda_cliente(request, cliente_id):
-    agendas = Agenda.objects.filter(cliente_id=cliente_id).order_by("-id")
+    agendas = Agenda.objects.filter(cliente_id=cliente_id, cliente__empresa=request.empresa).order_by("-id")
     context = {
         "agendas": agendas
     }
