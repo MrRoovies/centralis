@@ -139,7 +139,7 @@ def atendimento_cliente(request, cliente_id):
         ),
         id=cliente_id
     )
-    situacoes = Situacao.objects.exclude(ativo=False)
+    situacoes = Situacao.objects.filter(ativo=True, carteira=usuario.agente.carteira)
     messages.success(request, nova_agenda['message'])
     context = {
         "cliente": cliente,
