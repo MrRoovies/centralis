@@ -17,6 +17,7 @@ document.addEventListener('click', function(e){
     const target = btn.dataset.target;
 
     const delete_form = document.querySelector(`#form_del_${type}`);
+    if (!delete_form){ return; }
 
     // Fluxo específico para ação de DELETE
     if (action === "delete") {
