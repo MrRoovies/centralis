@@ -17,11 +17,12 @@ def search_cliente(request):
         data = json.loads(request.body)
         documento = data.get("documento")
 
-        try:
-            cliente = Cliente.objects.for_request(request).filter(documento=documento).first()
-            return JsonResponse({'status': 'success', 'data': cliente.id }, status=200)
-        except Exception as e:
+        cliente = Cliente.objects.for_request(request).filter(documento=documento).first()
+        if not cliente:
             return JsonResponse({'status': 'error', 'message': "Cliente não existe"}, status=404)
+
+        return JsonResponse({'status': 'success', 'data': cliente.id }, status=200)
+
 
 @login_required
 def cliente_novo(request):
