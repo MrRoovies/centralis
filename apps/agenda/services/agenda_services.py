@@ -102,7 +102,7 @@ class AgendamentoService:
 
     def registrar_situacao(self, id_agenda, situacao, dataAgenda, telefone, comentario):
         from apps.core.validacoes import Validar
-        if Validar.valida_Fone(telefone):
+        if not Validar().valida_Fone(telefone):
             return {
                 "success": False,
                 "errors": {
