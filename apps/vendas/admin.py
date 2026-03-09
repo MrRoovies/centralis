@@ -84,6 +84,7 @@ class HistVendaInline(admin.TabularInline):
 class VendaAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        'contrato',
         "cliente",
         "oferta",
         "usuario",
@@ -103,6 +104,7 @@ class VendaAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
+        'contrato',
         "cliente__nome",
         "cliente__documento"
     )
