@@ -9,7 +9,7 @@ from ..forms import EmailForm
 @require_POST
 @login_required
 def deleta_email(request, id):
-    email = get_object_or_404(Email, id=id)
+    email = get_object_or_404(Email, id=id, cliente__empresa=request.empresa)
     email.ativo = False
     email.save()
     return JsonResponse({
