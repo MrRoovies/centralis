@@ -86,10 +86,10 @@ def cliente(request, id):
 
 @login_required
 def edita_cliente(request, cliente_id):
-    cliente = get_object_or_404(Cliente, pk=cliente_id)
+    cliente = get_object_or_404(Cliente, pk=cliente_id, empresa=request.empresa)
     if request.method == 'POST':
         # IMPORTANTE: passar instance aqui também
-        cliente_form = ClienteForm(request.POST, instance=cliente, prefix="cliente")
+        cliente_form = ClienteForm(request.POST, instance=cliente, empresa=request.empresa, prefix="cliente")
         if cliente_form.is_valid():
             with transaction.atomic():
                 edita_cli = cliente_form.save(commit=False)
@@ -108,7 +108,7 @@ def edita_cliente(request, cliente_id):
         return JsonResponse({"success": False, "errors": form_errors}, status=400)
 
 
-    form = ClienteForm(prefix="cliente", instance=cliente)
+    form = ClienteForm(prefix="cliente", instance=cliente, empresa=request.empresa)
     context = {
         'title': "Editar Info's. Cliente",
         'action': "edit_client",
