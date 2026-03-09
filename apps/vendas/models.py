@@ -123,12 +123,17 @@ class Venda(models.Model):
         on_delete=models.PROTECT,
         related_name="vendas"
     )
+    contrato = models.PositiveSmallIntegerField("Nr. Contrato")
 
     oferta = models.ForeignKey(
         Oferta,
         on_delete=models.PROTECT,
         related_name="vendas"
     )
+
+    # snapshot da oferta
+    produto_nome = models.CharField("Produto nome", max_length=150)
+    parceiro_nome = models.CharField("Parceito nome", max_length=150)
 
     prazo = models.PositiveSmallIntegerField("Prazo")
 
