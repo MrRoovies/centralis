@@ -27,8 +27,14 @@ class AgendamentoService:
                 )
 
                 situacao_atendimento = Situacao.objects.filter(
-                    nome="Atendimento"
+                    tipo="CURSO", carteira=carteira
                 ).first()
+
+                if not situacao_atendimento:
+                    return {
+                        "success": False,
+                        "error": "Nenhuma situação de atendimento configurada para esta carteira."
+                    }
 
                 # 🔹 Caso 1: Existe agenda ativa
                 if agenda:
