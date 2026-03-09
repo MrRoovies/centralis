@@ -7,7 +7,7 @@
 <div class="cliente-info mail">
     <div class="info-item">
         <span class="info-label">E-mail</span>
-        <form id="form_del_mail">
+        <form id="form_del_email">
             {% csrf_token %}
             <table>
             {% for email in cliente.emails.all %}
