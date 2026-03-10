@@ -65,8 +65,8 @@ class Oferta(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["empresa", "produto", "parceiro"],
-                name="unique_oferta_empresa_produto_parceiro"
+                fields=["empresa", "produto", "parceiro", "prazo_min", "prazo_max"],
+                name="unique_oferta_empresa_produto_parceiro_prazo"
             )
         ]
 

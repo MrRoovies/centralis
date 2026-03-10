@@ -1,0 +1,90 @@
+{% load static %}
+{% load admin_urls %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/vendas.css' %}">
+{% endblock %}
+<div class="venda-container">
+
+    <!-- Header Clicável -->
+    <div class="dropdown-header" onclick="dropdownhandler('dropdownVendaHeader', 'dropdownVendaBody')" id="dropdownVendaHeader">
+        <h2>Registrar Venda</h2>
+        <span class="dropdown-icon">▼</span>
+    </div>
+
+    <!-- Corpo do Formulário -->
+    <div class="dropdown-body" id="dropdownVendaBody">
+        <form id="vendaForm">
+            {% csrf_token %}
+            <input type="hidden" name="id_agenda" value="{{ nova_agenda.agenda.id }}">
+
+            <div class="form-row-inline">
+
+                <div class="form-group">
+                    <label for="oferta">
+                        Oferta
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.oferta }}
+                </div>
+
+                <div class="form-group">
+                    <label for="contrato">
+                        Nº Contrato
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.contrato }}
+                </div>
+
+                <div class="form-group">
+                    <label for="prazo">
+                        Prazo (meses)
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.prazo }}
+                </div>
+
+            </div>
+
+            <div class="form-row-inline">
+
+                <div class="form-group">
+                    <label for="parcela">
+                        Valor Parcela
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.parcela }}
+                </div>
+
+                <div class="form-group">
+                    <label for="valor">
+                        Valor Contrato
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.valor }}
+                </div>
+
+                <!-- Coluna vazia para alinhar o grid de 3 -->
+                <div class="form-group venda-info-oferta">
+                    <label>Detalhes da Oferta</label>
+                    <span id="oferta-detalhe" class="oferta-detalhe-text">Selecione uma oferta...</span>
+                </div>
+
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="registrarVenda()">
+                    Registrar Venda
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="limparVendaForm()">
+                    Limpar
+                </button>
+            </div>
+
+            <p class="form-hint">* Campos obrigatórios</p>
+        </form>
+    </div>
+</div>
+
+<script>
+
+</script>

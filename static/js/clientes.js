@@ -224,9 +224,9 @@ function carrega_agenda(cliente_id){
 }
 
 // Toggle Dropdown
-function dropdownhandler(){
-    dropdownHeader.classList.toggle('active');
-    dropdownBody.classList.toggle('active');
+function dropdownhandler(headerId, bodyId){
+    document.getElementById(headerId).classList.toggle('active');
+    document.getElementById(bodyId).classList.toggle('active');
 }
 
 

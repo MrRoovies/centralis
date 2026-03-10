@@ -1,0 +1,28 @@
+/* ========== REGISTRAR VENDA ========== */
+.venda-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin: 0 auto 20px;
+    overflow: hidden;
+}
+
+.venda-container .dropdown-header {
+    background: #127B89;
+}
+
+.venda-container .dropdown-header:hover {
+    background: #0f6a76;
+}
+
+.oferta-detalhe-text {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-height: 44px;
+    line-height: 1.6;
+}
