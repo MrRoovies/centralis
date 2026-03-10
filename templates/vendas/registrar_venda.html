@@ -18,7 +18,8 @@
     <div class="dropdown-body" id="dropdownVendaBody">
         <form id="vendaForm">
             {% csrf_token %}
-            <input type="hidden" name="id_agenda" value="{{ agenda.id }}">
+            <input type="hidden" name="id_agenda" value="{{ nova_agenda.agenda.id }}">
+            <input type="hidden" name="cliente_id" value="{{ cliente.id }}">
 
             <div class="form-row-inline">
 
