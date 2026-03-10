@@ -66,6 +66,13 @@
 }
 
 .mail table{ width: fit-content; }
+.fones table{ width: fit-content; }
+
+#form_del_telefone {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
 
 .historico {
     background: #f8f9fa;
@@ -342,5 +349,14 @@
 
     .dropdown-header h2 {
         font-size: 16px;
+    }
+
+    #form_del_telefone {
+    display: flex;
+    flex-direction: column;
+    }
+    .fone-row{
+        display: flex;
+        justify-content: space-between;
     }
 }
