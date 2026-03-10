@@ -1,5 +1,4 @@
 // venda.js
-alert("Ta nao ta");
 document.addEventListener("DOMContentLoaded", function () {
     const parceiro = document.getElementById("id_venda-parceiro");
     const produto = document.getElementById("id_venda-produto");
