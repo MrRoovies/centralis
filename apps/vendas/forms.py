@@ -1,8 +1,20 @@
 from django import forms
-from .models import Venda, Oferta, Esteira, HistVenda
+from .models import Parceiro, Produto, Venda, Oferta, Esteira, HistVenda
 
 
 class VendaForm(forms.ModelForm):
+    parceiro = forms.ModelChoiceField(
+        queryset=Parceiro.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Parceiro'
+    )
+    produto = forms.ModelChoiceField(
+        queryset=Produto.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Produto'
+    )
+
+
     class Meta:
         model = Venda
         fields = [
@@ -49,12 +61,10 @@ class VendaForm(forms.ModelForm):
         empresa = kwargs.pop('empresa', None)
         super().__init__(*args, **kwargs)
 
-        # Filtra ofertas ativas da empresa e já traz produto/parceiro junto
         if empresa:
-            self.fields['oferta'].queryset = Oferta.objects.filter(
-                empresa=empresa,
-                ativo=True
-            ).select_related('produto', 'parceiro')
+            self.fields['parceiro'].queryset = Parceiro.objects.filter(empresa=empresa, ativo=True)
+            self.fields['produto'].queryset = Produto.objects.none()  # populado via JS
+            self.fields['oferta'].queryset = Oferta.objects.none()    # populado via JS
 
     def clean(self):
         cleaned_data = super().clean()

@@ -1,56 +1,38 @@
-// vendas.js - Lógica do painel de vendas
+// venda.js
+alert("Ta nao ta");
+document.addEventListener("DOMContentLoaded", function () {
+    const parceiro = document.getElementById("id_venda-parceiro");
+    const produto = document.getElementById("id_venda-produto");
+    const oferta = document.getElementById("id_venda-oferta");
 
-// Dados simulados de vendas
-let vendas = {
-    dia: 15847.50,
-    total: 37,
-    ticket: 428.31,
-    novos: 5
-};
+    parceiro.addEventListener("change", function () {
+        buscarProdutos(this.value);
+    });
 
-// Atualiza as informações de vendas na tela
-function updateVendas() {
-    const vendasDia = document.getElementById('vendasDia');
-    const totalVendas = document.getElementById('totalVendas');
-    const ticketMedio = document.getElementById('ticketMedio');
-    const novosClientes = document.getElementById('novosClientes');
-    
-    if (vendasDia) {
-        vendasDia.textContent = `R$ ${vendas.dia.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    }
-    
-    if (totalVendas) {
-        totalVendas.textContent = vendas.total;
-    }
-    
-    if (ticketMedio) {
-        ticketMedio.textContent = `R$ ${vendas.ticket.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    }
-    
-    if (novosClientes) {
-        novosClientes.textContent = vendas.novos;
-    }
-}
-
-// Incrementa novos clientes (será chamado quando cadastrar um cliente)
-function incrementarNovosClientes() {
-    vendas.novos++;
-    updateVendas();
-    
-    // Salva no localStorage para persistir
-    localStorage.setItem('vendas', JSON.stringify(vendas));
-}
-
-// Carrega dados salvos
-function loadVendas() {
-    const vendasSalvas = localStorage.getItem('vendas');
-    if (vendasSalvas) {
-        vendas = JSON.parse(vendasSalvas);
-    }
-}
-
-// Inicializa quando a página carregar
-document.addEventListener('DOMContentLoaded', function() {
-    loadVendas();
-    updateVendas();
+    produto.addEventListener("change", function () {
+        buscarOfertas(parceiro.value, this.value);
+    });
 });
+
+function buscarProdutos(parceiroId) {
+    fetch(`/vendas/produtos/?parceiro_id=${parceiroId}`)
+        .then(res => res.json())
+        .then(data => popularSelect("id_venda-produto", data.produtos));
+}
+
+function buscarOfertas(parceiroId, produtoId) {
+    fetch(`/vendas/ofertas/?parceiro_id=${parceiroId}&produto_id=${produtoId}`)
+        .then(res => res.json())
+        .then(data => popularSelect("id_venda-oferta", data.ofertas));
+}
+
+function popularSelect(elementId, itens) {
+    const select = document.getElementById(elementId);
+    select.innerHTML = '<option value="">Selecione...</option>';
+    itens.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.id;
+        option.text = item.nome;
+        select.appendChild(option);
+    });
+}

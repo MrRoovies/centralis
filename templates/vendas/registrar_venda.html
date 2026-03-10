@@ -1,8 +1,11 @@
 {% load static %}
-{% load admin_urls %}
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'js/vendas.js' %}" defer></script>
+{% endblock %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/vendas.css' %}">
 {% endblock %}
+
 <div class="venda-container">
 
     <!-- Header Clicável -->
@@ -15,32 +18,32 @@
     <div class="dropdown-body" id="dropdownVendaBody">
         <form id="vendaForm">
             {% csrf_token %}
-            <input type="hidden" name="id_agenda" value="{{ nova_agenda.agenda.id }}">
+            <input type="hidden" name="id_agenda" value="{{ agenda.id }}">
 
             <div class="form-row-inline">
 
                 <div class="form-group">
-                    <label for="oferta">
+                    <label for="id_venda-parceiro">
+                        Parceiro
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.parceiro }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_venda-produto">
+                        Produto
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.produto }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_venda-oferta">
                         Oferta
                         <span class="required">*</span>
                     </label>
                     {{ venda_form.oferta }}
-                </div>
-
-                <div class="form-group">
-                    <label for="contrato">
-                        Nº Contrato
-                        <span class="required">*</span>
-                    </label>
-                    {{ venda_form.contrato }}
-                </div>
-
-                <div class="form-group">
-                    <label for="prazo">
-                        Prazo (meses)
-                        <span class="required">*</span>
-                    </label>
-                    {{ venda_form.prazo }}
                 </div>
 
             </div>
@@ -48,23 +51,42 @@
             <div class="form-row-inline">
 
                 <div class="form-group">
-                    <label for="parcela">
+                    <label for="id_venda-contrato">
+                        Nº Contrato
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.contrato }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_venda-prazo">
+                        Prazo (meses)
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.prazo }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_venda-parcela">
                         Valor Parcela
                         <span class="required">*</span>
                     </label>
                     {{ venda_form.parcela }}
                 </div>
 
+            </div>
+
+            <div class="form-row-inline">
+
                 <div class="form-group">
-                    <label for="valor">
+                    <label for="id_venda-valor">
                         Valor Contrato
                         <span class="required">*</span>
                     </label>
                     {{ venda_form.valor }}
                 </div>
 
-                <!-- Coluna vazia para alinhar o grid de 3 -->
-                <div class="form-group venda-info-oferta">
+                <div class="form-group">
                     <label>Detalhes da Oferta</label>
                     <span id="oferta-detalhe" class="oferta-detalhe-text">Selecione uma oferta...</span>
                 </div>
@@ -84,7 +106,3 @@
         </form>
     </div>
 </div>
-
-<script>
-
-</script>

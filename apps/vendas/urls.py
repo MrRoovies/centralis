@@ -1,7 +1,12 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from .views import contratos
 
+app_name = 'vendas'
+
 urlpatterns = [
-    path('novo_contrato', contratos.registrar_venda, name='novo_contrato')
+    path('novo_contrato', contratos.registrar_venda, name='novo_contrato'),
+    path('produtos/', contratos.get_produtos, name='get_produtos'),
+    path('ofertas/', contratos.get_ofertas, name='get_ofertas')
+
+    #path('novo_contrato', contratos.registrar_venda, name='novo_contrato')
 ]

@@ -8,6 +8,9 @@ from django.db import transaction
 from ..forms import ClienteForm, EmailForm, TelefoneForm
 from django.contrib import messages
 import json
+from apps.vendas.forms import VendaForm
+
+
 
 # Create your views here.
 @require_POST
@@ -144,6 +147,7 @@ def atendimento_cliente(request, cliente_id):
     context = {
         "cliente": cliente,
         "situacoes": situacoes,
-        "nova_agenda": nova_agenda
+        "nova_agenda": nova_agenda,
+        'venda_form': VendaForm(prefix="venda", empresa=request.empresa),
     }
     return render(request, 'clientes/atendimento_cliente.html', context)
