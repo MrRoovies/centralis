@@ -123,7 +123,7 @@ class Venda(models.Model):
         on_delete=models.PROTECT,
         related_name="vendas"
     )
-    contrato = models.PositiveSmallIntegerField("Nr. Contrato")
+    contrato = models.CharField("Nr. Contrato", max_length=50, null=False, blank=False)
 
     oferta = models.ForeignKey(
         Oferta,
@@ -169,9 +169,9 @@ class Venda(models.Model):
         related_name="vendas"
     )
 
-    carteira = models.CharField("Carteira", max_length=50)
+    carteira_nome = models.CharField("Carteira", max_length=50)
 
-    equipe = models.CharField("Equipe", max_length=100)
+    equipe_nome = models.CharField("Equipe", max_length=100)
 
     esteira = models.ForeignKey(
         Esteira,
@@ -179,10 +179,18 @@ class Venda(models.Model):
         related_name="vendas"
     )
 
-    data_venda = models.DateTimeField(
+    created_at = models.DateTimeField(
         "Data Boletagem",
         auto_now_add=True
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["empresa", "contrato", "cliente", "esteira"],
+                name="unique_contrato_empresa_cliente_esteira"
+            )
+        ]
 
     def __str__(self):
         return f"Venda {self.id} - {self.cliente}"
@@ -192,7 +200,7 @@ class HistVenda(models.Model):
 
     venda = models.ForeignKey(
         Venda,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="historico"
     )
 

@@ -91,7 +91,7 @@ class VendaAdmin(admin.ModelAdmin):
         "esteira",
         "valor",
         "prazo",
-        "data_venda"
+        "created_at"
     )
 
     list_filter = (
@@ -100,7 +100,7 @@ class VendaAdmin(admin.ModelAdmin):
         "oferta__produto",
         "oferta__parceiro",
         "usuario",
-        "data_venda"
+        "created_at"
     )
 
     search_fields = (
@@ -109,7 +109,7 @@ class VendaAdmin(admin.ModelAdmin):
         "cliente__documento"
     )
 
-    ordering = ("-data_venda",)
+    ordering = ("-created_at",)
 
     inlines = [HistVendaInline]
 

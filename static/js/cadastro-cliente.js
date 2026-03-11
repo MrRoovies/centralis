@@ -2,7 +2,6 @@
 const form = document.getElementById('clienteForm');
 form.addEventListener('submit', function(e) {
     e.preventDefault();
-    const formData = new FormData(form);
 
     fetch("/clientes/cliente_novo", {
         method: "POST",
@@ -14,23 +13,17 @@ form.addEventListener('submit', function(e) {
         return data;
     })
     .then( data  => {
-        renderFormMessage(form, data.message, "success");
+        // Caso erro de validação retornado via throw
+        const groupedErrors = data.message;
+        let allErrors = flattenGroupedMessages(groupedErrors);
+        renderFormMessage(form, allErrors);
         form.reset();
     })
     .catch( error => {
-
-        const allErrors = {};
-        const groupedErrors = error.errors;
-
-        for (let formName in groupedErrors) {
-            let formErrors = groupedErrors[formName];
-
-            for (let field in formErrors) {
-                allErrors[field] = formErrors[field];
-            }
-        }
-
-        renderFormMessage(form, allErrors);
+    // Caso erro de validação retornado via throw
+    const groupedErrors = error.errors;
+    let allErrors = flattenGroupedMessages(groupedErrors);
+    renderFormMessage(form, allErrors);
 
     })
 })

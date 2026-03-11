@@ -1,29 +1,11 @@
 from django import forms
-from .models import Parceiro, Produto, Venda, Oferta, Esteira, HistVenda
+from .models import Venda, Oferta, Esteira, HistVenda
 
 
 class VendaForm(forms.ModelForm):
-    parceiro = forms.ModelChoiceField(
-        queryset=Parceiro.objects.none(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Parceiro'
-    )
-    produto = forms.ModelChoiceField(
-        queryset=Produto.objects.none(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label='Produto'
-    )
-
-
     class Meta:
         model = Venda
-        fields = [
-            'contrato',
-            'oferta',
-            'prazo',
-            'parcela',
-            'valor',
-        ]
+        fields = ['contrato', 'oferta', 'prazo', 'parcela', 'valor']
 
         widgets = {
             'contrato': forms.TextInput(attrs={
@@ -62,27 +44,26 @@ class VendaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if empresa:
-            self.fields['parceiro'].queryset = Parceiro.objects.filter(empresa=empresa, ativo=True)
-            self.fields['produto'].queryset = Produto.objects.none()  # populado via JS
-            self.fields['oferta'].queryset = Oferta.objects.none()    # populado via JS
+            self.fields['oferta'].queryset = Oferta.objects.filter(
+                empresa=empresa,
+                ativo=True
+            ).select_related('produto', 'parceiro')
 
     def clean(self):
         cleaned_data = super().clean()
         oferta = cleaned_data.get('oferta')
         prazo = cleaned_data.get('prazo')
 
-        if oferta and prazo:
-            if prazo < oferta.prazo_min or prazo > oferta.prazo_max:
-                raise forms.ValidationError(
-                    f"Prazo deve estar entre {oferta.prazo_min} e {oferta.prazo_max} meses para esta oferta."
-                )
+        if prazo < oferta.prazo_min or prazo > oferta.prazo_max:
+            raise forms.ValidationError(
+                f"Prazo deve estar entre {oferta.prazo_min} e {oferta.prazo_max} meses para esta oferta."
+            )
 
         return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
 
-        # Snapshot do produto e parceiro no momento da venda
         if instance.oferta:
             instance.produto_nome = instance.oferta.produto.nome
             instance.parceiro_nome = instance.oferta.parceiro.nome
@@ -116,7 +97,6 @@ class HistVendaForm(forms.ModelForm):
         carteira = kwargs.pop('carteira', None)
         super().__init__(*args, **kwargs)
 
-        # Filtra esteiras pela empresa e carteira do agente
         qs = Esteira.objects.filter(ativo=True)
         if empresa:
             qs = qs.filter(empresa=empresa)

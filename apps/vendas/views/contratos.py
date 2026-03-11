@@ -2,14 +2,36 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from apps.vendas.forms import VendaForm
-from apps.vendas.models import Venda, Parceiro, Produto, Oferta
-# Create your views here.
+from apps.vendas.models import Venda, Parceiro, Produto, Oferta, Esteira
+from apps.vendas.services.vendas_services import VendasService
 
+@login_required
 def registrar_venda(request):
+    if request.method == "POST":
+        venda_form = VendaForm(request.POST, prefix="venda", empresa=request.empresa)
+
+        if venda_form.is_valid():
+            usuario = request.user
+            cliente_id = request.POST.get('cliente_id')
+            id_agenda = request.POST.get('id_agenda')
+
+            check_complements = VendasService.get_complements(
+                usuario, cliente_id, id_agenda, request.empresa
+            )
+            if check_complements["success"]:
+                venda = VendasService.registrar_venda(venda_form, check_complements["data"])
+                return JsonResponse(venda, status=venda["status"])
+
+            else:
+                return JsonResponse(check_complements, status=400)
+
+
+        form_errors = {"vendas": venda_form.errors}
+        return JsonResponse({"success": False, "status": 400, "errors": form_errors})
+
     context = {
-        'venda_form': VendaForm(prefix="venda"),
+        'venda_form': VendaForm(prefix="venda", empresa=request.empresa),
         'cliente_id': ""
     }
     return render(request, 'vendas/registrar_venda.html', context)
