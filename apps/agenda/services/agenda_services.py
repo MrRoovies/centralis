@@ -24,7 +24,7 @@ class AgendamentoService:
                 agenda = (
                     Agenda.objects
                     .select_for_update()
-                    .select_related('situacao')
+                    .select_related('situacao', 'usuario', 'carteira')
                     .filter(
                         cliente=cliente,
                         carteira=carteira,
@@ -97,10 +97,11 @@ class AgendamentoService:
         """
         Atualiza ou cria um acionamento para a agenda.
         """
-        acionamento = Acionamento.objects.filter(
-            agenda=agenda,
-            data_finalizado__isnull=True
-        ).first()
+        acionamento = (Acionamento.objects
+            .select_related('agenda', 'situacao')
+            .filter(agenda=agenda, data_finalizado__isnull=True
+            ).first()
+        )
 
         if acionamento:
             # Atualiza a situação e mantém data_acionamento original
@@ -125,7 +126,18 @@ class AgendamentoService:
 
         try:
             with transaction.atomic():
-                agenda = Agenda.objects.select_related('situacao').filter(pk=id_agenda, agenda_ativa=True).first()
+                agenda = (
+                    Agenda.objects
+                    .select_for_update()
+                    .select_related('situacao', 'usuario')
+                    .filter(
+                        pk=id_agenda,
+                        agenda_ativa=True,
+                        carteira__empresa=usuario.agente.carteira.empresa
+                    )
+                    .first()
+                )
+
                 if not agenda:
                     return {
                         "success": False,
@@ -133,7 +145,7 @@ class AgendamentoService:
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
                         }
                     }
-                acionamento = Acionamento.objects.filter(
+                acionamento = Acionamento.objects.select_related('agenda').filter(
                     agenda=agenda,
                     data_finalizado__isnull=True
                 ).first()

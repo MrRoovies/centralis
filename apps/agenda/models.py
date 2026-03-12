@@ -80,11 +80,18 @@ class Agenda(models.Model):
         if self.carteira:
             self.carteira_nome = self.carteira.nome
 
-        # Atualiza agenda_ativa automaticamente
-        # AVISO: faz query para carregar situacao.tipo se não estiver em cache
+        if self.situacao_id:
+            # Se situacao já está em cache (via select_related), usa direto
+            # Se não está, busca só o campo tipo — sem carregar o objeto inteiro
+            if 'situacao' in self.__dict__:
+                tipo = self.situacao.tipo
+            else:
+                tipo = Situacao.objects.filter(
+                    pk=self.situacao_id
+                ).values_list('tipo', flat=True).first()
 
-        if self.situacao and self.situacao.tipo not in ["AGENDA", "CURSO"]:
-            self.agenda_ativa = False
+            if tipo and tipo not in ["AGENDA", "CURSO"]:
+                self.agenda_ativa = False
 
         # Validação antes de salvar
         super().save(*args, **kwargs)

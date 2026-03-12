@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_GET
 from django.contrib.auth.decorators import login_required
 import json
 
@@ -45,5 +45,6 @@ def logout_view(request):
 
 
 @login_required
+@require_GET
 def home(request):
     return render(request, 'home.html')

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 class Parceiro(models.Model):
@@ -197,6 +198,13 @@ class Venda(models.Model):
                 name="unique_contrato_empresa_cliente_esteira"
             )
         ]
+    def clean(self):
+
+        if self.oferta_id and self.prazo:
+            if self.prazo < self.oferta.prazo_min or self.prazo > self.oferta.prazo_max:
+                raise ValidationError({
+                    'prazo': f"Prazo deve estar entre {self.oferta.prazo_min} e {self.oferta.prazo_max} meses para esta oferta."
+                })
 
     def __str__(self):
         return f"Venda {self.id} - {self.cliente}"

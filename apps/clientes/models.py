@@ -200,7 +200,7 @@ class Endereco(models.Model):
     logradouro = models.CharField('Logra.', max_length=100)
     numero = models.CharField('Numero', max_length=10)
     bairro = models.CharField('Bairro', max_length=255)
-    cidade = models.CharField('Cidade', max_length=200)
+    cidade = models.CharField('Cidade', max_length=100)
     uf = models.CharField('UF', max_length=2, choices=UF_CHOICES)
     cep = models.CharField('Cep', max_length=10)
     tipo = models.CharField('Tipo Endereco', max_length=15, choices=ENDERECO_CHOICES)

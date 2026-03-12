@@ -6,8 +6,9 @@ from django.contrib.auth.decorators import login_required
 from ..models import Telefone
 from ..forms import TelefoneForm
 
-@require_POST
+
 @login_required
+@require_POST
 def deleta_telefone(request, id):
     telefone = get_object_or_404(Telefone, id=id, cliente__empresa=request.empresa)
     telefone.ativo = False

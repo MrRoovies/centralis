@@ -6,8 +6,9 @@ from ..models import Agenda
 from ..services.agenda_services import AgendamentoService
 import json
 
-@require_GET
+
 @login_required
+@require_GET
 def hist_agenda_cliente(request, cliente_id):
     agendas = Agenda.objects.filter(cliente_id=cliente_id, cliente__empresa=request.empresa).order_by("-id")
     context = {
@@ -15,8 +16,9 @@ def hist_agenda_cliente(request, cliente_id):
     }
     return render(request, "agendas/agenda_detalhes.html", context)
 
-@require_POST
+
 @login_required
+@require_POST
 def registrar_atendimento(request):
     if request.body:
         data = json.loads(request.body)

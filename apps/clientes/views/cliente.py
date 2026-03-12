@@ -121,8 +121,8 @@ def edita_cliente(request, cliente_id):
     return render(request, 'components/modal.html', context)
 
 
-@require_GET
 @login_required
+@require_GET
 def atendimento_cliente(request, cliente_id):
     from apps.agenda.services.agenda_services import AgendamentoService
     from apps.agenda.models import Situacao

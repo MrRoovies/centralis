@@ -1,6 +1,6 @@
 from django import forms
 from .models import Venda, Oferta, Esteira, HistVenda
-
+from django.core.exceptions import ValidationError
 
 class VendaForm(forms.ModelForm):
     class Meta:
@@ -61,13 +61,14 @@ class VendaForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        oferta = cleaned_data.get('oferta')
-        prazo = cleaned_data.get('prazo')
+        instance = self.instance
+        instance.oferta = cleaned_data.get('oferta')
+        instance.prazo = cleaned_data.get('prazo')
 
-        if prazo < oferta.prazo_min or prazo > oferta.prazo_max:
-            raise forms.ValidationError(
-                f"Prazo deve estar entre {oferta.prazo_min} e {oferta.prazo_max} meses para esta oferta."
-            )
+        try:
+            instance.clean()
+        except ValidationError as e:
+            raise forms.ValidationError(e.messages)
 
         return cleaned_data
 
