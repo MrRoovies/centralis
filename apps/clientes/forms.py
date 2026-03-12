@@ -138,6 +138,9 @@ class EnderecoForm(forms.ModelForm):
         ]
 
         widgets = {
+            'tipo': forms.Select(attrs={
+                'class': 'form-control'
+            }),
             'logradouro': forms.TextInput(attrs={
                 'class': 'form-control'
             }),

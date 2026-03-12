@@ -9,7 +9,11 @@ from django.utils.dateparse import parse_datetime
 class AgendamentoService:
 
     def criar_ou_atualizar(self, cliente_id, usuario):
-        cliente = get_object_or_404(Cliente, pk=cliente_id, empresa=usuario.agente.carteira.empresa)
+        cliente = get_object_or_404(
+            Cliente.objects.select_related('empresa'),
+            pk=cliente_id,
+            empresa=usuario.agente.carteira.empresa
+        )
         carteira = usuario.agente.carteira
         equipe = usuario.agente.equipe
         perfil = usuario.agente.perfil

@@ -87,7 +87,6 @@ class Agenda(models.Model):
             self.agenda_ativa = False
 
         # Validação antes de salvar
-        self.full_clean()
         super().save(*args, **kwargs)
 
 

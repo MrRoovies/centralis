@@ -67,8 +67,8 @@ class VendasService:
                 novo = venda_form.save(commit=False)
                 novo.cliente = cliente
                 novo.agenda = agenda
-                novo.carteira = usuario.agente.carteira
-                novo.equipe = usuario.agente.equipe
+                novo.carteira_nome = usuario.agente.carteira.nome
+                novo.equipe_nome = usuario.agente.equipe.nome
                 novo.empresa = usuario.agente.carteira.empresa
                 novo.usuario = usuario
                 novo.esteira = esteira
@@ -85,14 +85,16 @@ class VendasService:
         except ValidationError as e:
             return {
                 "success": False,
+                "status": 400,
                 "errors": {
-                    "vendas": {"error": [f"{str(e)}"]}
+                    "vendas": {"__all__": [f"{str(e)}"]}
                 }
             }
         except IntegrityError as e:
             return {
                 "success": False,
+                "status": 400,
                 "errors": {
-                    "vendas": {"error": [f"Venda duplicada detectada."]}
+                    "vendas": {"__all__": [f"Venda duplicada detectada."]}
                 }
             }

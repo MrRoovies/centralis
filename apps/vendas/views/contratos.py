@@ -28,7 +28,7 @@ def registrar_venda(request):
 
 
         form_errors = {"vendas": venda_form.errors}
-        return JsonResponse({"success": False, "status": 400, "errors": form_errors})
+        return JsonResponse({"success": False, "errors": form_errors}, status=400)
 
     context = {
         'venda_form': VendaForm(prefix="venda", empresa=request.empresa),

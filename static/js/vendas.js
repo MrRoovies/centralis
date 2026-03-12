@@ -10,10 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => popularSelect("id_venda-parceiro", data.parceiros));
 
     parceiro.addEventListener("change", function () {
+        produto.innerHTML = '<option value="">Selecione...</option>';
+        oferta.innerHTML = '<option value="">Selecione...</option>';
         buscarProdutos(this.value);
     });
 
     produto.addEventListener("change", function () {
+        oferta.innerHTML = '<option value="">Selecione...</option>';
         buscarOfertas(parceiro.value, this.value);
     });
 });
@@ -41,35 +44,38 @@ function popularSelect(elementId, itens) {
     });
 }
 
-const vendaForm = document.querySelector("#vendaForm");
-vendaForm.addEventListener("submit", function (e){
-    e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
 
-    const formData = new FormData(vendaForm);
+    const vendaForm = document.querySelector("#vendaForm");
+    vendaForm.addEventListener("submit", function (e){
+        e.preventDefault();
 
-    fetch("/vendas/novo_contrato", {
-        method: "POST",
-        body: formData,
-        headers: {
-            "X-CSRFToken": vendaForm.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(async response => {
-        const r = await response.json();
-        if(!response.ok){ throw r; }
-        return r;
-    })
-    .then( r => {
-        // Junta erros de múltiplos forms em um único objeto
-        const groupedMessages = r.messages;
-        const allMessages = flattenGroupedMessages(groupedMessages);
-        // Renderiza mensagens no formulário
-        renderFormMessage(vendaForm, allMessages);
-    })
-    .catch( error => {
-        // Caso erro de validação retornado via throw
-        const groupedErrors = error.errors;
-        let allErrors = flattenGroupedMessages(groupedErrors);
-        renderFormMessage(vendaForm, allErrors);
+        const formData = new FormData(vendaForm);
+
+        fetch("/vendas/novo_contrato", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": vendaForm.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(async response => {
+            const r = await response.json();
+            if(!response.ok){ throw r; }
+            return r;
+        })
+        .then( r => {
+            // Junta erros de múltiplos forms em um único objeto
+            const groupedMessages = r.messages;
+            const allMessages = flattenGroupedMessages(groupedMessages);
+            // Renderiza mensagens no formulário
+            renderFormMessage(vendaForm, allMessages);
+        })
+        .catch( error => {
+            // Caso erro de validação retornado via throw
+            const groupedErrors = error.errors;
+            let allErrors = flattenGroupedMessages(groupedErrors);
+            renderFormMessage(vendaForm, allErrors);
+        })
     })
 })

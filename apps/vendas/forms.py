@@ -44,10 +44,13 @@ class VendaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if empresa:
-            self.fields['oferta'].queryset = Oferta.objects.filter(
-                empresa=empresa,
-                ativo=True
-            ).select_related('produto', 'parceiro')
+            if self.data:
+                self.fields['oferta'].queryset = Oferta.objects.filter(
+                    empresa=empresa,
+                    ativo=True
+                ).select_related('produto', 'parceiro')
+            else:
+                self.fields['oferta'].queryset = Oferta.objects.none()
 
     def clean(self):
         cleaned_data = super().clean()
