@@ -31,7 +31,7 @@ class ClienteForm(forms.ModelForm):
                 'maxlength': '14',
                 'autocomplete': 'off'
             }),
-            'data_nascimento': forms.DateInput(attrs={
+            'data_nascimento': forms.DateInput(format="%Y-%m-%d", attrs={
                 'type': 'date',
                 'class': 'form-control'
             }),
