@@ -6,31 +6,31 @@
 </div>
 <form id="form_del_endereco">
     {% for endereco in cliente.enderecos.all %}
-<div class="cliente-info endereco">
-    <div class="info-item">
-        <span class="info-label">Endereço</span>
-        <table>
-            <tr>
-                <td><span class="info-value">Tipo: {{ endereco.tipo|title }}</span></td>
-                <td><span class="info-value">Logr.: {{ endereco.logradouro }}</span></td>
-                <td><span class="info-value">N°: {{ endereco.numero }}</span></td>
-            </tr>
-            <tr>
-                <td><span class="info-value">Bairro: {{ endereco.bairro }}</span></td>
-                <td><span class="info-value">Cidade: {{ endereco.cidade }}</span></td>
-                <td><span class="info-value">UF: {{ endereco.uf }}</span></td>
-            </tr>
-            <tr>
-                <td><span class="info-value">Cep: {{ endereco.cep }}</span></td>
-                <td>
-                    <button class="action-btn btn-small btn-delete" data-type="endereco" data-action="delete" data-cliente="{{ endereco.id }}">Excluir</button>
-                </td>
-            </tr>
-        </table>
+    <div class="cliente-info endereco">
+        <div class="info-item">
+            <span class="info-label">Endereço</span>
+            <table>
+                <tr>
+                    <td><span class="info-value">Tipo: {{ endereco.tipo|title }}</span></td>
+                    <td><span class="info-value">Logr.: {{ endereco.logradouro }}</span></td>
+                    <td><span class="info-value">N°: {{ endereco.numero }}</span></td>
+                </tr>
+                <tr>
+                    <td><span class="info-value">Bairro: {{ endereco.bairro }}</span></td>
+                    <td><span class="info-value">Cidade: {{ endereco.cidade }}</span></td>
+                    <td><span class="info-value">UF: {{ endereco.uf }}</span></td>
+                </tr>
+                <tr>
+                    <td><span class="info-value">Cep: {{ endereco.cep }}</span></td>
+                    <td>
+                        <button class="action-btn btn-small btn-delete" data-type="endereco" data-action="delete" data-cliente="{{ endereco.id }}">Excluir</button>
+                    </td>
+                </tr>
+            </table>
 
+
+        </div>
 
     </div>
-
-</div>
-{% endfor %}
-        </form>
+    {% endfor %}
+</form>
