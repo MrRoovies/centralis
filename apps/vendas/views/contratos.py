@@ -15,12 +15,13 @@ def registrar_venda(request):
             usuario = request.user
             cliente_id = request.POST.get('cliente_id')
             id_agenda = request.POST.get('id_agenda')
+            comentario = request.POST.get('venda-comentario')
 
             check_complements = VendasService.get_complements(
                 usuario, cliente_id, id_agenda, request.empresa
             )
             if check_complements["success"]:
-                venda = VendasService.registrar_venda(venda_form, check_complements["data"])
+                venda = VendasService.registrar_venda(venda_form, check_complements["data"], comentario)
                 return JsonResponse(venda, status=venda["status"])
 
             else:

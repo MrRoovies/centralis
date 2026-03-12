@@ -5,7 +5,7 @@ from .models import Venda, Oferta, Esteira, HistVenda
 class VendaForm(forms.ModelForm):
     class Meta:
         model = Venda
-        fields = ['contrato', 'oferta', 'prazo', 'parcela', 'valor']
+        fields = ['contrato', 'oferta', 'prazo', 'parcela', 'valor', 'taxa']
 
         widgets = {
             'contrato': forms.TextInput(attrs={
@@ -37,6 +37,13 @@ class VendaForm(forms.ModelForm):
                 'min': 0,
                 'required': True
             }),
+            'taxa': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': '0,00',
+                'step': '0.01',
+                'min': 0,
+                'required': True
+            })
         }
 
     def __init__(self, *args, **kwargs):

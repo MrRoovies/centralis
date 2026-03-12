@@ -1,5 +1,5 @@
 from apps.vendas.forms import VendaForm
-from apps.vendas.models import Venda, Parceiro, Produto, Oferta, Esteira
+from apps.vendas.models import Venda, Parceiro, Produto, Oferta, Esteira, HistVenda
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
@@ -57,11 +57,12 @@ class VendasService:
             }
 
     @staticmethod
-    def registrar_venda(venda_form, data):
+    def registrar_venda(venda_form, data, comentario):
         cliente = data["cliente"]
         agenda = data["agenda"]
         usuario = data["usuario"]
         esteira = data["esteira"]
+
         try:
             with transaction.atomic():
                 novo = venda_form.save(commit=False)
@@ -73,6 +74,13 @@ class VendasService:
                 novo.usuario = usuario
                 novo.esteira = esteira
                 novo.save()
+
+                HistVenda.objects.create(
+                    venda=novo,
+                    esteira=esteira,
+                    usuario=usuario,
+                    comentario=comentario
+                )
 
                 return {
                     "success": True,

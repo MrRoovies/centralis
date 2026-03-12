@@ -149,6 +149,12 @@ class Venda(models.Model):
         decimal_places=2
     )
 
+    taxa = models.DecimalField(
+        "Taxa",
+        max_digits=5,
+        decimal_places=2
+    )
+
     comissao = models.DecimalField(
         "Comissão aplicada %",
         max_digits=5,

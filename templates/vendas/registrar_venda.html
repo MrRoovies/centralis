@@ -84,10 +84,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Detalhes da Oferta</label>
-                    <span id="oferta-detalhe" class="oferta-detalhe-text">Selecione uma oferta...</span>
+                    <label for="id_venda-taxa">
+                        Taxa de Jurus
+                        <span class="required">*</span>
+                    </label>
+                    {{ venda_form.taxa }}
                 </div>
-
+            </div>
+            <div class="form-row-inline">
+                <div class="form-group">
+                    <label for="id_venda-comentario">
+                        Taxa de Jurus
+                        <span class="required">*</span>
+                    </label>
+                    <textarea name="venda-comentario" class="form-control" placeholder="Comentario ..." id="id_venda-comentario"></textarea>
+                </div>
             </div>
 
             <div class="btn-group">
