@@ -1,12 +1,8 @@
-/* ============================================================
-   VENDAS.CSS — Formulário de registro de venda
-   Depende de: base.css
-   ============================================================ */
-
+/* ========== REGISTRAR VENDA ========== */
 .venda-container {
     background: white;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     margin: 0 auto 20px;
     overflow: hidden;
 }

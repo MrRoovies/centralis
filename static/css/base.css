@@ -1,0 +1,283 @@
+/* ============================================================
+   BASE.CSS — Estilos compartilhados por todas as páginas
+   ============================================================ */
+
+/* ========== RESET ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #EDEDED;
+    min-height: 100vh;
+}
+
+/* ========== FORM GROUP ========== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group label .required {
+    color: #dc3545;
+    margin-left: 3px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    background-color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #127B89;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.input-error {
+    border-color: #c33 !important;
+}
+
+/* ========== MENSAGENS ========== */
+.error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border-left: 4px solid #c33;
+    display: none;
+}
+
+.warning-message {
+    background: #fffcee;
+    color: #cca433;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border-left: 4px solid #dcc630;
+    display: none;
+}
+
+.success-message {
+    background: #eefff2;
+    color: #3dad38;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border-left: 4px solid #33cc3b;
+    display: none;
+}
+
+/* ========== BOTÕES ========== */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background: #127B89;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0f6a76;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-small {
+    padding: 4px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: opacity 0.3s;
+}
+
+.btn-small:hover {
+    opacity: 0.8;
+}
+
+.btn-edit {
+    background: #6B9E7A;
+    color: white;
+}
+
+.btn-delete {
+    background: #E07070;
+    color: white;
+}
+
+.btn-reactivate {
+    background: #f0a500;
+    color: white;
+}
+
+/* ========== DROPDOWN ========== */
+.dropdown-header {
+    color: white;
+    padding: 10px 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: background 0.3s;
+}
+
+.dropdown-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.dropdown-icon {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-header.active .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.dropdown-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 25px;
+}
+
+.dropdown-body.active {
+    max-height: 800px;
+    padding: 25px;
+}
+
+/* ========== MODAL ========== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    z-index: 1001;
+    position: fixed;
+    text-align: center;
+    background: #EDEDED;
+    padding: 30px;
+    width: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    box-shadow: 1px 5px 7px 1px #444444;
+}
+
+/* ========== FORM ROW ========== */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row-inline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.form-hint {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 16px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .form-row-inline {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .modal {
+        width: 90%;
+    }
+}
+
+@media (max-width: 900px) {
+    .modal {
+        width: 80%;
+    }
+}
