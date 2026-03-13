@@ -1,0 +1,60 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/campanhas.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="container">
+
+        <div class="painel-header">
+            <h2 class="page-title">Minhas Campanhas</h2>
+            <span class="painel-subtitulo">Campanhas ativas disponíveis para atendimento</span>
+        </div>
+
+        {% if campanhas_agente %}
+        <div class="campanhas-grid">
+            {% for ca in campanhas_agente %}
+            <div class="campanha-card">
+
+                <div class="campanha-card__header">
+                    <div class="campanha-card__badge campanha-card__badge--{{ ca.campanha.modo_atendimento|lower }}">
+                        {{ ca.campanha.get_modo_atendimento_display }}
+                    </div>
+                    <div class="campanha-card__metodo">
+                        {% if ca.campanha.metodo_distribuicao == "ORDENADO" %}
+                            <span class="metodo-icon">↕</span> Ordenado
+                        {% else %}
+                            <span class="metodo-icon">⟳</span> Aleatório
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="campanha-card__body">
+                    <h3 class="campanha-card__nome">{{ ca.campanha.nome }}</h3>
+                    <p class="campanha-card__carteira">{{ ca.campanha.carteira.nome }}</p>
+                </div>
+
+                <div class="campanha-card__footer">
+                    <a href="{% url 'campanhas:atender' ca.campanha.id %}" class="btn-entrar">
+                        Iniciar Atendimento
+                        <span class="btn-entrar__arrow">→</span>
+                    </a>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-campanhas">
+            <div class="empty-campanhas__icon">📋</div>
+            <h3>Nenhuma campanha ativa</h3>
+            <p>Você não está associado a nenhuma campanha ativa no momento.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</main>
+{% endblock %}
