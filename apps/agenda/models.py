@@ -165,7 +165,8 @@ class Situacao(models.Model):
         ('CURSO', 'Em Atendimento'),
         ('AGENDA', 'Agendamento'),
         ('INSUCESSO', 'Insucesso'),
-        ('SUCESSO', 'Sucesso')
+        ('SUCESSO', 'Sucesso'),
+        ('SEMCONTATO', 'Sem Contato')
     ]
     nome = models.CharField('Situacao', max_length=50, blank=False, null=False)
     tipo = models.CharField('Tipo', max_length=15, choices=TIPO_CHOICES, blank=False, null=False)
