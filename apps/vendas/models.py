@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.functions import Lower
 from django.core.exceptions import ValidationError
 
 
@@ -11,9 +12,15 @@ class Parceiro(models.Model):
     )
 
     nome = models.CharField("Parceiro", max_length=150)
-
     ativo = models.BooleanField(default=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                Lower("nome"), "empresa",
+                name="unique_name_emrpesa"
+            )
+        ]
     def __str__(self):
         return f"{self.nome}"
 
