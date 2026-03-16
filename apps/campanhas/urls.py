@@ -5,5 +5,5 @@ app_name = 'campanhas'
 
 urlpatterns = [
     path('', campanhas.painel_campanhas, name="painel_campanhas"),
-    path('atender', campanhas.atender, name="painel_campanhas"),
+    path('atender', campanhas.atender, name="atender"),
 ]
