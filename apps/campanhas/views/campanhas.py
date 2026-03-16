@@ -28,5 +28,5 @@ def painel_campanhas(request):
 
 @login_required
 @require_GET
-def atender(request, id):
+def atender(request, id_campanha):
     pass
