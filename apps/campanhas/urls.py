@@ -1,6 +1,9 @@
 from .views import campanhas
-from django.urls import path, include
+from django.urls import path
+
+app_name = 'campanhas'
 
 urlpatterns = [
     path('', campanhas.painel_campanhas, name="painel_campanhas"),
+    path('atender', campanhas.atender, name="painel_campanhas"),
 ]
