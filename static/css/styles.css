@@ -2,7 +2,11 @@
    STYLES.CSS — Layout geral, header, sidebar e login
    Depende de: base.css
    ============================================================ */
-
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #EDEDED;
+    min-height: 100vh;
+}
 /* ========== LOGIN ========== */
 .login-wrapper {
     min-height: 100vh;
@@ -29,6 +33,7 @@
 
 /* Inputs do login usam estilo próprio (sem padding: 12px do base) */
 .login-container .form-group input {
+    width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -41,7 +46,15 @@
 
 .login-container .btn {
     width: 100%;
+    padding: 12px;
+    background: #127B89;
+    color: white;
+    border: none;
+    border-radius: 5px;
     font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s;
 }
 
 .login-hint {
