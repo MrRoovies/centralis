@@ -1,5 +1,6 @@
 from apps.agenda.models import Agenda, Acionamento, Situacao
 from apps.clientes.models import Cliente
+from apps.campanhas.models import CampanhaCliente
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
@@ -8,7 +9,7 @@ from django.utils.dateparse import parse_datetime
 
 class AgendamentoService:
 
-    def criar_ou_atualizar(self, cliente_id, usuario):
+    def criar_ou_atualizar(self, cliente_id, usuario, modo, canal):
         cliente = get_object_or_404(
             Cliente.objects.select_related('empresa'),
             pk=cliente_id,
@@ -74,8 +75,8 @@ class AgendamentoService:
                     carteira=carteira,
                     equipe=equipe,
                     perfil=perfil,
-                    modo="Ativo",
-                    canal="Campanha da sorte",
+                    modo=modo,
+                    canal=canal,
                     situacao=situacao_atendimento
                 )
 
@@ -197,6 +198,11 @@ class AgendamentoService:
                 acionamento.data_finalizado = timezone.now()
                 acionamento.comentario = comentario
                 acionamento.save()
+
+                cliente_campanha = get_object_or_404(CampanhaCliente, agenda=agenda, agente_responsavel=usuario)
+                cliente_campanha.situacao = sit
+                cliente_campanha.save()
+
             return {
                 "success": True,
                 "messages": {
