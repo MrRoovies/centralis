@@ -1,0 +1,96 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/cliente.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendas.css' %}">
+    <link rel="stylesheet" href="{% static 'css/campanhas.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="container">
+
+        <!-- Barra de controle da fila -->
+        <div class="fila-control-bar">
+            <div class="fila-info">
+                <span class="fila-nome">{{ campanha.nome }}</span>
+                <span class="fila-carteira">{{ campanha.carteira.nome }}</span>
+            </div>
+
+            <div class="fila-status" id="filaStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span class="status-label" id="statusLabel">Parado</span>
+            </div>
+
+            <div class="fila-controles">
+                <button class="btn-fila btn-iniciar" data-id_camp="{{ campanha.id }}" id="btnIniciar" onclick="iniciarFila()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 2.5L13 8L4 13.5V2.5Z" fill="currentColor"/>
+                    </svg>
+                    Iniciar
+                </button>
+
+                <button class="btn-fila btn-pausar" id="btnPausar" onclick="pausarFila()" disabled>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="3" y="2" width="4" height="12" rx="1" fill="currentColor"/>
+                        <rect x="9" y="2" width="4" height="12" rx="1" fill="currentColor"/>
+                    </svg>
+                    Pausar
+                </button>
+
+                <button class="btn-fila btn-parar" id="btnParar" onclick="pararFila()" disabled>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="currentColor"/>
+                    </svg>
+                    Parar
+                </button>
+            </div>
+
+            <div class="fila-contador">
+                <div class="contador-item">
+                    <span class="contador-valor" id="contAtendidos">0</span>
+                    <span class="contador-label">Atendidos</span>
+                </div>
+                <div class="contador-sep"></div>
+                <div class="contador-item">
+                    <span class="contador-valor" id="contRestantes">{{ restantes }}</span>
+                    <span class="contador-label">Na fila</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área do cliente (preenchida dinamicamente) -->
+        <div class="cliente-area" id="clienteArea">
+            <div class="cliente-placeholder" id="clientePlaceholder">
+                <div class="placeholder-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="18" r="8" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 40C8 32.268 15.163 26 24 26C32.837 26 40 32.268 40 40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <p class="placeholder-titulo">Nenhum cliente em atendimento</p>
+                <p class="placeholder-sub">Clique em <strong>Iniciar</strong> para buscar o próximo cliente da fila</p>
+            </div>
+
+            <!-- O card do cliente será injetado aqui via JS -->
+            <div id="clienteInjetado"></div>
+        </div>
+
+        <div class="cliente-area vinculados">
+            <div class="cliente-placeholder">
+                {% for vinculado in clientes_vinculados %}
+                    <p class="placeholder-titulo">{{ vinculado.cliente }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/formHandler.js' %}" defer></script>
+    <script src="{% static 'js/clientes.js' %}" defer></script>
+    <script src="{% static 'js/vendas.js' %}" defer></script>
+    <script src="{% static 'js/atendimento_cliente.js' %}" defer></script>
+{% endblock %}
