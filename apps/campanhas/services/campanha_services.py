@@ -49,4 +49,5 @@ class CampanhaService:
             .order_by('prioridade')
             .first()
         )
+
         return proximo
