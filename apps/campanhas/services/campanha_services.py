@@ -2,22 +2,35 @@ from apps.campanhas.models import Campanha, CampanhaCliente
 
 class CampanhaService:
     @staticmethod
-    def clientes_vinculados(campanha, usuario):
+    def nao_tabulado(campanha, usuario):
         # Retorna lista de clientes vinculados ao agente para controle e atendimento #
-        clientes_campanha = (
+        return (
             CampanhaCliente.objects
             .select_related('cliente', 'situacao')
             .filter(
                 agente_responsavel=usuario,
                 campanha=campanha,
-                situacao__tipo__in=["CURSO", "AGENDA"],
+                situacao__tipo="CURSO",
+            )
+            .order_by('prioridade').first()
+        )
+
+
+    @staticmethod
+    def agendados(campanha, usuario):
+        # Retorna lista de clientes vinculados ao agente para controle e atendimento #
+        return (
+            CampanhaCliente.objects
+            .select_related('cliente', 'situacao')
+            .filter(
+                agente_responsavel=usuario,
+                campanha=campanha,
+                situacao__tipo="AGENDA",
             )
             .order_by('prioridade')
         )
-        if clientes_campanha:
-            return clientes_campanha
-        else:
-            return []
+
+
 
     @staticmethod
     def restantes_mailing(campanha):

@@ -45,13 +45,15 @@ def atender(request, id_campanha):
         carteira=request.user.agente.carteira,
         distribuicao_ativa=True,
     )
-    clientes_vinculados = CampanhaService.clientes_vinculados(campanha, request.user)
+    nao_tabulado = CampanhaService.nao_tabulado(campanha, request.user)
+    agendados = CampanhaService.agendados(campanha, request.user)
     restantes = CampanhaService.restantes_mailing(campanha)
 
     context = {
         "campanha": campanha,
         "restantes": restantes,
-        "clientes_vinculados": clientes_vinculados
+        "nao_tabulado": nao_tabulado,
+        "agendados": agendados
     }
     return render(request, "campanhas/atendimento_campanha.html", context)
 
@@ -83,25 +85,33 @@ def proximo_cliente(request, id_campanha):
     if not proximo:
         return JsonResponse({"fim_da_fila": True})
 
-    # Criar ou retomar agenda
-    resultado = AgendamentoService().criar_ou_atualizar(
-        proximo.cliente.id,
-        usuario,
-        modo="Campanha Manual",
-        canal=campanha.nome
-    )
-
-    if not resultado["success"]:
-        return JsonResponse({"fim_da_fila": False, "erro": resultado["errors"]}, status=400)
-
     situacoes = Situacao.objects.filter(carteira=usuario.agente.carteira)
-    situacao_curso = situacoes.filter(tipo="CURSO").first()
     situacoes_tela = situacoes.filter(ativo=True)
 
-    proximo.agente_responsavel = usuario
-    proximo.agenda = resultado["agenda"]
-    proximo.situacao = situacao_curso
-    proximo.save()
+    if proximo.situacao.tipo != "CURSO":
+        # Criar ou retomar agenda
+        resultado = AgendamentoService().criar_ou_atualizar(
+            proximo.cliente.id,
+            usuario,
+            modo="Campanha Manual",
+            canal=campanha.nome
+        )
+
+        if not resultado["success"]:
+            return JsonResponse({"fim_da_fila": False, "erro": resultado["errors"]}, status=400)
+
+        situacao_curso = situacoes.filter(tipo="CURSO").first()
+
+        proximo.agente_responsavel = usuario
+        proximo.agenda = resultado["agenda"]
+        proximo.situacao = situacao_curso
+        proximo.save()
+    else:
+        resultado = {
+            "success": True,
+            "agenda": proximo.agenda,
+            "message": "Retomando atendimento"
+        }
 
     # Carregar cliente com prefetch para o template
     cliente = get_object_or_404(

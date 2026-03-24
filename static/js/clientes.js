@@ -230,7 +230,7 @@ function dropdownhandler(headerId, bodyId){
 }
 
 
-function registrar(){
+function registrar(id_campanha){
 
     const form = document.querySelector("#atendimentoForm");
     if (!form){ return; }
@@ -257,6 +257,8 @@ function registrar(){
         const allMessages = flattenGroupedMessages(groupedMessages);
         // Renderiza mensagens no formulário
         renderFormMessage(form, allMessages);
+        proximoCliente(window.APP.campanhaId);
+
     })
     .catch( error => {
         // Caso erro de validação retornado via throw

@@ -1,9 +1,6 @@
 // atendimento_campanha.js
 // Gerencia o ciclo de vida do atendimento: iniciar, pausar, parar
 
-
-
-
 const Estado = {
     PARADO:  'parado',
     RODANDO: 'rodando',
@@ -56,9 +53,15 @@ function aplicarEstado(estado) {
     btnParar.disabled   = cfg.parar;
 }
 
+// Executa caso exista cliente pendente de tabulação
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.APP.temCliente) {
+        iniciarFila(window.APP.campanhaId);
+    }
+});
+
 // ─── Ações dos botões ─────────────────────────────────────────
-function iniciarFila() {
-    id_campanha = btnIniciar.dataset.id_camp;
+function iniciarFila(id_campanha) {
     aplicarEstado(Estado.RODANDO);
     buscarProximoCliente(id_campanha);
 }
@@ -118,14 +121,14 @@ function injetarCliente(html, restantes) {
 
 // ─── Chamada externa: cliente finalizado → avança a fila ──────
 // Deve ser chamada pelo código do card de cliente após salvar atendimento
-function proximoCliente() {
+function proximoCliente(campanhaId) {
     contAtendidos++;
     contAtendidosEl.textContent = contAtendidos;
     clienteArea.classList.remove('com-cliente');
     clienteInjetado.innerHTML = '';
 
     if (estadoAtual === Estado.RODANDO) {
-        buscarProximoCliente();
+        buscarProximoCliente(campanhaId);
     }
 }
 

@@ -23,7 +23,10 @@
             </div>
 
             <div class="fila-controles">
-                <button class="btn-fila btn-iniciar" data-id_camp="{{ campanha.id }}" id="btnIniciar" onclick="iniciarFila()">
+                <button
+                    class="btn-fila btn-iniciar"
+                    id="btnIniciar"
+                    onclick="iniciarFila({{ campanha.id }})">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M4 2.5L13 8L4 13.5V2.5Z" fill="currentColor"/>
                     </svg>
@@ -78,27 +81,36 @@
 
         <div class="cliente-area vinculados">
             <div class="cliente-placeholder">
-                <table>
-                    <tr>
-                        <th>Cliente</th>
-                        <th>Situação</th>
-                    </tr>
-                {% for vinculado in clientes_vinculados %}
-                    <tr>
-                        <td>{{ vinculado.cliente }}</td>
-                        <td>{{ vinculado.situacao }}</td>
-                        <td><button class="btn btn-primary">Adiantar</button></td>
-                    </tr>
-                {% endfor %}
-                </table>
+                {% if agendados %}
+                    <table>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Situação</th>
+                        </tr>
+                    {% for agendado in agendados %}
+                        <tr>
+                            <td>{{ agendado.cliente }}</td>
+                            <td>{{ agendado.situacao }}</td>
+                            <td><button class="btn btn-primary">Adiantar</button></td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    Nenhum Cliente Pendente o Agendado
+                {% endif %}
             </div>
         </div>
-
     </div>
 </main>
 {% endblock %}
+    {% block extra_js %}
+    <script>
+    window.APP = {
+        campanhaId: {{ campanha.id }},
+        temCliente: {{ nao_tabulado|yesno:"true,false" }}
+    };
+    </script>
 
-{% block extra_js %}
     <script src="{% static 'js/formHandler.js' %}" defer></script>
     <script src="{% static 'js/clientes.js' %}" defer></script>
     <script src="{% static 'js/vendas.js' %}" defer></script>
