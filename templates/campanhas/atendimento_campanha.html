@@ -78,9 +78,19 @@
 
         <div class="cliente-area vinculados">
             <div class="cliente-placeholder">
+                <table>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Situação</th>
+                    </tr>
                 {% for vinculado in clientes_vinculados %}
-                    <p class="placeholder-titulo">{{ vinculado.cliente }}</p>
+                    <tr>
+                        <td>{{ vinculado.cliente }}</td>
+                        <td>{{ vinculado.situacao }}</td>
+                        <td><button class="btn btn-primary">Adiantar</button></td>
+                    </tr>
                 {% endfor %}
+                </table>
             </div>
         </div>
 
