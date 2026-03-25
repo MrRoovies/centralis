@@ -25,7 +25,7 @@ class CampanhaService:
             .filter(
                 agente_responsavel=usuario,
                 campanha=campanha,
-                situacao__tipo="AGENDA",
+                situacao__tipo="AGENDA"
             )
             .order_by('prioridade')
         )

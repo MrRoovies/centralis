@@ -1,8 +1,10 @@
 // venda.js
-document.addEventListener("DOMContentLoaded", function () {
+function initVendaForm(){
     const parceiro = document.getElementById("id_venda-parceiro");
     const produto = document.getElementById("id_venda-produto");
     const oferta = document.getElementById("id_venda-oferta");
+
+    if(!parceiro || !produto || !oferta) return;
 
     /* Popular Parceiros */
     fetch(`/vendas/parceiros/`)
@@ -19,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         oferta.innerHTML = '<option value="">Selecione...</option>';
         buscarOfertas(parceiro.value, this.value);
     });
-});
+}
 
 function buscarProdutos(parceiroId) {
     fetch(`/vendas/produtos/?parceiro_id=${parceiroId}`)
@@ -44,8 +46,7 @@ function popularSelect(elementId, itens) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-
+function initVendaSubmit() {
     const vendaForm = document.querySelector("#vendaForm");
     vendaForm.addEventListener("submit", function (e){
         e.preventDefault();
@@ -78,4 +79,4 @@ document.addEventListener("DOMContentLoaded", function () {
             renderFormMessage(vendaForm, allErrors);
         })
     })
-})
+}

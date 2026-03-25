@@ -99,6 +99,7 @@ function buscarProximoCliente(id_campanha) {
             return;
         }
         injetarCliente(data.html, data.restantes);
+        initVendaForm();
     })
     .catch(err => {
         console.error('Erro ao buscar cliente:', err);
