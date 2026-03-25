@@ -96,7 +96,11 @@
                             <td>{{ agendado.cliente }}</td>
                             <td>{{ agendado.situacao }}</td>
                             <td>{{ agendado.agenda.data_hora_retorno|date:"d/m/Y H:i:s" }}</td>
-                            <td><button class="btn btn-primary">Adiantar</button></td>
+                            <td>
+                                <button class="btn btn-primary" onclick="atenderAgendamentoCampanha({{ agendado.id }})">
+                                Adiantar
+                                </button>
+                            </td>
                         </tr>
                     {% endfor %}
                     </table>

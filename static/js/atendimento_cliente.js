@@ -76,6 +76,36 @@ function pararFila() {
     limparClienteArea();
 }
 
+// ─── Adiantar Agendamento da fila ───────────────────────────
+function atenderAgendamentoCampanha(id_campanha){
+    mostrarLoading();
+
+    fetch(`/campanhas/adiantar_agenda/${id_campanha}/`, {
+        method: 'GET',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+    })
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw data;
+        return data;
+    })
+    .then(data => {
+        if (data.fim_da_fila) {
+            aplicarEstado(Estado.PARADO);
+            mostrarFimDeFila();
+            atualizarContRestantes(0);
+            return;
+        }
+        injetarCliente(data.html, data.restantes);
+        initVendaForm();
+    })
+    .catch(err => {
+        console.error('Erro ao buscar cliente:', err);
+        mostrarErro(err.message || 'Erro ao buscar próximo cliente.');
+    });
+}
+
+
 // ─── Buscar próximo cliente da fila ───────────────────────────
 function buscarProximoCliente(id_campanha) {
     if (estadoAtual !== Estado.RODANDO) return;

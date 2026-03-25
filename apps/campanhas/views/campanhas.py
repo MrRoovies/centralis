@@ -145,3 +145,64 @@ def proximo_cliente(request, id_campanha):
         "html":        html,
         "restantes":   restantes,
     })
+
+
+@login_required
+@require_GET
+def adiantar_agenda(request, id_campanha):
+    usuario = request.user
+
+    campanha_cliente = get_object_or_404(
+        CampanhaCliente,
+        pk=id_campanha,
+        agente_responsavel=usuario,
+        situacao__tipo="AGENDA"
+    )
+
+    resultado = AgendamentoService().criar_ou_atualizar(
+        campanha_cliente.cliente.id,
+        usuario,
+        modo=campanha_cliente.campanha.modo_atendimento,
+        canal=campanha_cliente.campanha.nome
+    )
+
+    if not resultado["success"]:
+        return JsonResponse({"erro": resultado["errors"]}, status=400)
+
+    situacoes = Situacao.objects.filter(carteira=usuario.agente.carteira)
+    situacoes_tela = situacoes.filter(ativo=True)
+
+    situacao_curso = situacoes.filter(tipo="CURSO").first()
+
+    campanha_cliente.situacao = situacao_curso
+    campanha_cliente.save()
+
+    # Carregar cliente com prefetch para o template
+    cliente = get_object_or_404(
+        Cliente.objects
+        .prefetch_related(
+            Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+            Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
+            Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True)),
+        ),
+        pk=campanha_cliente.cliente.id,
+        empresa=request.empresa,
+    )
+    restantes = CampanhaService.restantes_mailing(campanha_cliente.campanha)
+
+    html = render_to_string(
+        "clientes/partials/card_atendimento_cliente.html",
+        {
+            "cliente": cliente,
+            "situacoes": situacoes_tela,
+            "nova_agenda": resultado,
+            "venda_form": VendaForm(prefix="venda", empresa=request.empresa),
+        },
+        request=request,
+    )
+
+    return JsonResponse({
+        "fim_da_fila": False,
+        "html": html,
+        "restantes": restantes,
+    })
