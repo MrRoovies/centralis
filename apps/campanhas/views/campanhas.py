@@ -93,7 +93,7 @@ def proximo_cliente(request, id_campanha):
         resultado = AgendamentoService().criar_ou_atualizar(
             proximo.cliente.id,
             usuario,
-            modo="Campanha Manual",
+            modo=campanha.modo_atendimento,
             canal=campanha.nome
         )
 
