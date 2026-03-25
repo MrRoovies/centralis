@@ -383,6 +383,21 @@
     display: none;
 }
 
+.cliente-placeholder table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.cliente-placeholder table th{
+    background: #007AAA;
+    color: #fff;
+    padding: 5px;
+}
+.cliente-placeholder table td{
+    background: #eeeeee;
+    padding: 5px;
+    color: #646464;
+}
+
 /* ========== LOADING (busca próximo cliente) ========== */
 .cliente-loading {
     display: flex;
