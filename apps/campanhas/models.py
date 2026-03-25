@@ -9,7 +9,8 @@ class Campanha(models.Model):
     CHOICE_TIPOS = [
         ("MANUAL", "Manual"),
         ("DISCADOR", "Discador"),
-        ("EXLEAD", "Lead Externo")
+        ("EXLEAD", "Lead Externo"),
+        ("RECEPTIVO", "Receptivo")
     ]
     CHOICE_METODO = [("ORDENADO", "Ordenado"), ("ALEATORIO", "Aleatorio")]
 
