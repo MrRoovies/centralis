@@ -83,14 +83,19 @@
             <div class="cliente-placeholder">
                 {% if agendados %}
                     <table>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Situação</th>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Situação</th>
+                                <th>Data Retorno</th>
+                                <th>#</th>
+                            </tr>
+                        </thead>
                     {% for agendado in agendados %}
                         <tr>
                             <td>{{ agendado.cliente }}</td>
                             <td>{{ agendado.situacao }}</td>
+                            <td>{{ agendado.agenda.data_hora_retorno|date:"d/m/Y H:i:s" }}</td>
                             <td><button class="btn btn-primary">Adiantar</button></td>
                         </tr>
                     {% endfor %}
