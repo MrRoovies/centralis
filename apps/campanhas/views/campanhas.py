@@ -98,6 +98,9 @@ def proximo_cliente(request, id_campanha):
         )
 
         if not resultado["success"]:
+            if resultado["errors"] == "Cliente agendado com outro agente":
+                situacao_outro = situacoes.filter(tipo="OUTRO").first()
+                proximo.situacao = situacao_outro
             return JsonResponse({"fim_da_fila": False, "erro": resultado["errors"]}, status=400)
 
         situacao_curso = situacoes.filter(tipo="CURSO").first()
