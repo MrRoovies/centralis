@@ -17,7 +17,4 @@ urlpatterns = [
 
     path('endereco/<int:id>/delete', endereco.delete_endereco, name='delete-endereco'),
     path('endereco/<int:cliente_id>/create', endereco.novo_endereco, name='novo-endereco'),
-
-    # === Urls para atendimento ao Cliente === #
-    path('atendimento/<int:cliente_id>', cliente.atendimento_cliente, name='atendimento_cliente'),
 ]
