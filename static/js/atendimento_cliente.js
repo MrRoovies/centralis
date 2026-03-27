@@ -208,3 +208,42 @@ function atualizarContRestantes(val) {
 
 // ─── Inicialização ─────────────────────────────────────────────
 aplicarEstado(Estado.PARADO);
+
+
+// ─── Registrar Atendimento ─────────────────────────────────────────────
+function registrar(id_campanha){
+    const form = document.querySelector("#atendimentoForm");
+    if (!form){ return; }
+
+    const formData = new FormData(form);
+    formData.delete('csrfmiddlewaretoken'); // ← remove do body
+
+    const dados = Object.fromEntries(formData);
+
+    fetch("/agenda/registrar", {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCookie('csrftoken'),  // Token CSRF (Django)
+                'Content-Type': 'application/json'},
+        body: JSON.stringify(dados)
+    })
+    .then(async response => {
+        const r = await response.json();
+        if(!response.ok){ throw r; }
+        return r;
+    })
+    .then( r => {
+        // Junta erros de múltiplos forms em um único objeto
+        const groupedMessages = r.messages;
+        const allMessages = flattenGroupedMessages(groupedMessages);
+        // Renderiza mensagens no formulário
+        renderFormMessage(form, allMessages);
+        proximoCliente(window.APP.campanhaId);
+
+    })
+    .catch( error => {
+        // Caso erro de validação retornado via throw
+        const groupedErrors = error.errors;
+        let allErrors = flattenGroupedMessages(groupedErrors);
+        renderFormMessage(form, allErrors);
+    })
+}
