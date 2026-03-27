@@ -146,7 +146,7 @@ function injetarCliente(html, restantes) {
     // Recarrega o histórico de agendas (mesmo comportamento de clientes.js)
     const historicoEl = clienteInjetado.querySelector('#historico-agendas');
     if (historicoEl) {
-        carrega_agenda(historicoEl.dataset.clienteId);
+        historico_agenda(historicoEl.dataset.clienteId);
     }
 }
 
