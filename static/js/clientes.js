@@ -49,19 +49,15 @@ document.addEventListener('click', function(e){
     }
 })
 
-
-
-
-
 document.addEventListener("DOMContentLoaded", function() {
     const container = document.getElementById("historico-agendas");
     if (container) {
         const clienteId = container.dataset.clienteId;
-        carrega_agenda(clienteId);
+        historico_agenda(clienteId);
     }
 });
 
-function carrega_agenda(cliente_id){
+function historico_agenda(cliente_id){
     /* CARREGA OS DADOS DE AGENDA DO CLIENTE CASO EXISTA */
     fetch(`/agenda/historico/${cliente_id}/`)
         .then(response => response.text())

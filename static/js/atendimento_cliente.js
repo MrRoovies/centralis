@@ -211,7 +211,7 @@ aplicarEstado(Estado.PARADO);
 
 
 // ─── Registrar Atendimento ─────────────────────────────────────────────
-function registrar(id_campanha){
+function registraSituacaoContato(id_campanha){
     const form = document.querySelector("#atendimentoForm");
     if (!form){ return; }
 
