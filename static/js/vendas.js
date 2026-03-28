@@ -74,7 +74,7 @@ function initVendaSubmit() {
         })
         .catch( error => {
             // Caso erro de validação retornado via throw
-            const groupedErrors = error.errors;
+            const groupedErrors = error.messages;
             let allErrors = flattenGroupedMessages(groupedErrors);
             renderFormMessage(vendaForm, allErrors);
         })

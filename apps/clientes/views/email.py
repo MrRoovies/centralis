@@ -37,7 +37,7 @@ def novo_email(request, cliente_id):
                 return JsonResponse({
                     "success": False,
                     "state": "nothing",
-                    "errors": {
+                    "messages": {
                         "email": {"__all__": ["Este e-mail já está cadastrado e ativo."]}
                     }
                 }, status=400)
@@ -66,13 +66,13 @@ def novo_email(request, cliente_id):
 
             return JsonResponse({
                 "success": True,
-                "message": {
+                "messages": {
                         "email": {"success": ["E-mail Criado com Sucesso!"]}
                     }
             }, status=201)
 
         form_errors = {"email": email_form.errors}
-        return JsonResponse({"success": False, "errors": form_errors}, status=400)
+        return JsonResponse({"success": False, "messages": form_errors}, status=400)
 
     form = EmailForm(prefix="email")
     context = {

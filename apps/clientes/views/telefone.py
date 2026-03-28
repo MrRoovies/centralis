@@ -35,7 +35,7 @@ def novo_telefone(request, cliente_id):
                 return JsonResponse({
                     "success": False,
                     "state": "nothing",
-                    "errors": {
+                    "messages": {
                         "telefone": {"__all__": ["Telefone já está cadastrado e ativo."]}
                     }
                 }, status=400)
@@ -53,7 +53,7 @@ def novo_telefone(request, cliente_id):
                     "state": "reactivate",
                     "email_id": existente.id,
                     "messages": {
-                        "email": {"warning": ["Este telefone já existe, mas está inativo. Deseja reativar?"]}
+                        "telefone": {"warning": ["Este telefone já existe, mas está inativo. Deseja reativar?"]}
                     }
                 }, status=200)
 
@@ -65,13 +65,13 @@ def novo_telefone(request, cliente_id):
 
             return JsonResponse({
                 "success": True,
-                "message": {
+                "messages": {
                     "telefone": {"success": ["Telefone Criado com Sucesso!"]}
                 }
             }, status=201)
 
-        form_errors = {"email": telefone_form.errors}
-        return JsonResponse({"success": False, "errors": form_errors}, status=400)
+        form_errors = {"telefone": telefone_form.errors}
+        return JsonResponse({"success": False, "messages": form_errors}, status=400)
 
     form = TelefoneForm(prefix="telefone")
     context = {

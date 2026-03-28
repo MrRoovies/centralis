@@ -113,7 +113,9 @@ def proximo_cliente(request, id_campanha):
         resultado = {
             "success": True,
             "agenda": proximo.agenda,
-            "message": "Retomando atendimento"
+            "messages": {
+                "agenda" : { "success": ["Retomando Atendimento"] }
+            }
         }
 
     # Carregar cliente com prefetch para o template
@@ -144,6 +146,7 @@ def proximo_cliente(request, id_campanha):
         "fim_da_fila": False,
         "html":        html,
         "restantes":   restantes,
+        "messages": resultado["messages"]
     })
 
 
@@ -205,4 +208,5 @@ def adiantar_agenda(request, id_campanha):
         "fim_da_fila": False,
         "html": html,
         "restantes": restantes,
+        "messages": resultado["messages"]
     })

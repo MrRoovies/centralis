@@ -14,7 +14,7 @@ class VendasService:
         if not cliente:
             return {
                 "success": False,
-                "errors": {
+                "messages": {
                     "vendas": {"error": [f"Cliente não encontrado."]}
                 }
             }
@@ -29,7 +29,7 @@ class VendasService:
         if not esteira:
             return{
                 "success": False,
-                "errors": {
+                "messages": {
                     "vendas": {"error": [f"Esteira INICIAL não cadastrada"]}
                 }
             }
@@ -41,7 +41,7 @@ class VendasService:
         if not agenda:
             return {
                 "success": False,
-                "errors": {
+                "messages": {
                     "vendas": {"error": [f"Agenda não encontrada"]}
                 }
             }
@@ -94,7 +94,7 @@ class VendasService:
             return {
                 "success": False,
                 "status": 400,
-                "errors": {
+                "messages": {
                     "vendas": {"__all__": [f"{str(e)}"]}
                 }
             }
@@ -102,7 +102,7 @@ class VendasService:
             return {
                 "success": False,
                 "status": 400,
-                "errors": {
+                "messages": {
                     "vendas": {"__all__": [f"Venda duplicada detectada."]}
                 }
             }

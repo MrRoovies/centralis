@@ -130,10 +130,11 @@ function buscarProximoCliente(id_campanha) {
         }
         injetarCliente(data.html, data.restantes);
         initVendaForm();
+        SystemModal.showMessage(data.messages || 'Message.');
     })
     .catch(err => {
         console.error('Erro ao buscar cliente:', err);
-        mostrarErro(err.message || 'Erro ao buscar próximo cliente.');
+        SystemModal.showMessage(err.error || 'Erro ao buscar próximo cliente.');
     });
 }
 
@@ -242,7 +243,7 @@ function registraSituacaoContato(id_campanha){
     })
     .catch( error => {
         // Caso erro de validação retornado via throw
-        const groupedErrors = error.errors;
+        const groupedErrors = error.messages;
         let allErrors = flattenGroupedMessages(groupedErrors);
         renderFormMessage(form, allErrors);
     })

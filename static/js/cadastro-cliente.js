@@ -14,16 +14,15 @@ form.addEventListener('submit', function(e) {
     })
     .then( data  => {
         // Caso erro de validação retornado via throw
-        const groupedErrors = data.message;
+        const groupedErrors = data.messages;
         let allErrors = flattenGroupedMessages(groupedErrors);
         renderFormMessage(form, allErrors);
         form.reset();
     })
     .catch( error => {
-    // Caso erro de validação retornado via throw
-    const groupedErrors = error.errors;
-    let allErrors = flattenGroupedMessages(groupedErrors);
-    renderFormMessage(form, allErrors);
-
+       // Caso erro de validação retornado via throw
+        const groupedErrors = error.messages;
+        let allErrors = flattenGroupedMessages(groupedErrors);
+        renderFormMessage(form, allErrors);
     })
 })

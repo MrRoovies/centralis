@@ -41,7 +41,9 @@ class AgendamentoService:
                 if not situacao_atendimento:
                     return {
                         "success": False,
-                        "errors": "Nenhuma situação de atendimento configurada para esta carteira."
+                        "messages": {
+                            "situacao": {"warning": ["Nenhuma situação de atendimento configurada para esta carteira."]}
+                        }
                     }
 
                 # 🔹 Caso 1: Existe agenda ativa
@@ -57,7 +59,9 @@ class AgendamentoService:
 
                         return {
                             "success": True,
-                            "message": "Retomando Atendimento!",
+                            "messages": {
+                                "agenda": {"success": ["Retomando Atendimento!"]}
+                            },
                             "agenda": agenda
                         }
 
@@ -65,7 +69,9 @@ class AgendamentoService:
                     else:
                         return {
                             "success": False,
-                            "errors": f"Cliente agendado com outro agente"
+                            "messages": {
+                                "situacao": { "warning": ["Cliente agendado com outro agente."] }
+                            }
                         }
 
                 # 🔹 Caso 2: Não existe agenda ativa → cria nova
@@ -85,13 +91,17 @@ class AgendamentoService:
 
                 return {
                     "success": True,
-                    "message": "Novo atendimento iniciado!",
+                    "messages": {
+                        "agenda": {"success": "Novo atendimento iniciado!"},
+                    },
                     "agenda": nova_agenda
                 }
         except Exception as e:
             return {
                 "success": False,
-                "errors": f"{str(e)}"
+                "messages": {
+                    "agenda": {"success": [f"{str(e)}"]},
+                }
             }
 
     def _criar_ou_atualizar_acionamento(self, agenda):
@@ -120,7 +130,7 @@ class AgendamentoService:
         if not Validar().valida_Fone(telefone):
             return {
                 "success": False,
-                "errors": {
+                "messages": {
                     "agenda": {"warning": ["Telefone Não pode ser vazio, e deve conter apenas números!"]}
                 }
             }
@@ -142,7 +152,7 @@ class AgendamentoService:
                 if not agenda:
                     return {
                         "success": False,
-                        "errors": {
+                        "messages": {
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
                         }
                     }
@@ -153,7 +163,7 @@ class AgendamentoService:
                 if not acionamento:
                     return {
                         "success": False,
-                        "errors": {
+                        "messages": {
                             "agenda": {"warning": ["Agenda não encontrada ou já finalizada"]}
                         }
                     }
@@ -162,7 +172,7 @@ class AgendamentoService:
                 if agenda.usuario != usuario:
                     return {
                         "success": False,
-                        "errors": {
+                        "messages": {
                             "agenda": {"warning": ["Você não tem permissão para registrar nesta agenda"]}
                         }
                     }
@@ -173,7 +183,7 @@ class AgendamentoService:
                     if dataAgenda == "":
                         return {
                             "success": False,
-                            "errors": {
+                            "messages": {
                                 "agenda": {"__all__": ["Data não pode ser vazio para Agendamento"]}
                             }
                         }
@@ -181,7 +191,7 @@ class AgendamentoService:
                     if comentario.strip() == "":
                         return {
                             "success": False,
-                            "errors": {
+                            "messages": {
                                 "agenda": {"warning": ["Comentário não pode ser vazio"]}
                             }
                         }
@@ -212,12 +222,14 @@ class AgendamentoService:
         except ValidationError as e:
             return {
                 "success": False,
-                "errors": e.message_dict  # já vem formatado por campo
+                "messages": {
+                    "agenda": {"error": [e.message_dict]}
+                }
             }
         except Exception as e:
             return {
                 "success": False,
-                "errors": {
+                "messages": {
                     "agenda": {"__all__": ["Algo deu errado", f"{str(e)}"]}
                 }
             }

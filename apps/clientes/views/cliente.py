@@ -1,15 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from ..models import Cliente, Email, Telefone, Endereco
 from django.db import transaction
 from ..forms import ClienteForm, EmailForm, TelefoneForm
-from django.contrib import messages
 import json
-from apps.vendas.forms import VendaForm
-
 
 
 # Create your views here.
@@ -52,7 +49,7 @@ def cliente_novo(request):
 
             return JsonResponse({
                 "success": True,
-                "message": {
+                "messages": {
                     "cliente": {"success": ["Cliente criado com sucesso!"]}
                 }
             }, status=200)
@@ -62,7 +59,7 @@ def cliente_novo(request):
             "email": email_form.errors,
             "telefone": telefone_form.errors
         }
-        return JsonResponse({"success": False, "errors": form_errors}, status=400)
+        return JsonResponse({"success": False, "messages": form_errors}, status=400)
 
     forms = {
         'cliente_form' : ClienteForm(prefix="cliente"),

@@ -36,7 +36,7 @@ def novo_endereco(request, cliente_id):
                 return JsonResponse({
                     "success": False,
                     "state": "nothing",
-                    "errors": {
+                    "messages": {
                         "endereco": {"__all__": ["Endereco já está cadastrado e ativo."]}
                     }
                 }, status=400)
@@ -65,13 +65,13 @@ def novo_endereco(request, cliente_id):
 
             return JsonResponse({
                 "success": True,
-                "message": {
+                "messages": {
                     "endereco": {"success": ["Endereco Criado com Sucesso!"]}
                 }
             }, status=201)
 
         form_errors = {"endereco": endereco_form.errors}
-        return JsonResponse({"success": False, "errors": form_errors}, status=400)
+        return JsonResponse({"success": False, "messages": form_errors}, status=400)
 
     form = EnderecoForm(prefix="endereco")
     context = {

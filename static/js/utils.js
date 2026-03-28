@@ -102,7 +102,7 @@ const SystemModal = {
             })
             .catch(error => {
                 // Caso erro de validação retornado via throw
-                const groupedErrors = error.errors;
+                const groupedErrors = error.messages;
                 let allErrors = flattenGroupedMessages(groupedErrors);
                 renderFormMessage(form, allErrors);
              });
@@ -115,30 +115,37 @@ const SystemModal = {
     },
 
     showMessage(groupedMessages){
-    const allMessages = flattenGroupedMessages(groupedMessages);
-    let html = `
-        <div class="modal-overlay" id="sys-modal-overlay"></div>
-        <div class="modal" id="sys-modal">
-            <div class="modal-body">`;
+        const MESSAGE_TYPE_MAP = {
+            error: 'error',      // ou 'warning' se quiser suavizar
+            warning: 'warning',
+            success: 'success',
+            info: 'info'
+        };
 
-    for (const type in allMessages) {
-        const cssType = type === '__all__' ? 'error' : type;
-        allMessages[type].forEach(msg => {
-            html += `
-                <div class="cliente-form ${cssType}-message" style="display:block">
-                    <div class="alert">${msg}</div>
-                </div>`;
-        });
-    }
+        const allMessages = flattenGroupedMessages(groupedMessages);
+        let html = `
+            <div class="modal-overlay" id="sys-modal-overlay"></div>
+            <div class="modal" id="sys-modal">
+                <div class="modal-body">`;
 
-    html += `
-            </div>
-            <div class="modal-footer" id="sys-modal-footer">
-                <button class="btn-small btn-delete" onclick="SystemModal.close()">Fechar</button>
-            </div>
-        </div>`;
+        for (const type in allMessages) {
+            const cssType = MESSAGE_TYPE_MAP[type] || 'info';
+            allMessages[type].forEach(msg => {
+                html += `
+                    <div class="cliente-form ${cssType}-message" style="display:block">
+                        <div class="alert">${msg}</div>
+                    </div>`;
+            });
+        }
 
-        document.body.insertAdjacentHTML('beforeend', html);
+        html += `
+                </div>
+                <div class="modal-footer" id="sys-modal-footer">
+                    <button class="btn-small btn-delete" onclick="SystemModal.close()">Fechar</button>
+                </div>
+            </div>`;
+
+            document.body.insertAdjacentHTML('beforeend', html);
     }
 };
 
@@ -184,7 +191,10 @@ function flattenGroupedMessages(groupedErrors) {
              * o último sobrescreve (caso queira evitar isso,
              * podemos concatenar arrays).
              */
-            allErrors[field] = formErrors[field];
+            if(!allErrors[field]) {
+                allErrors[field] = [];
+            }
+            allErrors[field] = allErrors[field].concat(formErrors[field]);
         }
     }
     return allErrors;
