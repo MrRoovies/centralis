@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
-from django.db.models import Prefetch
+from django.db.models import Prefetch, F
 
 from apps.campanhas.models import Campanha, CampanhaCliente
 from apps.campanhas.services.campanha_services import CampanhaService
@@ -104,9 +104,9 @@ def proximo_cliente(request, id_campanha):
             return JsonResponse({"fim_da_fila": False, "messages": resultado["messages"]}, status=400)
 
         situacao_curso = situacoes.filter(tipo="CURSO").first()
-
         proximo.agente_responsavel = usuario
         proximo.agenda = resultado["agenda"]
+        proximo.tentativas = F('tentativas') + 1
         proximo.situacao = situacao_curso
         proximo.save()
     else:
@@ -178,6 +178,7 @@ def adiantar_agenda(request, id_campanha):
     situacao_curso = situacoes.filter(tipo="CURSO").first()
 
     campanha_cliente.situacao = situacao_curso
+    campanha_cliente.tentativas = F('tentativas') + 1
     campanha_cliente.save()
 
     # Carregar cliente com prefetch para o template

@@ -64,8 +64,9 @@ class CampanhaService:
                 situacao__tipo="AGENDA",
             ).first()
         )
-        if agendado.agenda.data_hora_retorno < timezone.now():
-            return agendado
+        if agendado:
+            if agendado.agenda.data_hora_retorno < timezone.now():
+                return agendado
 
         # 2 Verifica se existe cliente em Fila
         proximo = (

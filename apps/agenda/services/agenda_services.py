@@ -211,6 +211,8 @@ class AgendamentoService:
 
                 cliente_campanha = get_object_or_404(CampanhaCliente, agenda=agenda, agente_responsavel=usuario)
                 cliente_campanha.situacao = sit
+                if sit.tipo in ["INSUCESSO", "SUCESSO", "SEMCONTATO", "OUTRO"]:
+                    cliente_campanha.ultima_tentativa = timezone.now()
                 cliente_campanha.save()
 
             return {
