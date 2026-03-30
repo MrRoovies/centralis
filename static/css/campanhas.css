@@ -447,6 +447,137 @@
     }
 }
 
+/* ========== ATENDIMENTO RECEPTIVO ========== */
+.receptivo-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    border-top: 4px solid #3B82C4;
+}
+
+.receptivo-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.receptivo-tab {
+    padding: 6px 18px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.receptivo-tab:hover {
+    border-color: #3B82C4;
+    color: #3B82C4;
+}
+
+.receptivo-tab.active {
+    background: #3B82C4;
+    border-color: #3B82C4;
+    color: white;
+}
+
+.receptivo-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.receptivo-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.receptivo-input:focus {
+    outline: none;
+    border-color: #3B82C4;
+}
+
+.btn-receptivo-buscar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #3B82C4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-receptivo-buscar:hover {
+    background: #033860;
+}
+
+#receptivoResultado {
+    margin-top: 16px;
+}
+
+.receptivo-resultado-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.receptivo-resultado-item:hover {
+    border-color: #3B82C4;
+}
+
+.receptivo-resultado-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.receptivo-resultado-nome {
+    font-weight: 600;
+    color: #333;
+}
+
+.receptivo-resultado-doc {
+    font-size: 12px;
+    color: #888;
+}
+
+.receptivo-vazio {
+    text-align: center;
+    padding: 24px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .receptivo-input-group {
+        flex-direction: column;
+    }
+
+    .receptivo-tabs {
+        flex-wrap: wrap;
+    }
+}
+
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {

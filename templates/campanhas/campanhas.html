@@ -55,6 +55,42 @@
         </div>
         {% endif %}
 
+        <!-- Bloco Atendimento Receptivo -->
+        <div class="painel-header" style="margin-top: 40px">
+            <h2 class="page-title">Atendimento Receptivo</h2>
+            <span class="painel-subtitulo">Pesquise o cliente para iniciar o atendimento</span>
+        </div>
+
+        <div class="receptivo-card">
+            <div class="receptivo-search">
+                <div class="receptivo-tabs">
+                    <button class="receptivo-tab active" data-field="documento">CPF</button>
+                    <button class="receptivo-tab" data-field="nome">Nome</button>
+                    <button class="receptivo-tab" data-field="telefone">Telefone</button>
+                    <button class="receptivo-tab" data-field="email">E-mail</button>
+                </div>
+
+                <div class="receptivo-input-group">
+                    <input
+                        type="text"
+                        id="receptivoInput"
+                        class="receptivo-input"
+                        placeholder="Digite o CPF do cliente..."
+                        autocomplete="off"
+                    >
+                    <button class="btn-receptivo-buscar" id="btnBuscarReceptivo">
+                        Buscar
+                        <span>→</span>
+                    </button>
+                </div>
+
+                <div id="receptivoResultado"></div>
+            </div>
+        </div>
+
     </div>
 </main>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/receptivo.js' %}" defer></script>
 {% endblock %}
