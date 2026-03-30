@@ -70,7 +70,7 @@ class AgendamentoService:
                         return {
                             "success": False,
                             "messages": {
-                                "situacao": { "warning": ["Cliente agendado com outro agente."] }
+                                "agenda": { "warning": ["Cliente agendado com outro agente."] }
                             }
                         }
 
