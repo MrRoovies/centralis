@@ -76,7 +76,7 @@ function pararFila() {
     limparClienteArea();
 }
 
-// ─── Adiantar Agendamento da fila ───────────────────────────
+// ─── Adiantar Agenddamento da fila ───────────────────────────
 function atenderAgendamentoCampanha(id_campanha){
     mostrarLoading();
 
@@ -100,8 +100,8 @@ function atenderAgendamentoCampanha(id_campanha){
         initVendaForm();
     })
     .catch(err => {
-        console.error('Erro ao buscar cliente:', err);
-        mostrarErro(err.message || 'Erro ao buscar próximo cliente.');
+        //console.error('Erro ao buscar cliente:', err);
+        mostrarErro(err.messages || 'Erro ao buscar próximo cliente.');
     });
 }
 
@@ -130,11 +130,11 @@ function buscarProximoCliente(id_campanha) {
         }
         injetarCliente(data.html, data.restantes);
         initVendaForm();
-        SystemModal.showMessage(data.messages || 'Message.');
+        SystemModal.showMessage(data.messages);
     })
     .catch(err => {
-        console.error('Erro ao buscar cliente:', err);
-        SystemModal.showMessage(err.error || 'Erro ao buscar próximo cliente.');
+        //console.error('Erro ao buscar cliente:', err);
+        SystemModal.showMessage(err.error || 'Erro em busca.');
     });
 }
 

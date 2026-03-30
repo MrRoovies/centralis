@@ -44,7 +44,7 @@ document.addEventListener('click', function(e){
             renderFormMessage(delete_form, allMessages);
         })
         .catch( error => {
-            cconst groupedMessages = error.messages;
+            const groupedMessages = error.messages;
             const allMessages = flattenGroupedMessages(groupedMessages);
 
             // Renderiza mensagens no formulário

@@ -97,7 +97,7 @@ def edita_cliente(request, cliente_id):
 
             return JsonResponse({
                 "success": True,
-                "message": {
+                "messages": {
                     "cliente": {"success": ["Cliente alterado com Sucesso!"]}
                 }
             }, status=200)
@@ -105,7 +105,7 @@ def edita_cliente(request, cliente_id):
         form_errors = {
             "cliente": cliente_form.errors,
         }
-        return JsonResponse({"success": False, "errors": form_errors}, status=400)
+        return JsonResponse({"success": False, "messages": form_errors}, status=400)
 
 
     form = ClienteForm(prefix="cliente", instance=cliente, empresa=request.empresa)

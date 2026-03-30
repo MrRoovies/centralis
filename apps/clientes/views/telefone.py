@@ -51,7 +51,7 @@ def novo_telefone(request, cliente_id):
                 return JsonResponse({
                     "success": False,
                     "state": "reactivate",
-                    "email_id": existente.id,
+                    "telefone_id": existente.id,
                     "messages": {
                         "telefone": {"warning": ["Este telefone já existe, mas está inativo. Deseja reativar?"]}
                     }

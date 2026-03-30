@@ -144,8 +144,8 @@ def proximo_cliente(request, id_campanha):
 
     return JsonResponse({
         "fim_da_fila": False,
-        "html":        html,
-        "restantes":   restantes,
+        "html": html,
+        "restantes": restantes,
         "messages": resultado["messages"]
     })
 

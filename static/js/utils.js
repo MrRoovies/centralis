@@ -191,9 +191,11 @@ function flattenGroupedMessages(groupedErrors) {
              * o último sobrescreve (caso queira evitar isso,
              * podemos concatenar arrays).
              */
+
             if(!allErrors[field]) {
                 allErrors[field] = [];
             }
+
             allErrors[field] = allErrors[field].concat(formErrors[field]);
         }
     }
