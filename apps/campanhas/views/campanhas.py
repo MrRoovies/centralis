@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, F
+from itertools import groupby
 
 from apps.campanhas.models import Campanha, CampanhaCliente
 from apps.campanhas.services.campanha_services import CampanhaService
@@ -27,9 +28,17 @@ def painel_campanhas(request):
             campanha__distribuicao_ativa=True,
             campanha__empresa=request.empresa,
             campanha__carteira=usuario.agente.carteira,
-        )
+        ).order_by('campanha__modo_atendimento')
     )
-    context = {"campanhas_agente": campanhas}
+
+    campanhas_por_tipo = {
+        tipo: list(items)
+        for tipo, items in groupby(
+            campanhas,
+            key=lambda x: x.campanha.modo_atendimento
+        )
+    }
+    context = {"campanhas_por_tipo": campanhas_por_tipo}
     return render(request, "campanhas/campanhas.html", context)
 
 
