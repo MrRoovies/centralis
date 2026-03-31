@@ -37,8 +37,6 @@ function buscarReceptivo() {
 
     if (!valor) return;
 
-    resultado.innerHTML = '<p class="receptivo-vazio">Buscando...</p>';
-
     fetch('/clientes/search_cliente', {
         method: 'POST',
         headers: {
@@ -56,33 +54,61 @@ function buscarReceptivo() {
         renderResultado(data.data);
     })
     .catch(err => {
-        resultado.innerHTML = `<p class="receptivo-vazio">${err.message || 'Nenhum cliente encontrado.'}</p>`;
+        // Junta erros de múltiplos forms em um único objeto
+        const groupedMessages = err.messages;
+        // Renderiza mensagens no template
+        SystemModal.showMessage(groupedMessages);
     });
 }
 
 function renderResultado(clientes) {
     const resultado = document.getElementById('receptivoResultado');
 
-    // se vier um id único (busca por CPF retorna id direto)
-    if (typeof clientes === 'number') {
-        window.location.href = `/clientes/atendimento/${clientes}`;
-        return;
-    }
-
-    if (!clientes || clientes.length === 0) {
-        resultado.innerHTML = '<p class="receptivo-vazio">Nenhum cliente encontrado.</p>';
-        return;
-    }
-
+    // lista de clientes encontrados
     resultado.innerHTML = clientes.map(c => `
         <div class="receptivo-resultado-item">
             <div class="receptivo-resultado-info">
                 <span class="receptivo-resultado-nome">${c.nome}</span>
                 <span class="receptivo-resultado-doc">${c.documento}</span>
             </div>
-            <a href="/clientes/atendimento/${c.id}" class="btn-entrar" style="width:auto; padding: 6px 16px">
-                Atender <span>→</span>
-            </a>
+            <button class="btn-receptivo-selecionar" onclick="renderCanais(${c.id}, '${c.nome}')">
+                Selecionar <span>→</span>
+            </button>
         </div>
     `).join('');
+
+}
+
+const CANAIS = [
+    { id: 'WHATSAPP', label: 'WhatsApp', icon: '💬' },
+    { id: 'CHAT',     label: 'Chat',     icon: '🖥️' },
+    { id: 'EMAIL',    label: 'E-mail',   icon: '✉️' },
+    { id: 'TELEFONE', label: 'Telefone', icon: '📞' },
+];
+
+function renderCanais(clienteId, clienteNome) {
+    const resultado = document.getElementById('receptivoResultado');
+    const nomeLabel = clienteNome
+        ? `<span class="canais-cliente-nome">${clienteNome}</span>`
+        : '';
+
+    resultado.innerHTML = `
+        <div class="canais-box">
+            <div class="canais-header">
+                <span class="canais-titulo">Como o cliente está entrando em contato?</span>
+                ${nomeLabel}
+            </div>
+            <div class="canais-grid">
+                ${CANAIS.map(canal => `
+                    <button class="canal-btn" onclick="iniciarAtendimentoReceptivo(${clienteId}, '${canal.id}')">
+                        <span class="canal-icon">${canal.icon}</span>
+                        <span class="canal-label">${canal.label}</span>
+                    </button>
+                `).join('')}
+            </div>
+            <button class="btn-canais-voltar" onclick="document.getElementById('receptivoResultado').innerHTML = ''">
+                ← Voltar
+            </button>
+        </div>
+    `;
 }

@@ -456,6 +456,7 @@
     border-top: 4px solid #3B82C4;
 }
 
+/* ── Tabs ── */
 .receptivo-tabs {
     display: flex;
     gap: 8px;
@@ -485,6 +486,7 @@
     color: white;
 }
 
+/* ── Input de busca ── */
 .receptivo-input-group {
     display: flex;
     gap: 10px;
@@ -498,6 +500,7 @@
     font-size: 14px;
     font-family: inherit;
     transition: border-color 0.2s;
+    background: white;
 }
 
 .receptivo-input:focus {
@@ -525,10 +528,19 @@
     background: #033860;
 }
 
+/* ── Área de resultado ── */
 #receptivoResultado {
     margin-top: 16px;
 }
 
+.receptivo-vazio {
+    text-align: center;
+    padding: 24px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+/* ── Lista de clientes encontrados ── */
 .receptivo-resultado-item {
     display: flex;
     justify-content: space-between;
@@ -561,21 +573,106 @@
     color: #888;
 }
 
-.receptivo-vazio {
-    text-align: center;
-    padding: 24px;
-    color: #aaa;
-    font-size: 14px;
+.btn-receptivo-selecionar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #3B82C4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
 }
 
-@media (max-width: 768px) {
-    .receptivo-input-group {
-        flex-direction: column;
-    }
+.btn-receptivo-selecionar:hover {
+    background: #033860;
+}
 
-    .receptivo-tabs {
-        flex-wrap: wrap;
-    }
+/* ── Box de canais ── */
+.canais-box {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 8px;
+}
+
+.canais-cliente-nome {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.canais-cliente-nome strong {
+    color: #333;
+}
+
+.canais-titulo {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 16px;
+}
+
+.canais-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.canal-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.canal-btn:hover {
+    border-color: #3B82C4;
+    background: #f0f6ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 196, 0.15);
+}
+
+.canal-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.canal-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+}
+
+.canal-btn:hover .canal-label {
+    color: #3B82C4;
+}
+
+.btn-canais-voltar {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.btn-canais-voltar:hover {
+    color: #333;
 }
 
 
@@ -583,5 +680,16 @@
 @media (max-width: 768px) {
     .campanhas-grid {
         grid-template-columns: 1fr;
+    }
+    .receptivo-input-group {
+        flex-direction: column;
+    }
+
+    .receptivo-tabs {
+        flex-wrap: wrap;
+    }
+
+    .canais-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

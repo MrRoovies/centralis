@@ -16,12 +16,27 @@ def search_cliente(request):
     if request.body:
         data = json.loads(request.body)
         documento = data.get("documento")
+        nome = data.get('nome')
+        telefone = data.get('telefone')
+        email = data.get('email')
 
-        cliente = Cliente.objects.for_request(request).filter(documento=documento).first()
+        if documento:
+            cliente = Cliente.objects.for_request(request).filter(documento=documento).first()
+
         if not cliente:
-            return JsonResponse({'status': 'error', 'message': "Cliente não existe"}, status=404)
+            return JsonResponse(
+                {
+                    "success": False,
+                    "messages": {
+                        "cliente": {"error": ["Cliente não encontrado"]}
+                    }
+                }, status=404)
 
-        return JsonResponse({'status': 'success', 'data': cliente.id }, status=200)
+        data_cli = {
+            'nome': cliente.nome,
+            'documento': cliente.documento
+        }
+        return JsonResponse({"success": True, 'data': [data_cli] }, status=200)
 
 
 @login_required
