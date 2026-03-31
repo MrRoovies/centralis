@@ -14,7 +14,7 @@
 /* Grid de cards */
 .campanhas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    /*grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));*/
     gap: 20px;
 }
 
@@ -31,7 +31,7 @@
     border-top: 4px solid var(--cor);
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;*/
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -42,10 +42,11 @@
 
 /* Header do card */
 .campanha-card__header {
-    display: flex;
-    justify-content: space-between;
+    /*display: flex;*/
+    /*justify-content: space-between;*/
+    /*padding: 14px 18px 0;*/
     align-items: center;
-    padding: 14px 18px 0;
+    padding: 16px 18px 0;
 }
 
 .campanha-card__badge {
@@ -103,7 +104,7 @@
 
 /* Footer do card */
 .campanha-card__footer {
-    padding: 14px 18px;
+    padding: 16px 18px;
     border-top: 1px solid #f0f0f0;
 }
 
