@@ -1,83 +1,25 @@
-//---------------- Atendimento Receptivo ---------------------------
-// receptivo.js
-let campoBusca = 'documento';
+// ---------------- Atendimento Receptivo ---------------------------
 
-// Troca de tab
-document.querySelectorAll('.receptivo-tab').forEach(tab => {
-    tab.addEventListener('click', function () {
-        document.querySelectorAll('.receptivo-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
+// Elementos centralizados
+const el = {
+    input: document.getElementById('receptivoInput'),
+    resultado: document.getElementById('receptivoResultado'),
+    btnBuscar: document.getElementById('btnBuscarReceptivo'),
+    tabs: document.querySelectorAll('.receptivo-tab')
+};
 
-        campoBusca = this.dataset.field;
+// Estado
+const state = {
+    campoBusca: 'documento'
+};
 
-        const placeholders = {
-            documento: 'Digite o CPF do cliente...',
-            nome:      'Digite o nome do cliente...',
-            telefone:  'Digite o telefone do cliente...',
-            email:     'Digite o e-mail do cliente...',
-        };
-
-        document.getElementById('receptivoInput').value = '';
-        document.getElementById('receptivoInput').placeholder = placeholders[campoBusca];
-        document.getElementById('receptivoResultado').innerHTML = '';
-    });
-});
-
-// Busca ao clicar
-document.getElementById('btnBuscarReceptivo').addEventListener('click', buscarReceptivo);
-
-// Busca ao pressionar Enter
-document.getElementById('receptivoInput').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') buscarReceptivo();
-});
-
-function buscarReceptivo() {
-    const valor = document.getElementById('receptivoInput').value.trim();
-    const resultado = document.getElementById('receptivoResultado');
-
-    if (!valor) return;
-
-    fetch('/clientes/search_cliente', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ [campoBusca]: valor })
-    })
-    .then(async res => {
-        const data = await res.json();
-        if (!res.ok) throw data;
-        return data;
-    })
-    .then(data => {
-        renderResultado(data.data);
-    })
-    .catch(err => {
-        // Junta erros de múltiplos forms em um único objeto
-        const groupedMessages = err.messages;
-        // Renderiza mensagens no template
-        SystemModal.showMessage(groupedMessages);
-    });
-}
-
-function renderResultado(clientes) {
-    const resultado = document.getElementById('receptivoResultado');
-
-    // lista de clientes encontrados
-    resultado.innerHTML = clientes.map(c => `
-        <div class="receptivo-resultado-item">
-            <div class="receptivo-resultado-info">
-                <span class="receptivo-resultado-nome">${c.nome}</span>
-                <span class="receptivo-resultado-doc">${c.documento}</span>
-            </div>
-            <button class="btn-receptivo-selecionar" onclick="renderCanais(${c.id}, '${c.nome}')">
-                Selecionar <span>→</span>
-            </button>
-        </div>
-    `).join('');
-
-}
+// Configs
+const PLACEHOLDERS = {
+    documento: 'Digite o CPF do cliente...',
+    nome: 'Digite o nome do cliente...',
+    telefone: 'Digite o telefone do cliente...',
+    email: 'Digite o e-mail do cliente...'
+};
 
 const CANAIS = [
     { id: 'WHATSAPP', label: 'WhatsApp', icon: '💬' },
@@ -86,29 +28,143 @@ const CANAIS = [
     { id: 'TELEFONE', label: 'Telefone', icon: '📞' },
 ];
 
+// ---------------- Eventos ---------------------------
+
+// Tabs
+el.tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        el.tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        state.campoBusca = tab.dataset.field;
+
+        updateInput();
+        clearResultado();
+    });
+});
+
+// Botão buscar
+el.btnBuscar.addEventListener('click', buscarReceptivo);
+
+// Enter no input
+el.input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') buscarReceptivo();
+});
+
+// Event delegation (substitui TODOS os onclick)
+el.resultado.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+
+    if (action === 'selecionar') {
+        renderCanais(btn.dataset.id, btn.dataset.nome);
+    }
+
+    if (action === 'canal') {
+        iniciarAtendimentoReceptivo(btn.dataset.id, btn.dataset.canal);
+    }
+
+    if (action === 'voltar') {
+        clearResultado();
+    }
+});
+
+// ---------------- Funções ---------------------------
+
+function updateInput() {
+    el.input.value = '';
+    el.input.placeholder = PLACEHOLDERS[state.campoBusca];
+}
+
+function clearResultado() {
+    el.resultado.innerHTML = '';
+}
+
+// Fetch (async/await)
+async function buscarReceptivo() {
+    const valor = el.input.value.trim();
+    if (!valor) return;
+
+    try {
+        const res = await fetch('/clientes/search_cliente', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ [state.campoBusca]: valor })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw data;
+
+        renderResultado(data.data);
+
+    } catch (err) {
+        SystemModal.showMessage(err.messages);
+    }
+}
+
+// Render clientes
+function renderResultado(clientes) {
+    el.resultado.innerHTML = clientes.map(c => `
+        <div class="receptivo-resultado-item">
+            <div class="receptivo-resultado-info">
+                <span class="receptivo-resultado-nome">${escapeHTML(c.nome)}</span>
+                <span class="receptivo-resultado-doc">${escapeHTML(c.documento)}</span>
+            </div>
+            <button
+                class="btn-receptivo-selecionar"
+                data-action="selecionar"
+                data-id="${c.id}"
+                data-nome="${escapeHTML(c.nome)}">
+                Selecionar →
+            </button>
+        </div>
+    `).join('');
+}
+
+// Render canais
 function renderCanais(clienteId, clienteNome) {
-    const resultado = document.getElementById('receptivoResultado');
     const nomeLabel = clienteNome
-        ? `<span class="canais-cliente-nome">${clienteNome}</span>`
+        ? `<span class="canais-cliente-nome">${escapeHTML(clienteNome)}</span>`
         : '';
 
-    resultado.innerHTML = `
+    el.resultado.innerHTML = `
         <div class="canais-box">
             <div class="canais-header">
                 <span class="canais-titulo">Como o cliente está entrando em contato?</span>
                 ${nomeLabel}
             </div>
+
             <div class="canais-grid">
                 ${CANAIS.map(canal => `
-                    <button class="canal-btn" onclick="iniciarAtendimentoReceptivo(${clienteId}, '${canal.id}')">
+                    <button
+                        class="canal-btn"
+                        data-action="canal"
+                        data-id="${clienteId}"
+                        data-canal="${canal.id}">
                         <span class="canal-icon">${canal.icon}</span>
                         <span class="canal-label">${canal.label}</span>
                     </button>
                 `).join('')}
             </div>
-            <button class="btn-canais-voltar" onclick="document.getElementById('receptivoResultado').innerHTML = ''">
+
+            <button class="btn-canais-voltar" data-action="voltar">
                 ← Voltar
             </button>
         </div>
     `;
+}
+
+// Segurança básica contra XSS
+function escapeHTML(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }

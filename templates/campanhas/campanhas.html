@@ -7,60 +7,59 @@
 {% block content %}
 <main class="main-content">
     <div class="container">
-
-        <div class="painel-header">
-            <h2 class="page-title">Minhas Campanhas</h2>
-            <span class="painel-subtitulo">Campanhas ativas disponíveis para atendimento</span>
-        </div>
-
-        {% if campanhas_agente %}
-        <div class="campanhas-grid">
-            {% for ca in campanhas_agente %}
-            <div class="campanha-card">
-
-                <div class="campanha-card__header">
-                    <div class="campanha-card__badge campanha-card__badge--{{ ca.campanha.modo_atendimento|lower }}">
-                        {{ ca.campanha.get_modo_atendimento_display }}
-                    </div>
-                    <div class="campanha-card__metodo">
-                        {% if ca.campanha.metodo_distribuicao == "ORDENADO" %}
-                            <span class="metodo-icon">↕</span> Ordenado
-                        {% else %}
-                            <span class="metodo-icon">⟳</span> Aleatório
-                        {% endif %}
-                    </div>
+        {% if campanhas_por_tipo %}
+            {% for tipo, campanhas in campanhas_por_tipo.items %}
+                <div class="painel-header" style="margin-top: 30px">
+                    <h2 class="page-title">{{ tipo|title }}</h2>
                 </div>
 
-                <div class="campanha-card__body">
-                    <h3 class="campanha-card__nome">{{ ca.campanha.nome }}</h3>
-                    <p class="campanha-card__carteira">{{ ca.campanha.carteira.nome }}</p>
+                <div class="campanhas-grid horizontal">
+                    {% for ca in campanhas %}
+                        <div class="campanha-card {{ ca.campanha.modo_atendimento }}">
+
+                            <div class="campanha-card__header">
+                                <div class="campanha-card__badge campanha-card__badge--{{ ca.campanha.modo_atendimento|lower }}">
+                                    {{ ca.campanha.get_modo_atendimento_display }}
+                                </div>
+
+                                <div class="campanha-card__metodo">
+                                    {% if ca.campanha.metodo_distribuicao == "ORDENADO" %}
+                                        <span class="metodo-icon">↕</span> Ordenado
+                                    {% else %}
+                                        <span class="metodo-icon">⟳</span> Aleatório
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="campanha-card__body">
+                                <h3>{{ ca.campanha.nome }}</h3>
+                                <p>{{ ca.campanha.carteira.nome }}</p>
+                            </div>
+
+                            <div class="campanha-card__footer">
+                                <a href="{% url 'campanhas:atender' ca.campanha.id %}" class="btn-entrar">
+                                    Iniciar Atendimento →
+                                </a>
+                            </div>
+
+                        </div>
+                    {% endfor %}
                 </div>
 
-                <div class="campanha-card__footer">
-                    <a href="{% url 'campanhas:atender' ca.campanha.id %}" class="btn-entrar">
-                        Iniciar Atendimento
-                        <span class="btn-entrar__arrow">→</span>
-                    </a>
-                </div>
-
-            </div>
             {% endfor %}
-        </div>
 
         {% else %}
-        <div class="empty-campanhas">
-            <div class="empty-campanhas__icon">📋</div>
-            <h3>Nenhuma campanha ativa</h3>
-            <p>Você não está associado a nenhuma campanha ativa no momento.</p>
-        </div>
+            <div class="empty-campanhas">
+                <div class="empty-campanhas__icon">📋</div>
+                <h3>Nenhuma campanha ativa</h3>
+                <p>Você não está associado a nenhuma campanha ativa no momento.</p>
+            </div>
         {% endif %}
 
         <!-- Bloco Atendimento Receptivo -->
         <div class="painel-header" style="margin-top: 40px">
-            <h2 class="page-title">Atendimento Receptivo</h2>
-            <span class="painel-subtitulo">Pesquise o cliente para iniciar o atendimento</span>
+            <h2 class="page-title">Pesquisa Receptivo</h2>
         </div>
-
         <div class="receptivo-card">
             <div class="receptivo-search">
                 <div class="receptivo-tabs">
@@ -78,7 +77,7 @@
                         placeholder="Digite o CPF do cliente..."
                         autocomplete="off"
                     >
-                    <button class="btn-receptivo-buscar" id="btnBuscarReceptivo">
+                    <button class="btn-receptivo-buscar" id="btnBuscarReceptivo" onclick="buscarReceptivo()">
                         Buscar
                         <span>→</span>
                     </button>

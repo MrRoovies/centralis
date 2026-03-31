@@ -14,20 +14,25 @@
 /* Grid de cards */
 .campanhas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
 }
 
 /* Card */
+.MANUAL { --cor: #127B89; }
+.RECEPTIVO { --cor: #3b82c4; }
+.DISCADOR { --cor: #ffb339; }
+.EXLEAD { --cor: #f96e6e; }
+
 .campanha-card {
     background: white;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid var(--cor);
     overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: transform 0.2s, box-shadow 0.2s;
-    border-top: 4px solid #127B89;
 }
 
 .campanha-card:hover {
@@ -107,8 +112,8 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    background: var(--cor);
     padding: 10px 16px;
-    background: #127B89;
     color: white;
     border: none;
     border-radius: 6px;
@@ -120,9 +125,7 @@
     box-sizing: border-box;
 }
 
-.btn-entrar:hover {
-    background: #0f6a76;
-}
+.btn-entrar:hover { filter: brightness(0.9); }
 
 .btn-entrar__arrow {
     font-size: 16px;
