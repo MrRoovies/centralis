@@ -6,8 +6,9 @@ from ..core.choices import UF_CHOICES
 # Create your models here.
 class ClienteQuerySet(models.QuerySet):
     def for_empresa(self, empresa):
-        return self.filter(empresa=empresa)
-
+        if not empresa:
+            raise ValueError("Empresa é obrigatória")
+        return self.filter(empresa=empresa.id)
 
 class ClienteManager(models.Manager):
     def get_queryset(self):
@@ -15,6 +16,9 @@ class ClienteManager(models.Manager):
 
     def for_request(self, request):
         return self.get_queryset().for_empresa(request.empresa)
+
+    def for_empresa(self, empresa):
+        return self.get_queryset().for_empresa(empresa)
 
 
 class Cliente(models.Model):
@@ -173,6 +177,10 @@ class Telefone(models.Model):
 
         if len(self.telefone) not in [10, 11]:
             raise ValidationError("Telefone deve ter 10 ou 11 dígitos.")
+
+        # celular brasileiro normalmente começa com 9
+        if len(self.telefone) == 11 and self.telefone[2] != '9':
+            raise ValidationError("Celular inválido.")
 
     @classmethod
     def get_existente(cls, cliente_id, telefone, tipo):

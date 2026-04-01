@@ -3,9 +3,10 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
-from ..models import Cliente, Email, Telefone, Endereco
 from django.db import transaction
+from ..models import Cliente, Email, Telefone, Endereco
 from ..forms import ClienteForm, EmailForm, TelefoneForm
+from ..services.cliente_service import ClienteService
 import json
 
 
@@ -15,13 +16,16 @@ import json
 def search_cliente(request):
     if request.body:
         data = json.loads(request.body)
-        documento = data.get("documento")
-        nome = data.get('nome')
-        telefone = data.get('telefone')
-        email = data.get('email')
+        modo = data.get('modo', 'search')
+        if modo == 'lookup' and 'documento' in data:
+            cliente = ClienteService.buscar_por_documento(request.empresa, data['documento'])
 
-        if documento:
-            cliente = Cliente.objects.for_request(request).filter(documento=documento).first()
+            if not cliente:
+                return JsonResponse({'message': 'Cliente não encontrado'}, status=404)
+
+            return JsonResponse({'id': cliente['id']})
+
+        cliente = ClienteService.buscar_cliente(data, request.empresa)
 
         if not cliente:
             return JsonResponse(
@@ -32,11 +36,7 @@ def search_cliente(request):
                     }
                 }, status=404)
 
-        data_cli = {
-            'nome': cliente.nome,
-            'documento': cliente.documento
-        }
-        return JsonResponse({"success": True, 'data': [data_cli] }, status=200)
+        return JsonResponse({"success": True, 'data': list(cliente) }, status=200)
 
 
 @login_required

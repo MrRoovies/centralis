@@ -94,7 +94,7 @@ async function buscarReceptivo() {
                 'X-CSRFToken': getCookie('csrftoken'),
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ [state.campoBusca]: valor })
+            body: JSON.stringify({ [state.campoBusca]: valor, 'modo': 'search' })
         });
 
         const data = await res.json();
@@ -167,4 +167,9 @@ function escapeHTML(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function iniciarAtendimentoReceptivo(dataset_id, dataset_canal){
+    console.log(dataset_id);
+    console.log(dataset_canal);
 }

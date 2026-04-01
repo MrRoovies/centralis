@@ -7,7 +7,7 @@ document.querySelector(".search-icon").addEventListener('click', function(){
     fetch("/clientes/search_cliente", {
         method: 'POST',
         headers: {'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json'},
-        body: JSON.stringify({'documento': documento })
+        body: JSON.stringify({'documento': documento, 'modo': 'lookup' })
     })
     .then( async response => {
         const data = await response.json();
@@ -15,8 +15,7 @@ document.querySelector(".search-icon").addEventListener('click', function(){
         return data;
     })
     .then( data => {
-        console.log(data);
-        window.location.href = `/clientes/cliente/${data.data}`;
+        window.location.href = `/clientes/cliente/${data.id}`;
     })
     .catch( error => {
         alert( error.message );
