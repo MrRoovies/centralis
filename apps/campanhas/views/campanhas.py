@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, F
 from itertools import groupby
@@ -220,3 +220,15 @@ def adiantar_agenda(request, id_campanha):
         "restantes": restantes,
         "messages": resultado["messages"]
     })
+
+
+"""
+Função será responsável por: 
+incluir o cliente na campanha receptiva
+Abrir a tela da campanha com o atendimento em aberto
+"""
+@login_required
+@require_POST
+def atender_receptivo(requests, id_cliente):
+    """Buscar cliente"""
+    pass
