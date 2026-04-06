@@ -23,7 +23,7 @@ def search_cliente(request):
             if not cliente:
                 return JsonResponse({'message': 'Cliente não encontrado'}, status=404)
 
-            return JsonResponse({'id': cliente['id']})
+            return JsonResponse({'id': cliente['id'], 'agenda': cliente['agendas']})
 
         cliente = ClienteService.buscar_cliente(data, request.empresa)
 

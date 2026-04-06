@@ -112,8 +112,14 @@ function renderResultado(clientes) {
     el.resultado.innerHTML = clientes.map(c => `
         <div class="receptivo-resultado-item">
             <div class="receptivo-resultado-info">
-                <span class="receptivo-resultado-nome">${escapeHTML(c.nome)}</span>
-                <span class="receptivo-resultado-doc">${escapeHTML(c.documento)}</span>
+                <span class="receptivo-resultado-nome">${escapeHTML(c.nome)} - ${escapeHTML(c.documento)}</span>
+                <span class="receptivo-resultado-nome">Agendamentos ativos:</span>
+                ${c.agentes.map(a => `
+                    <span class="receptivo-resultado-doc">
+                        ${escapeHTML(a.nome)}
+                        ${a.carteira ? `(${escapeHTML(a.carteira)})` : ''}
+                    </span>
+                `).join('')}
             </div>
             <button
                 class="btn-receptivo-selecionar"

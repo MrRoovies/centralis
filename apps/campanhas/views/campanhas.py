@@ -6,12 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, F
 from itertools import groupby
 
-from apps.campanhas.models import Campanha, CampanhaCliente
+from apps.campanhas.models import Campanha, CampanhaCliente, CampanhaAgente
 from apps.campanhas.services.campanha_services import CampanhaService
+from apps.clientes.services.cliente_service import ClienteService
+
 from apps.clientes.models import Cliente, Email, Telefone, Endereco
 from apps.agenda.models import Situacao
 from apps.agenda.services.agenda_services import AgendamentoService
 from apps.vendas.forms import VendaForm
+import json
 
 
 @login_required
@@ -19,7 +22,7 @@ from apps.vendas.forms import VendaForm
 def painel_campanhas(request):
     """Lista as Campanhas que o agente está cadastrado"""
 
-    from apps.campanhas.models import CampanhaAgente
+
     usuario = request.user
     campanhas = (CampanhaAgente.objects
         .select_related('campanha', 'campanha__carteira')
@@ -229,6 +232,49 @@ Abrir a tela da campanha com o atendimento em aberto
 """
 @login_required
 @require_POST
-def atender_receptivo(requests, id_cliente):
-    """Buscar cliente"""
-    pass
+def atender_receptivo(request):
+    if not request.body:
+        return JsonResponse({
+            "success": False,
+            "messages": {
+                "campanha": { "error": ["Nenhum dado recebido"]}
+                }
+            }
+        )
+    data = json.loads(request.body)
+    usuario = request.user
+
+    """Buscar campanha receptiva"""
+    campanha_receptiva = (CampanhaAgente.objects
+        .select_related('campanha', 'campanha__carteira')
+        .filter(
+           agente=usuario.agente,
+           campanha__distribuicao_ativa=True,
+           campanha__empresa=request.empresa,
+           campanha__carteira=usuario.agente.carteira,
+           campanha__modo_atendimento="RECEPTIVO"
+        ).first())
+
+    if not campanha_receptiva:
+        return JsonResponse({
+            "success": False,
+            "messages": {
+                "campanha": { "warning": ["Campanha Receptiva não localizada"]}
+                }
+            }
+        )
+
+    cliente = ClienteService.buscar_por_id(request.empresa, id_cliente)
+    # Criar ou retomar agenda
+    resultado = AgendamentoService().criar_ou_atualizar(
+        cliente.id,
+        usuario,
+        modo=campanha_receptiva.modo_atendimento,
+        canal=campanha_receptiva.nome
+    )
+
+    if not resultado["success"]:
+        if resultado["messages"]['agenda']['warning'] == ["Cliente agendado com outro agente"]:
+            situacao_outro = situacoes.filter(tipo="OUTRO").first()
+            cliente.situacao = situacao_outro
+        return JsonResponse({"fim_da_fila": False, "messages": resultado["messages"]}, status=400)
