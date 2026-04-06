@@ -244,7 +244,7 @@ def atender_receptivo(request):
     data = json.loads(request.body)
     usuario = request.user
 
-    """Buscar campanha receptiva"""
+    """Buscar campanha receptiva para inserção do cliente"""
     campanha_receptiva = (CampanhaAgente.objects
         .select_related('campanha', 'campanha__carteira')
         .filter(
@@ -261,20 +261,60 @@ def atender_receptivo(request):
             "messages": {
                 "campanha": { "warning": ["Campanha Receptiva não localizada"]}
                 }
-            }
-        )
+            }, status=404)
 
-    cliente = ClienteService.buscar_por_id(request.empresa, id_cliente)
+    cliente = ClienteService.buscar_por_id(request.empresa, data['cliente_id'])
+
     # Criar ou retomar agenda
     resultado = AgendamentoService().criar_ou_atualizar(
         cliente.id,
         usuario,
-        modo=campanha_receptiva.modo_atendimento,
-        canal=campanha_receptiva.nome
+        modo=campanha_receptiva.campanha.modo_atendimento,
+        canal=data['canal']
     )
 
     if not resultado["success"]:
-        if resultado["messages"]['agenda']['warning'] == ["Cliente agendado com outro agente"]:
-            situacao_outro = situacoes.filter(tipo="OUTRO").first()
-            cliente.situacao = situacao_outro
         return JsonResponse({"fim_da_fila": False, "messages": resultado["messages"]}, status=400)
+
+    situacoes = Situacao.objects.filter(carteira=usuario.agente.carteira)
+    situacao_curso = situacoes.filter(tipo="CURSO").first()
+
+    try:
+        obj, created = CampanhaCliente.objects.get_or_create(
+            campanha=campanha_receptiva.campanha, cliente=cliente,
+            defaults={
+                'agente_responsavel': usuario,
+                'situacao': situacao_curso,
+                'agenda': resultado["agenda"],
+                'prioridade': 1,
+                'tentativas': 1
+            }
+        )
+        if not created:
+            obj.agente_responsavel = usuario
+            obj.situacao = situacao_curso
+            obj.agenda = resultado["agenda"]
+            obj.prioridade = 1
+            obj.tentativas = F("tentativas") + 1
+            obj.save()
+            obj.refresh_from_db()
+
+            mensagem = "Cliente localizado em receptivo"
+        else:
+            mensagem = "Cliente vinculado à campanha com sucesso"
+
+        return JsonResponse({
+            "success": True,
+            "redirect_url": f"/campanhas/atender/{campanha_receptiva.campanha.id}",
+            "messages": {
+                "campanha": {"success": [mensagem]}
+            }
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({
+            "success": True,
+            "messages": {
+                "campanha": {"success": [str(e)]}
+            }
+        }, status=400)

@@ -176,6 +176,21 @@ function escapeHTML(str) {
 }
 
 function iniciarAtendimentoReceptivo(dataset_id, dataset_canal){
-    console.log(dataset_id);
-    console.log(dataset_canal);
+    fetch('/campanhas/atender_receptivo/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 'cliente_id': dataset_id, 'canal': dataset_canal })
+        })
+        .then( async response => {
+            const r = await response.json();
+            if(!response.ok){ throw r;}
+            return r;
+        })
+        .then( r => {
+            SystemModal.showMessage(r.messages);
+            window.location.href = r.redirect_url;
+        })
+        .catch(error => {
+            SystemModal.showMessage(error.messages);
+        })
 }

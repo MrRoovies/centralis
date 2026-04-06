@@ -43,7 +43,7 @@ class ClienteService:
                     {
                         'id': agenda.usuario.id,
                         'nome': getattr(agenda.usuario, 'nome', agenda.usuario.username),
-                        'carteira': agenda.carteira.nomez
+                        'carteira': agenda.carteira.nome
                     }
                     for agenda in agendas
                 ]
@@ -81,5 +81,4 @@ class ClienteService:
     def buscar_por_id(empresa, id):
         return Cliente.objects.for_empresa(empresa) \
             .filter(id=id) \
-            .values('id') \
             .first()
