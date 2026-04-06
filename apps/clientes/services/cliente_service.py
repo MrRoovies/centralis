@@ -48,7 +48,6 @@ class ClienteService:
                     for agenda in agendas
                 ]
             })
-        print(resultado)
         return resultado
 
     @staticmethod
