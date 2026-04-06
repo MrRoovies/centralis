@@ -241,7 +241,27 @@ def atender_receptivo(request):
                 }
             }
         )
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({
+            "success": False,
+            "messages": {
+                "campanha": {"error": ["JSON inválido"]}
+            }
+        }, status=400)
+
+    cliente_id = data.get('cliente_id')
+    canal = data.get('canal')
+
+    if not cliente_id or not canal:
+        return JsonResponse({
+            "success": False,
+            "messages": {
+                "campanha": {"error": ["Dados obrigatórios não enviados"]}
+            }
+        }, status=400)
+
     usuario = request.user
 
     """Buscar campanha receptiva para inserção do cliente"""
@@ -276,8 +296,10 @@ def atender_receptivo(request):
     if not resultado["success"]:
         return JsonResponse({"fim_da_fila": False, "messages": resultado["messages"]}, status=400)
 
-    situacoes = Situacao.objects.filter(carteira=usuario.agente.carteira)
-    situacao_curso = situacoes.filter(tipo="CURSO").first()
+    situacao_curso = Situacao.objects.filter(
+        carteira=usuario.agente.carteira,
+        tipo="CURSO"
+    ).first()
 
     try:
         obj, created = CampanhaCliente.objects.get_or_create(
@@ -291,12 +313,17 @@ def atender_receptivo(request):
             }
         )
         if not created:
-            obj.agente_responsavel = usuario
-            obj.situacao = situacao_curso
-            obj.agenda = resultado["agenda"]
-            obj.prioridade = 1
+            update_data = {
+                "agente_responsavel": usuario,
+                "situacao": situacao_curso,
+                "agenda": resultado["agenda"],
+                "prioridade": 1,
+            }
+            for field, value in update_data.items():
+                setattr(obj, field, value)
+
             obj.tentativas = F("tentativas") + 1
-            obj.save()
+            obj.save(update_fields=[*update_data.keys(), "tentativas"])
             obj.refresh_from_db()
 
             mensagem = "Cliente localizado em receptivo"
@@ -313,8 +340,8 @@ def atender_receptivo(request):
 
     except Exception as e:
         return JsonResponse({
-            "success": True,
+            "success": False,
             "messages": {
                 "campanha": {"success": [str(e)]}
             }
-        }, status=400)
+        }, status=500)
