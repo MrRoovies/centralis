@@ -1,0 +1,245 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/vendas_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- Cabeçalho -->
+    <div class="vl-header">
+        <div class="vl-header__left">
+            <h2 class="vl-title">Vendas Realizadas</h2>
+            <span class="vl-subtitle">{{ totais.total_vendas }} registro{{ totais.total_vendas|pluralize }}</span>
+        </div>
+        <div class="vl-header__right">
+            <div class="vl-totais">
+                <div class="vl-totais__item">
+                    <span class="vl-totais__label">Volume Total</span>
+                    <span class="vl-totais__valor">R$ {{ totais.total_valor|floatformat:2 }}</span>
+                </div>
+                <div class="vl-totais__sep"></div>
+                <div class="vl-totais__item">
+                    <span class="vl-totais__label">Comissão</span>
+                    <span class="vl-totais__valor vl-totais__valor--comissao">R$ {{ totais.total_comissao|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel de Filtros -->
+    <div class="vl-filtros" id="vl-filtros">
+        <form method="get" id="filtroForm">
+            {% csrf_token %}
+            <div class="vl-filtros__grid">
+
+                <!-- Data Início -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">De</label>
+                    <input
+                        type="date"
+                        name="data_inicio"
+                        class="vl-filtros__input"
+                        value="{{ filtros.data_inicio }}"
+                    >
+                </div>
+
+                <!-- Data Fim -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">Até</label>
+                    <input
+                        type="date"
+                        name="data_fim"
+                        class="vl-filtros__input"
+                        value="{{ filtros.data_fim }}"
+                    >
+                </div>
+
+                <!-- Esteira -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">Esteira</label>
+                    <select name="esteira" class="vl-filtros__input">
+                        <option value="">Todas</option>
+                        {% for e in esteiras %}
+                        <option value="{{ e.id }}" {% if filtros.esteira == e.id|stringformat:"s" %}selected{% endif %}>
+                            {{ e.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Produto -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">Produto</label>
+                    <select name="produto" class="vl-filtros__input">
+                        <option value="">Todos</option>
+                        {% for p in produtos %}
+                        <option value="{{ p.id }}" {% if filtros.produto == p.id|stringformat:"s" %}selected{% endif %}>
+                            {{ p.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Parceiro -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">Parceiro</label>
+                    <select name="parceiro" class="vl-filtros__input">
+                        <option value="">Todos</option>
+                        {% for pa in parceiros %}
+                        <option value="{{ pa.id }}" {% if filtros.parceiro == pa.id|stringformat:"s" %}selected{% endif %}>
+                            {{ pa.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Carteira -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">Carteira</label>
+                    <select name="carteira" class="vl-filtros__input">
+                        <option value="">Todas</option>
+                        {% for c in carteiras %}
+                        <option value="{{ c.id }}" {% if filtros.carteira == c.id|stringformat:"s" %}selected{% endif %}>
+                            {{ c.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Usuário -->
+                <div class="vl-filtros__group">
+                    <label class="vl-filtros__label">Agente</label>
+                    <select name="usuario" class="vl-filtros__input">
+                        <option value="">Todos</option>
+                        {% for u in usuarios %}
+                        <option value="{{ u.id }}" {% if filtros.usuario == u.id|stringformat:"s" %}selected{% endif %}>
+                            {{ u.get_full_name|default:u.username }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="vl-filtros__actions">
+                <button type="submit" class="vl-btn vl-btn--primary">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Filtrar
+                </button>
+                <a href="?clear=1" class="vl-btn vl-btn--ghost">Limpar</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabela -->
+    <div class="vl-table-wrap">
+        {% if vendas %}
+        <table class="vl-table">
+            <thead>
+                <tr>
+                    <th>Contrato</th>
+                    <th>Cliente</th>
+                    <th>Produto</th>
+                    <th>Parceiro</th>
+                    <th class="vl-table__num">Prazo</th>
+                    <th class="vl-table__num">Parcela</th>
+                    <th class="vl-table__num">Valor</th>
+                    <th class="vl-table__num">Taxa</th>
+                    <th class="vl-table__num">Comissão</th>
+                    <th>Esteira</th>
+                    <th>Carteira</th>
+                    <th>Agente</th>
+                    <th>Data</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venda in vendas %}
+                <tr class="vl-table__row" data-id="{{ venda.id }}">
+                    <td>
+                        <span class="vl-contrato">{{ venda.contrato }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'clientes:cliente' venda.cliente.id %}" class="vl-cliente-link">
+                            {{ venda.cliente.nome }}
+                        </a>
+                        <small class="vl-doc">{{ venda.cliente.documento }}</small>
+                    </td>
+                    <td>{{ venda.produto_nome }}</td>
+                    <td>{{ venda.parceiro_nome }}</td>
+                    <td class="vl-table__num">{{ venda.prazo }}x</td>
+                    <td class="vl-table__num">R$ {{ venda.parcela|floatformat:2 }}</td>
+                    <td class="vl-table__num vl-valor">R$ {{ venda.valor|floatformat:2 }}</td>
+                    <td class="vl-table__num">{{ venda.taxa }}%</td>
+                    <td class="vl-table__num vl-comissao">R$ {{ venda.comissao_calculada|floatformat:2 }}</td>
+                    <td>
+                        <span class="vl-badge vl-badge--{{ venda.esteira.tipo|lower }}">
+                            {{ venda.esteira.nome }}
+                        </span>
+                    </td>
+                    <td>{{ venda.carteira_nome }}</td>
+                    <td>{{ venda.usuario.get_full_name|default:venda.usuario.username }}</td>
+                    <td class="vl-data">{{ venda.created_at|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <button
+                            class="vl-btn-detail"
+                            onclick="abrirDetalhe({{ venda.id }})"
+                            title="Ver histórico">
+                            ↗
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Paginação -->
+        {% if vendas.has_other_pages %}
+        <div class="vl-paginacao">
+            {% if vendas.has_previous %}
+                <a href="?{{ query_string }}&page={{ vendas.previous_page_number }}" class="vl-page-btn">←</a>
+            {% endif %}
+
+            {% for num in vendas.paginator.page_range %}
+                {% if vendas.number == num %}
+                    <span class="vl-page-btn vl-page-btn--active">{{ num }}</span>
+                {% elif num > vendas.number|add:"-3" and num < vendas.number|add:"3" %}
+                    <a href="?{{ query_string }}&page={{ num }}" class="vl-page-btn">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if vendas.has_next %}
+                <a href="?{{ query_string }}&page={{ vendas.next_page_number }}" class="vl-page-btn">→</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="vl-empty">
+            <div class="vl-empty__icon">📋</div>
+            <p class="vl-empty__title">Nenhuma venda encontrada</p>
+            <p class="vl-empty__sub">Tente ajustar os filtros acima.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal Detalhe (histórico da venda) -->
+    <div class="vl-modal-overlay" id="vl-modal-overlay" onclick="fecharDetalhe()"></div>
+    <div class="vl-modal" id="vl-modal">
+        <div class="vl-modal__header">
+            <h3 class="vl-modal__title">Histórico da Venda</h3>
+            <button class="vl-modal__close" onclick="fecharDetalhe()">✕</button>
+        </div>
+        <div class="vl-modal__body" id="vl-modal-body">
+            <div class="vl-spinner-wrap"><div class="vl-spinner"></div></div>
+        </div>
+    </div>
+
+</div>
+</main>
+{% endblock %}

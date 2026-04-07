@@ -1,0 +1,567 @@
+/* ============================================================
+   VENDAS_LIST.CSS — Listagem de vendas com filtros
+   Depende de: base.css, styles.css
+   ============================================================ */
+
+/* ========== HEADER ========== */
+.vl-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.vl-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a2e3b;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.vl-subtitle {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ========== TOTAIS ========== */
+.vl-totais {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: white;
+    border-radius: 10px;
+    padding: 14px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border-top: 3px solid #127B89;
+}
+
+.vl-totais__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.vl-totais__label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.vl-totais__valor {
+    font-size: 18px;
+    font-weight: 700;
+    color: #127B89;
+}
+
+.vl-totais__valor--comissao {
+    color: #3B82C4;
+}
+
+.vl-totais__sep {
+    width: 1px;
+    height: 36px;
+    background: #eee;
+}
+
+/* ========== FILTROS ========== */
+.vl-filtros {
+    background: white;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid #127B89;
+}
+
+.vl-filtros__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.vl-filtros__group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.vl-filtros__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.vl-filtros__input {
+    padding: 9px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #fafafa;
+    color: #333;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+}
+
+.vl-filtros__input:focus {
+    outline: none;
+    border-color: #127B89;
+    background: white;
+}
+
+.vl-filtros__actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* ========== BOTÕES ========== */
+.vl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.vl-btn--primary {
+    background: #127B89;
+    color: white;
+}
+
+.vl-btn--primary:hover {
+    background: #0f6a76;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(18,123,137,0.3);
+}
+
+.vl-btn--ghost {
+    background: transparent;
+    color: #888;
+    border: 1px solid #ddd;
+}
+
+.vl-btn--ghost:hover {
+    background: #f5f5f5;
+    color: #555;
+}
+
+/* ========== TABELA ========== */
+.vl-table-wrap {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+.vl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.vl-table thead th {
+    background: #f0f7f8;
+    color: #555;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 2px solid #e0eff1;
+    white-space: nowrap;
+}
+
+.vl-table__num {
+    text-align: right !important;
+}
+
+.vl-table__row {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background 0.15s;
+}
+
+.vl-table__row:hover {
+    background: #f7fcfd;
+}
+
+.vl-table td {
+    padding: 11px 14px;
+    color: #333;
+    vertical-align: middle;
+}
+
+/* células especiais */
+.vl-contrato {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #127B89;
+    background: #e8f6f8;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+.vl-cliente-link {
+    color: #1a2e3b;
+    text-decoration: none;
+    font-weight: 600;
+    display: block;
+}
+
+.vl-cliente-link:hover {
+    color: #127B89;
+    text-decoration: underline;
+}
+
+.vl-doc {
+    font-size: 11px;
+    color: #aaa;
+    display: block;
+    margin-top: 1px;
+}
+
+.vl-valor {
+    font-weight: 700;
+    color: #1a7a42;
+}
+
+.vl-comissao {
+    color: #3B82C4;
+    font-weight: 600;
+}
+
+.vl-data {
+    color: #999;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* ========== BADGES ESTEIRA ========== */
+.vl-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.vl-badge--inicial {
+    background: #e8f4fd;
+    color: #2980b9;
+}
+
+.vl-badge--em_andamento {
+    background: #fef9e7;
+    color: #d4ac0d;
+}
+
+.vl-badge--sucesso {
+    background: #eafaf1;
+    color: #1e8449;
+}
+
+.vl-badge--insucesso {
+    background: #fdf2f2;
+    color: #c0392b;
+}
+
+/* ========== BOTÃO DETALHE ========== */
+.vl-btn-detail {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.vl-btn-detail:hover {
+    background: #127B89;
+    border-color: #127B89;
+    color: white;
+}
+
+/* ========== PAGINAÇÃO ========== */
+.vl-paginacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 16px;
+    border-top: 1px solid #f2f2f2;
+}
+
+.vl-page-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #555;
+    border: 1px solid #e0e0e0;
+    background: white;
+    transition: all 0.2s;
+}
+
+.vl-page-btn:hover {
+    background: #f0f7f8;
+    border-color: #127B89;
+    color: #127B89;
+}
+
+.vl-page-btn--active {
+    background: #127B89;
+    border-color: #127B89;
+    color: white;
+}
+
+/* ========== EMPTY STATE ========== */
+.vl-empty {
+    text-align: center;
+    padding: 60px 40px;
+    color: #bbb;
+}
+
+.vl-empty__icon {
+    font-size: 40px;
+    margin-bottom: 14px;
+}
+
+.vl-empty__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #999;
+    margin-bottom: 6px;
+}
+
+.vl-empty__sub {
+    font-size: 13px;
+    color: #bbb;
+}
+
+/* ========== MODAL DETALHE ========== */
+.vl-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1100;
+}
+
+.vl-modal-overlay.active {
+    display: block;
+}
+
+.vl-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -48%);
+    width: 520px;
+    max-width: 95vw;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    z-index: 1101;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.25s ease;
+}
+
+.vl-modal.active {
+    display: flex;
+    transform: translate(-50%, -50%);
+}
+
+.vl-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #f8fcfd;
+}
+
+.vl-modal__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a2e3b;
+    margin: 0;
+}
+
+.vl-modal__close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #aaa;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.vl-modal__close:hover {
+    background: #fee;
+    color: #c33;
+}
+
+.vl-modal__body {
+    padding: 22px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Spinner */
+.vl-spinner-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.vl-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #127B89;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Detalhe da venda (modal) */
+.vl-detalhe-info {
+    background: #f8fcfd;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+}
+
+.vl-detalhe-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #edf3f4;
+}
+
+.vl-detalhe-row:last-child {
+    border-bottom: none;
+}
+
+.vl-detalhe-row span {
+    color: #888;
+}
+
+.vl-detalhe-row strong {
+    color: #333;
+}
+
+.vl-hist-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.vl-hist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vl-hist-item {
+    border-left: 3px solid #127B89;
+    padding: 10px 14px;
+    background: #f8f9fa;
+    border-radius: 0 6px 6px 0;
+}
+
+.vl-hist-item__esteira {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2e3b;
+    margin-bottom: 4px;
+}
+
+.vl-hist-item__meta {
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: #999;
+}
+
+.vl-hist-item__coment {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+    .vl-header {
+        flex-direction: column;
+    }
+
+    .vl-totais {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .vl-table-wrap {
+        overflow-x: auto;
+    }
+
+    .vl-table {
+        min-width: 900px;
+    }
+}
+
+@media (max-width: 600px) {
+    .vl-filtros__grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
