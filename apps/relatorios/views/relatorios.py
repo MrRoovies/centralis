@@ -1,10 +1,10 @@
 import json
-
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from ..services.relatorio_vendas import FiltroRelatorioVendas, RelatorioVendasService
 from django.utils import timezone
 from datetime import datetime, time
+from django.core.paginator import Paginator
 
 @login_required
 def relatorio_vendas(request):
@@ -20,6 +20,13 @@ def relatorio_vendas(request):
     filtro = FiltroRelatorioVendas(data)
 
     vendas = RelatorioVendasService().gerar(request.empresa, filtro)
-    context = RelatorioVendasService().get_context_relatorio(request.empresa, vendas, filtro)
+    totais = RelatorioVendasService().calcular_totais(vendas)
+
+
+    paginator = Paginator(vendas, 50)
+    page = request.GET.get("page")
+    vendas = paginator.get_page(page)
+
+    context = RelatorioVendasService().get_context_relatorio(request.empresa, vendas, totais, filtro)
 
     return render(request, 'relatorios/vendas.html', context)

@@ -3,7 +3,7 @@ from apps.usuarios.models import Carteira
 from django.contrib.auth.models import User
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.utils.dateparse import parse_date
-
+from datetime import datetime, time
 
 class FiltroRelatorioVendas:
     def __init__(self, data):
@@ -27,7 +27,7 @@ class RelatorioVendasService:
             'usuario'
         ).order_by('-created_at')
 
-    def get_context_relatorio(self, empresa, vendas, filtro):
+    def get_context_relatorio(self, empresa, vendas, totais, filtro):
         return {
             "vendas": vendas,
             "carteiras": Carteira.objects.filter(empresa=empresa, ativo=True).order_by('nome'),
@@ -44,8 +44,35 @@ class RelatorioVendasService:
                 'parceiro': filtro.parceiro_id or '',
                 'usuario': filtro.usuario_id or ''
             },
-            'totais': totais(vendas)
+            'totais': totais
         }
+
+    def calcular_totais(self, vendas):
+        agregados = vendas.aggregate(
+            total_valor=Sum('valor'),
+            total_comissao=Sum(
+                ExpressionWrapper(
+                    F('valor') * F('comissao') / 100,
+                    output_field=DecimalField(max_digits=14, decimal_places=2)
+                )
+            )
+        )
+        total_valor = agregados['total_valor'] or 0
+        total_comissao = agregados['total_comissao'] or 0
+        total_vendas = vendas.count()
+
+        # Anota comissão calculada para exibir na linha
+        qs = vendas.annotate(
+            comissao_calculada=ExpressionWrapper(
+                F('valor') * F('comissao') / 100,
+                output_field=DecimalField(max_digits=14, decimal_places=2)
+            )
+        )
+        return {
+            'total_valor': total_valor,
+            'total_comissao': total_comissao,
+            'total_vendas': total_vendas,
+            'qs': qs}
 
 def listar_vendas(empresa, filtro):
     qs = Venda.objects.filter(
@@ -55,12 +82,14 @@ def listar_vendas(empresa, filtro):
     if filtro.data_inicio:
         dt = parse_date(filtro.data_inicio)
         if dt:
-            qs = qs.filter(created_at__date__gte=dt)
+            inicio = datetime.combine(dt, time.min)
+            qs = qs.filter(created_at__gte=inicio)
 
     if filtro.data_fim:
         dt = parse_date(filtro.data_fim)
         if dt:
-            qs = qs.filter(created_at__date__lte=dt)
+            fim = datetime.combine(dt, time.max)
+            qs = qs.filter(created_at__lte=fim)
 
     if filtro.carteira_id:
         qs = qs.filter(esteira__carteira_id=filtro.carteira_id)
@@ -78,31 +107,3 @@ def listar_vendas(empresa, filtro):
         qs = qs.filter(usuario_id=filtro.usuario_id)
 
     return qs
-
-
-def totais(vendas):
-    agregados = vendas.aggregate(
-        total_valor=Sum('valor'),
-        total_comissao=Sum(
-            ExpressionWrapper(
-                F('valor') * F('comissao') / 100,
-                output_field=DecimalField(max_digits=14, decimal_places=2)
-            )
-        )
-    )
-    total_valor = agregados['total_valor'] or 0
-    total_comissao = agregados['total_comissao'] or 0
-    total_vendas = vendas.count()
-
-    # Anota comissão calculada para exibir na linha
-    qs = vendas.annotate(
-        comissao_calculada=ExpressionWrapper(
-            F('valor') * F('comissao') / 100,
-            output_field=DecimalField(max_digits=14, decimal_places=2)
-        )
-    )
-    return {
-        'total_valor': total_valor,
-        'total_comissao': total_comissao,
-        'total_vendas': total_vendas,
-        'qs': qs }
