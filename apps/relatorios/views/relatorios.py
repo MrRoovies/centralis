@@ -3,8 +3,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from ..services.relatorio_vendas import FiltroRelatorioVendas, RelatorioVendasService
 from django.utils import timezone
-from datetime import datetime, time
 from django.core.paginator import Paginator
+
 
 @login_required
 def relatorio_vendas(request):
