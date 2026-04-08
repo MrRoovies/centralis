@@ -132,7 +132,14 @@ class Perfil(models.Model):
         ('AGENTE', 'Agente'),
         ('VISITANTE', 'Visitante')
     ]
+    ESCOPO_CHOICES = [
+        ('GLOBAL', 'Global'),
+        ('CARTEIRA', 'Carteira'),
+        ('EQUIPE', 'Equipe'),
+        ('PROPRIO', 'Próprio'),
+    ]
     codigo = models.CharField('Perfil', max_length=50, choices=PERFIL_CHOICES)
+    escopo = models.CharField(max_length=20, choices=ESCOPO_CHOICES)
     grupo = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     data_create = models.DateTimeField('Data Criacao', auto_now=True)
     ativo = models.BooleanField(default=True)
