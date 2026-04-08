@@ -5,4 +5,5 @@ app_name = 'relatorios'
 
 urlpatterns = [
     path('relatorio_vendas/', relatorios.relatorio_vendas, name='relatorio_vendas'),
+    path('detalhe/<int:id>/', relatorios.detalhe_venda, name='detalhe_venda'),
 ]

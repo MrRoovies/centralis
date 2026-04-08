@@ -80,3 +80,58 @@ function initVendaSubmit() {
         })
     })
 }
+
+
+/* Relatorio de Vendas */
+function abrirDetalhe(id) {
+    document.getElementById('vl-modal-overlay').classList.add('active');
+    document.getElementById('vl-modal').classList.add('active');
+    document.getElementById('vl-modal-body').innerHTML =
+        '<div class="vl-spinner-wrap"><div class="vl-spinner"></div></div>';
+
+    fetch(`/relatorios/detalhe/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            const hist = data.historico.map(h => `
+                <div class="vl-hist-item">
+                    <div class="vl-hist-item__esteira">${h.esteira}</div>
+                    <div class="vl-hist-item__meta">
+                        <span>${h.usuario}</span>
+                        <span>${h.data}</span>
+                    </div>
+                    ${h.comentario ? `<p class="vl-hist-item__coment">${h.comentario}</p>` : ''}
+                </div>
+            `).join('');
+
+            document.getElementById('vl-modal-body').innerHTML = `
+                <div class="vl-detalhe-info">
+                    <div class="vl-detalhe-row">
+                        <span>Contrato</span><strong>${data.contrato}</strong>
+                    </div>
+                    <div class="vl-detalhe-row">
+                        <span>Cliente</span><strong>${data.cliente}</strong>
+                    </div>
+                    <div class="vl-detalhe-row">
+                        <span>Produto</span><strong>${data.produto}</strong>
+                    </div>
+                    <div class="vl-detalhe-row">
+                        <span>Parceiro</span><strong>${data.parceiro}</strong>
+                    </div>
+                    <div class="vl-detalhe-row">
+                        <span>Valor</span><strong>R$ ${data.valor}</strong>
+                    </div>
+                </div>
+                <h4 class="vl-hist-title">Movimentações</h4>
+                <div class="vl-hist-list">${hist || '<p style="color:#aaa;font-size:13px">Sem histórico.</p>'}</div>
+            `;
+        })
+        .catch(() => {
+            document.getElementById('vl-modal-body').innerHTML =
+                '<p style="color:#c33; text-align:center; padding:20px">Erro ao carregar detalhes.</p>';
+        });
+}
+
+function fecharDetalhe() {
+    document.getElementById('vl-modal-overlay').classList.remove('active');
+    document.getElementById('vl-modal').classList.remove('active');
+}
