@@ -42,6 +42,7 @@ def detalhe_venda(request, id):
 def relatorio_vendas(request):
     """ Criar visualização por níveis de perfil """
     data = request.GET.copy()
+    usuario = request.user
 
     if not data:
         hoje = timezone.now().date()
@@ -52,7 +53,7 @@ def relatorio_vendas(request):
 
     filtro = FiltroRelatorioVendas(data)
 
-    vendas = RelatorioVendasService().gerar(request.empresa, filtro)
+    vendas = RelatorioVendasService().gerar(request.empresa, filtro, usuario)
     totais = RelatorioVendasService().calcular_totais(vendas)
 
 

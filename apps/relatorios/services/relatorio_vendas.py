@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.utils.dateparse import parse_date
 from datetime import datetime, time
+from django.utils import timezone
+from apps.core.regras_acesso import RegrasAcesso
 
 class FiltroRelatorioVendas:
     def __init__(self, data):
@@ -16,8 +18,8 @@ class FiltroRelatorioVendas:
         self.usuario_id = data.get("usuario")
 
 class RelatorioVendasService:
-    def gerar(self, empresa, filtro):
-        qs = listar_vendas(empresa, filtro)
+    def gerar(self, empresa, filtro, usuario):
+        qs = listar_vendas(empresa, filtro, usuario)
 
         return qs.select_related(
             'cliente',
@@ -74,21 +76,23 @@ class RelatorioVendasService:
             'total_vendas': total_vendas,
             'qs': qs}
 
-def listar_vendas(empresa, filtro):
+def listar_vendas(empresa, filtro, usuario):
     qs = Venda.objects.filter(
         empresa=empresa
     )
 
+    qs = RegrasAcesso(usuario).model_filter(qs)
+
     if filtro.data_inicio:
         dt = parse_date(filtro.data_inicio)
         if dt:
-            inicio = datetime.combine(dt, time.min)
+            inicio = timezone.make_aware(datetime.combine(dt, time.min))
             qs = qs.filter(created_at__gte=inicio)
 
     if filtro.data_fim:
         dt = parse_date(filtro.data_fim)
         if dt:
-            fim = datetime.combine(dt, time.max)
+            fim = timezone.make_aware(datetime.combine(dt, time.max))
             qs = qs.filter(created_at__lte=fim)
 
     if filtro.carteira_id:
