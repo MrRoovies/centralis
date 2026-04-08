@@ -1,0 +1,286 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/agendas_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ── Cabeçalho ── -->
+    <div class="al-header">
+        <div class="al-header__left">
+            <h2 class="al-title">Relatório de Agendas</h2>
+            <span class="al-subtitle">{{ totais.total_agendas }} agenda{{ totais.total_agendas|pluralize }}</span>
+        </div>
+        <div class="al-counters">
+            <div class="al-counter al-counter--ativa">
+                <span class="al-counter__num">{{ totais.total_ativas }}</span>
+                <span class="al-counter__label">Ativas</span>
+            </div>
+            <div class="al-counter al-counter--finalizada">
+                <span class="al-counter__num">{{ totais.total_finalizadas }}</span>
+                <span class="al-counter__label">Finalizadas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Filtros ── -->
+    <form method="get" id="filtroForm">
+        <div class="al-filtros">
+            <div class="al-filtros__grid">
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">De</label>
+                    <input type="date" name="data_inicio" class="al-filtros__input"
+                           value="{{ filtros.data_inicio }}">
+                </div>
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">Até</label>
+                    <input type="date" name="data_fim" class="al-filtros__input"
+                           value="{{ filtros.data_fim }}">
+                </div>
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">Carteira</label>
+                    <select name="carteira" class="al-filtros__input">
+                        <option value="">Todas</option>
+                        {% for c in carteiras %}
+                        <option value="{{ c.id }}"
+                            {% if filtros.carteira == c.id|stringformat:"s" %}selected{% endif %}>
+                            {{ c.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">Tipo Situação</label>
+                    <select name="situacao_tipo" class="al-filtros__input">
+                        <option value="">Todas</option>
+                        {% for s in situacoes %}
+                        <option value="{{ s.tipo }}"
+                            {% if filtros.situacao_tipo == s.tipo|stringformat:"s" %}selected{% endif %}>
+                            {{ s.tipo }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">Agente</label>
+                    <select name="usuario" class="al-filtros__input">
+                        <option value="">Todos</option>
+                        {% for u in usuarios %}
+                        <option value="{{ u.id }}"
+                            {% if filtros.usuario == u.id|stringformat:"s" %}selected{% endif %}>
+                            {{ u.get_full_name|default:u.username }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">Modo</label>
+                    <select name="modo" class="al-filtros__input">
+                        <option value="">Todos</option>
+                        {% for m in modos %}
+                        <option value="{{ m }}"
+                            {% if filtros.modo == m %}selected{% endif %}>
+                            {{ m }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="al-filtros__group">
+                    <label class="al-filtros__label">Status</label>
+                    <select name="ativa" class="al-filtros__input">
+                        <option value="">Todas</option>
+                        <option value="1" {% if filtros.ativa == "1" %}selected{% endif %}>Ativas</option>
+                        <option value="0" {% if filtros.ativa == "0" %}selected{% endif %}>Finalizadas</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="al-filtros__actions">
+                <button type="submit" class="al-btn al-btn--primary">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Filtrar
+                </button>
+                <a href="?" class="al-btn al-btn--ghost">Limpar</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- ── Tabela ── -->
+    <div class="al-table-wrap">
+        {% if agendas %}
+        <table class="al-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cliente</th>
+                    <th>Agente</th>
+                    <th>Carteira</th>
+                    <th>Equipe</th>
+                    <th>Situação</th>
+                    <th>Modo / Canal</th>
+                    <th>Telefone</th>
+                    <th>Entrada</th>
+                    <th>Retorno</th>
+                    <th>Status</th>
+                    <th>Acionamentos</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agenda in agendas %}
+                <tr class="al-row {% if agenda.agenda_ativa %}al-row--ativa{% else %}al-row--finalizada{% endif %}">
+
+                    <td class="al-id">#{{ agenda.id }}</td>
+
+                    <td>
+                        <a href="{% url 'clientes:cliente' agenda.cliente.id %}"
+                           class="al-cliente-link">
+                            {{ agenda.cliente.nome }}
+                        </a>
+                        <small class="al-doc">{{ agenda.cliente.documento }}</small>
+                    </td>
+
+                    <td class="al-agente">
+                        {{ agenda.usuario.get_full_name|default:agenda.usuario.username }}
+                        <small>{{ agenda.perfil_nome }}</small>
+                    </td>
+
+                    <td>
+                        {{ agenda.carteira_nome|default:agenda.carteira.nome }}
+                        <small>{{ agenda.equipe_nome|default:agenda.equipe.nome }}</small>
+                    </td>
+
+                    <td>
+                        {% if agenda.situacao %}
+                        <span class="al-badge al-badge--{{ agenda.situacao.tipo|lower }}">
+                            {{ agenda.situacao.nome }}
+                        </span>
+                        {% else %}
+                        <span class="al-badge al-badge--outro">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="al-modo">
+                        <span>{{ agenda.modo }}</span>
+                        <small>{{ agenda.canal }}</small>
+                    </td>
+
+                    <td class="al-fone">{{ agenda.telefone|default:"—" }}</td>
+
+                    <td class="al-data">{{ agenda.data_entrada|date:"d/m/Y H:i" }}</td>
+
+                    <td class="al-data">
+                        {% if agenda.data_hora_retorno %}
+                            {{ agenda.data_hora_retorno|date:"d/m/Y H:i" }}
+                        {% else %}
+                            <span class="al-vazio">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if agenda.agenda_ativa %}
+                            <span class="al-status al-status--ativa">Ativa</span>
+                        {% else %}
+                            <span class="al-status al-status--finalizada">Finalizada</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="al-acion-count">
+                        <span class="al-pill">{{ agenda.total_acionamentos }}</span>
+                    </td>
+
+                    <td>
+                        <button class="al-btn-expand"
+                                onclick="abrirAcionamentos({{ agenda.id }})"
+                                title="Ver acionamentos">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8"
+                                      stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Paginação -->
+        {% if agendas.has_other_pages %}
+        <div class="al-paginacao">
+            {% if agendas.has_previous %}
+                <a href="?{{ query_string }}&page={{ agendas.previous_page_number }}"
+                   class="al-page-btn">←</a>
+            {% endif %}
+
+            {% for num in agendas.paginator.page_range %}
+                {% if agendas.number == num %}
+                    <span class="al-page-btn al-page-btn--active">{{ num }}</span>
+                {% elif num > agendas.number|add:"-3" and num < agendas.number|add:"3" %}
+                    <a href="?{{ query_string }}&page={{ num }}"
+                       class="al-page-btn">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if agendas.has_next %}
+                <a href="?{{ query_string }}&page={{ agendas.next_page_number }}"
+                   class="al-page-btn">→</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="al-empty">
+            <div class="al-empty__icon">📅</div>
+            <p class="al-empty__title">Nenhuma agenda encontrada</p>
+            <p class="al-empty__sub">Ajuste os filtros e tente novamente.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</main>
+
+<!-- ── Drawer de Acionamentos ── -->
+<div class="al-drawer-overlay" id="al-drawer-overlay" onclick="fecharAcionamentos()"></div>
+
+<aside class="al-drawer" id="al-drawer">
+    <div class="al-drawer__header">
+        <div class="al-drawer__title-wrap">
+            <h3 class="al-drawer__title">Acionamentos</h3>
+            <span class="al-drawer__subtitle" id="al-drawer-subtitle"></span>
+        </div>
+        <button class="al-drawer__close" onclick="fecharAcionamentos()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Info resumida da agenda -->
+    <div class="al-drawer__agenda-info" id="al-drawer-agenda-info"></div>
+
+    <!-- Timeline de acionamentos -->
+    <div class="al-drawer__body" id="al-drawer-body">
+        <div class="al-spinner-wrap"><div class="al-spinner"></div></div>
+    </div>
+</aside>
+
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/list_agendas.js' %}" defer></script>
+{% endblock %}

@@ -5,8 +5,6 @@ class RegrasAcesso:
     def model_filter(self, qs):
         perfil = self.usuario.agente.perfil.codigo
         escopo = self.usuario.agente.perfil.escopo
-        print(perfil)
-        print(type(perfil))
 
         if perfil == "ADM":
             return qs

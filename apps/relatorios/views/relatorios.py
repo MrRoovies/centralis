@@ -5,6 +5,7 @@ from django.views.decorators.http import require_GET
 from ..services.relatorio_vendas import FiltroRelatorioVendas, RelatorioVendasService
 from django.utils import timezone
 from django.core.paginator import Paginator
+from apps.agenda.models import Agenda, Acionamento
 
 from ...vendas.models import Venda
 
@@ -64,3 +65,77 @@ def relatorio_vendas(request):
     context = RelatorioVendasService().get_context_relatorio(request.empresa, vendas, totais, filtro)
 
     return render(request, 'relatorios/vendas.html', context)
+
+
+@require_GET
+@login_required
+def agendas_list(request):
+    from ..services.relatorio_agendas import FiltroRelatorioAgendas, RelatorioAgendaService
+
+    data = request.GET.copy()
+    usuario = request.user
+
+    if not data:
+        hoje = timezone.now().date()
+        data = {
+            "data_inicio": hoje.isoformat(),
+            "data_fim": hoje.isoformat()
+        }
+
+    filtro = FiltroRelatorioAgendas(data)
+    agenda = RelatorioAgendaService().gerar(request.empresa, filtro, usuario)
+    totais = RelatorioAgendaService().calcular_totais(agenda)
+
+    paginator = Paginator(agenda, 20)
+    page = request.GET.get("page")
+    agendas = paginator.get_page(page)
+
+    context = RelatorioAgendaService().get_context_relatorio(request.empresa, agendas, filtro, totais)
+
+    return render(request, 'relatorios/agendas_list.html', context)
+
+
+@login_required
+@require_GET
+def acionamentos_agenda(request, agenda_id):
+    """Retorna JSON com os dados da agenda e seus acionamentos (drawer)."""
+
+    try:
+        agenda = (
+            Agenda.objects
+            .select_related('cliente', 'usuario', 'situacao', 'carteira')
+            .get(pk=agenda_id, cliente__empresa=request.empresa)
+        )
+    except Agenda.DoesNotExist:
+        return JsonResponse({'error': 'Agenda não encontrada'}, status=404)
+
+    acionamentos = (
+        Acionamento.objects
+        .select_related('situacao')
+        .filter(agenda=agenda)
+        .order_by('-data_acionamento')
+    )
+
+    acionamentos_data = [
+        {
+            'situacao': a.situacao.nome,
+            'tipo': a.situacao.tipo.lower(),
+            'inicio': a.data_acionamento.strftime('%d/%m/%Y %H:%M'),
+            'fim': a.data_finalizado.strftime('%d/%m/%Y %H:%M') if a.data_finalizado else None,
+            'tempo_tela': a.tempo_tela_formatado,
+            'comentario': a.comentario or '',
+        }
+        for a in acionamentos
+    ]
+
+    return JsonResponse({
+        'cliente': agenda.cliente.nome,
+        'agente': agenda.usuario.get_full_name() or agenda.usuario.username,
+        'carteira': agenda.carteira_nome or (agenda.carteira.nome if agenda.carteira else '—'),
+        'canal': agenda.canal,
+        'situacao_atual': agenda.situacao.nome if agenda.situacao else '—',
+        'ativa': agenda.agenda_ativa,
+        'retorno': agenda.data_hora_retorno.strftime('%d/%m/%Y %H:%M')
+        if agenda.data_hora_retorno else None,
+        'acionamentos': acionamentos_data,
+    })
