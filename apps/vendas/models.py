@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.functions import Lower
 from django.core.exceptions import ValidationError
-
+from apps.core.choices import TipoEsteira
 
 class Parceiro(models.Model):
     empresa = models.ForeignKey(
@@ -83,13 +83,6 @@ class Oferta(models.Model):
 
 
 class Esteira(models.Model):
-
-    class TipoEsteira(models.TextChoices):
-        INICIAL = "INICIAL", "Inicial"
-        EM_ANDAMENTO = "EM_ANDAMENTO", "Em andamento"
-        SUCESSO = "SUCESSO", "Sucesso"
-        INSUCESSO = "INSUCESSO", "Insucesso"
-
     empresa = models.ForeignKey(
         "core.Empresa",
         on_delete=models.CASCADE,

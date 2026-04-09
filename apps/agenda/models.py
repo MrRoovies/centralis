@@ -160,17 +160,9 @@ class Acionamento(models.Model):
 # MODEL SITUACAO
 # ========================
 class Situacao(models.Model):
-    TIPO_CHOICES = [
-        ('INICIAL', 'Inicial'),
-        ('CURSO', 'Em Atendimento'),
-        ('AGENDA', 'Agendamento'),
-        ('INSUCESSO', 'Insucesso'),
-        ('SUCESSO', 'Sucesso'),
-        ('SEMCONTATO', 'Sem Contato'),
-        ('OUTRO', 'Outro')
-    ]
+    from apps.core.choices import TipoSituacao
     nome = models.CharField('Situacao', max_length=50, blank=False, null=False)
-    tipo = models.CharField('Tipo', max_length=15, choices=TIPO_CHOICES, blank=False, null=False)
+    tipo = models.CharField('Tipo', max_length=15, choices=TipoSituacao.choices, blank=False, null=False)
     carteira = models.ForeignKey(Carteira, on_delete=models.SET_NULL, null=True, blank=True)
     ativo = models.BooleanField(default=True)
 

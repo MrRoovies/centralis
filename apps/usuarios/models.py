@@ -117,6 +117,7 @@ class Equipe(models.Model):
 # Model Perfil
 # ========================
 from django.contrib.auth.models import Group
+from apps.core.choices import PerfilAgente, EscopoAgente
 
 class Perfil(models.Model):
     """
@@ -124,22 +125,8 @@ class Perfil(models.Model):
 
     Cada Perfil está ligado a um Group do Django para controle de permissões.
     """
-    PERFIL_CHOICES = [
-        ('ADM', 'Administrador'),
-        ('DIRETOR', 'Diretor'),
-        ('GERENTE', 'Gerente'),
-        ('SUPERVISOR', 'Supervisor'),
-        ('AGENTE', 'Agente'),
-        ('VISITANTE', 'Visitante')
-    ]
-    ESCOPO_CHOICES = [
-        ('GLOBAL', 'Global'),
-        ('CARTEIRA', 'Carteira'),
-        ('EQUIPE', 'Equipe'),
-        ('PROPRIO', 'Próprio'),
-    ]
-    codigo = models.CharField('Perfil', max_length=50, choices=PERFIL_CHOICES)
-    escopo = models.CharField(max_length=20, choices=ESCOPO_CHOICES)
+    codigo = models.CharField('Perfil', max_length=50, choices=PerfilAgente.choices)
+    escopo = models.CharField(max_length=20, choices=EscopoAgente.choices)
     grupo = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     data_create = models.DateTimeField('Data Criacao', auto_now=True)
     ativo = models.BooleanField(default=True)

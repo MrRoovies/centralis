@@ -24,7 +24,7 @@ class RelatorioAgendaService:
 
 
     def get_context_relatorio(self, empresa, agendas, filtro, totais):
-
+        from apps.core.choices import ModoAtendimento
         return {
             'agendas': agendas,
             "carteiras": Carteira.objects.filter(empresa=empresa, ativo=True).order_by('nome'),
@@ -33,7 +33,7 @@ class RelatorioAgendaService:
                 ativo=True).values('tipo').order_by('tipo', 'nome').distinct(),
             "modos": [
                 {"value": m[0], "label": m[1]}
-                for m in Campanha.CHOICE_TIPOS
+                for m in ModoAtendimento.choices
             ],
             "usuarios": User.objects.filter(agente__carteira__empresa=empresa).order_by('first_name'),
             'filtros': filtro,

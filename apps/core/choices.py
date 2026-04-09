@@ -1,29 +1,70 @@
-UF_CHOICES = [
-    ("AC", "Acre"),
-    ("AL", "Alagoas"),
-    ("AP", "Amapá"),
-    ("AM", "Amazonas"),
-    ("BA", "Bahia"),
-    ("CE", "Ceará"),
-    ("DF", "Distrito Federal"),
-    ("ES", "Espírito Santo"),
-    ("GO", "Goiás"),
-    ("MA", "Maranhão"),
-    ("MT", "Mato Grosso"),
-    ("MS", "Mato Grosso do Sul"),
-    ("MG", "Minas Gerais"),
-    ("PA", "Pará"),
-    ("PB", "Paraíba"),
-    ("PR", "Paraná"),
-    ("PE", "Pernambuco"),
-    ("PI", "Piauí"),
-    ("RJ", "Rio de Janeiro"),
-    ("RN", "Rio Grande do Norte"),
-    ("RS", "Rio Grande do Sul"),
-    ("RO", "Rondônia"),
-    ("RR", "Roraima"),
-    ("SC", "Santa Catarina"),
-    ("SP", "São Paulo"),
-    ("SE", "Sergipe"),
-    ("TO", "Tocantins"),
-]
+from django.db import models
+
+class Estado(models.TextChoices):
+    AC = "AC", "Acre"
+    AL = "AL", "Alagoas"
+    AP = "AP", "Amapá"
+    AM = "AM", "Amazonas"
+    BA = "BA", "Bahia"
+    CE = "CE", "Ceará"
+    DF = "DF", "Distrito Federal"
+    ES = "ES", "Espírito Santo"
+    GO = "GO", "Goiás"
+    MA = "MA", "Maranhão"
+    MT = "MT", "Mato Grosso"
+    MS = "MS", "Mato Grosso do Sul"
+    MG = "MG", "Minas Gerais"
+    PA = "PA", "Pará"
+    PB = "PB", "Paraíba"
+    PR = "PR", "Paraná"
+    PE = "PE", "Pernambuco"
+    PI = "PI", "Piauí"
+    RJ = "RJ", "Rio de Janeiro"
+    RN = "RN", "Rio Grande do Norte"
+    RS = "RS", "Rio Grande do Sul"
+    RO = "RO", "Rondônia"
+    RR = "RR", "Roraima"
+    SC = "SC", "Santa Catarina"
+    SP = "SP", "São Paulo"
+    SE = "SE", "Sergipe"
+    TO = "TO", "Tocantins"
+
+class ModoAtendimento(models.TextChoices):
+    MANUAL = "MANUAL", "Manual"
+    DISCADOR = "DISCADOR", "Discador"
+    EXLEAD = "EXLEAD", "Lead Externo"
+    RECEPTIVO = "RECEPTIVO", "Receptivo"
+
+
+class OrdemSorteio(models.TextChoices):
+    ORDENADO = "ORDENADO", "Ordenado"
+    ALEATORIO = "ALEATORIO", "Aleatorio"
+
+class TipoSituacao(models.TextChoices):
+    INICIAL = 'INICIAL', 'Inicial'
+    CURSO = 'CURSO', 'Em Atendimento'
+    AGENDA = 'AGENDA', 'Agendamento'
+    INSUCESSO = 'INSUCESSO', 'Insucesso'
+    SUCESSO = 'SUCESSO', 'Sucesso'
+    SEMCONTATO = 'SEMCONTATO', 'Sem Contato'
+    OUTRO = 'OUTRO', 'Outro'
+
+class PerfilAgente(models.TextChoices):
+    ADM = 'ADM', 'Administrador'
+    DIRETOR = 'DIRETOR', 'Diretor'
+    GERENTE = 'GERENTE', 'Gerente'
+    SUPERVISOR = 'SUPERVISOR', 'Supervisor'
+    AGENTE = 'AGENTE', 'Agente'
+    VISITANTE = 'VISITANTE', 'Visitante'
+
+class EscopoAgente(models.TextChoices):
+    GLOBAL = 'GLOBAL', 'Global'
+    CARTEIRA = 'CARTEIRA', 'Carteira'
+    EQUIPE = 'EQUIPE', 'Equipe'
+    PROPRIO = 'PROPRIO', 'Próprio'
+
+class TipoEsteira(models.TextChoices):
+    INICIAL = "INICIAL", "Inicial"
+    EM_ANDAMENTO = "EM_ANDAMENTO", "Em andamento"
+    SUCESSO = "SUCESSO", "Sucesso"
+    INSUCESSO = "INSUCESSO", "Insucesso"
