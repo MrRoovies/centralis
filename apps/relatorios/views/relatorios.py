@@ -70,19 +70,30 @@ def relatorio_vendas(request):
 @require_GET
 @login_required
 def agendas_list(request):
-    from ..services.relatorio_agendas import FiltroRelatorioAgendas, RelatorioAgendaService
-
-    data = request.GET.copy()
+    from ..services.relatorio_agendas import RelatorioAgendaService
+    campos_permitidos = [
+        'data_entrada__gte',
+        'data_entrada__lte',
+        'carteira_id',
+        'situacao__tipo',
+        'usuario_id',
+        'modo',
+        'agenda_ativa'
+    ]
+    filtro = {
+        k: v
+        for k, v in request.GET.dict().items()
+        if k in campos_permitidos and v != ''
+    }
     usuario = request.user
 
-    if not data:
+    if not filtro:
         hoje = timezone.now().date()
-        data = {
-            "data_inicio": hoje.isoformat(),
-            "data_fim": hoje.isoformat()
+        filtro = {
+            "data_entrada__gte": hoje.isoformat(),
+            "data_entrada__lte": hoje.isoformat()
         }
 
-    filtro = FiltroRelatorioAgendas(data)
     agenda = RelatorioAgendaService().gerar(request.empresa, filtro, usuario)
     totais = RelatorioAgendaService().calcular_totais(agenda)
 

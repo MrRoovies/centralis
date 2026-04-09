@@ -33,23 +33,23 @@
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">De</label>
-                    <input type="date" name="data_inicio" class="al-filtros__input"
-                           value="{{ filtros.data_inicio }}">
+                    <input type="date" name="data_entrada__gte" class="al-filtros__input"
+                           value="{{ filtros.data_entrada__gte }}">
                 </div>
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">Até</label>
-                    <input type="date" name="data_fim" class="al-filtros__input"
-                           value="{{ filtros.data_fim }}">
+                    <input type="date" name="data_entrada__lte" class="al-filtros__input"
+                           value="{{ filtros.data_entrada__lte }}">
                 </div>
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">Carteira</label>
-                    <select name="carteira" class="al-filtros__input">
+                    <select name="carteira_id" class="al-filtros__input">
                         <option value="">Todas</option>
                         {% for c in carteiras %}
                         <option value="{{ c.id }}"
-                            {% if filtros.carteira == c.id|stringformat:"s" %}selected{% endif %}>
+                            {% if filtros.carteira_id == c.id|stringformat:"s" %}selected{% endif %}>
                             {{ c.nome }}
                         </option>
                         {% endfor %}
@@ -58,11 +58,11 @@
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">Tipo Situação</label>
-                    <select name="situacao_tipo" class="al-filtros__input">
+                    <select name="situacao__tipo" class="al-filtros__input">
                         <option value="">Todas</option>
                         {% for s in situacoes %}
                         <option value="{{ s.tipo }}"
-                            {% if filtros.situacao_tipo == s.tipo|stringformat:"s" %}selected{% endif %}>
+                            {% if filtros.situacao__tipo == s.tipo|stringformat:"s" %}selected{% endif %}>
                             {{ s.tipo }}
                         </option>
                         {% endfor %}
@@ -71,11 +71,11 @@
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">Agente</label>
-                    <select name="usuario" class="al-filtros__input">
+                    <select name="usuario_id" class="al-filtros__input">
                         <option value="">Todos</option>
                         {% for u in usuarios %}
                         <option value="{{ u.id }}"
-                            {% if filtros.usuario == u.id|stringformat:"s" %}selected{% endif %}>
+                            {% if filtros.usuario_id == u.id|stringformat:"s" %}selected{% endif %}>
                             {{ u.get_full_name|default:u.username }}
                         </option>
                         {% endfor %}
@@ -87,9 +87,9 @@
                     <select name="modo" class="al-filtros__input">
                         <option value="">Todos</option>
                         {% for m in modos %}
-                        <option value="{{ m }}"
+                        <option value="{{ m.value }}"
                             {% if filtros.modo == m %}selected{% endif %}>
-                            {{ m }}
+                            {{ m.label }}
                         </option>
                         {% endfor %}
                     </select>
@@ -97,10 +97,10 @@
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">Status</label>
-                    <select name="ativa" class="al-filtros__input">
+                    <select name="agenda_ativa" class="al-filtros__input">
                         <option value="">Todas</option>
-                        <option value="1" {% if filtros.ativa == "1" %}selected{% endif %}>Ativas</option>
-                        <option value="0" {% if filtros.ativa == "0" %}selected{% endif %}>Finalizadas</option>
+                        <option value="1" {% if filtros.agenda_ativa == "1" %}selected{% endif %}>Ativas</option>
+                        <option value="0" {% if filtros.agenda_ativa == "0" %}selected{% endif %}>Finalizadas</option>
                     </select>
                 </div>
 
