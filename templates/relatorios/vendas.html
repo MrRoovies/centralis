@@ -40,9 +40,9 @@
                     <label class="vl-filtros__label">De</label>
                     <input
                         type="date"
-                        name="data_inicio"
+                        name="created_at__gte"
                         class="vl-filtros__input"
-                        value="{{ filtros.data_inicio }}"
+                        value="{{ filtros.created_at__gte }}"
                     >
                 </div>
 
@@ -51,19 +51,19 @@
                     <label class="vl-filtros__label">Até</label>
                     <input
                         type="date"
-                        name="data_fim"
+                        name="created_at__lte"
                         class="vl-filtros__input"
-                        value="{{ filtros.data_fim }}"
+                        value="{{ filtros.created_at__lte }}"
                     >
                 </div>
 
                 <!-- Esteira -->
                 <div class="vl-filtros__group">
                     <label class="vl-filtros__label">Esteira</label>
-                    <select name="esteira" class="vl-filtros__input">
+                    <select name="esteira_id" class="vl-filtros__input">
                         <option value="">Todas</option>
                         {% for e in esteiras %}
-                        <option value="{{ e.id }}" {% if filtros.esteira == e.id|stringformat:"s" %}selected{% endif %}>
+                        <option value="{{ e.id }}" {% if filtros.esteira_id == e.id|stringformat:"s" %}selected{% endif %}>
                             {{ e.nome }}
                         </option>
                         {% endfor %}
@@ -73,10 +73,10 @@
                 <!-- Produto -->
                 <div class="vl-filtros__group">
                     <label class="vl-filtros__label">Produto</label>
-                    <select name="produto" class="vl-filtros__input">
+                    <select name="oferta__produto_id" class="vl-filtros__input">
                         <option value="">Todos</option>
                         {% for p in produtos %}
-                        <option value="{{ p.id }}" {% if filtros.produto == p.id|stringformat:"s" %}selected{% endif %}>
+                        <option value="{{ p.id }}" {% if filtros.oferta__produto_id == p.id|stringformat:"s" %}selected{% endif %}>
                             {{ p.nome }}
                         </option>
                         {% endfor %}
@@ -86,10 +86,10 @@
                 <!-- Parceiro -->
                 <div class="vl-filtros__group">
                     <label class="vl-filtros__label">Parceiro</label>
-                    <select name="parceiro" class="vl-filtros__input">
+                    <select name="oferta__parceiro_id" class="vl-filtros__input">
                         <option value="">Todos</option>
                         {% for pa in parceiros %}
-                        <option value="{{ pa.id }}" {% if filtros.parceiro == pa.id|stringformat:"s" %}selected{% endif %}>
+                        <option value="{{ pa.id }}" {% if filtros.oferta__parceiro_id == pa.id|stringformat:"s" %}selected{% endif %}>
                             {{ pa.nome }}
                         </option>
                         {% endfor %}
@@ -99,10 +99,10 @@
                 <!-- Carteira -->
                 <div class="vl-filtros__group">
                     <label class="vl-filtros__label">Carteira</label>
-                    <select name="carteira" class="vl-filtros__input">
+                    <select name="esteira__carteira_id" class="vl-filtros__input">
                         <option value="">Todas</option>
                         {% for c in carteiras %}
-                        <option value="{{ c.id }}" {% if filtros.carteira == c.id|stringformat:"s" %}selected{% endif %}>
+                        <option value="{{ c.id }}" {% if filtros.esteira__carteira_id == c.id|stringformat:"s" %}selected{% endif %}>
                             {{ c.nome }}
                         </option>
                         {% endfor %}
@@ -112,10 +112,10 @@
                 <!-- Usuário -->
                 <div class="vl-filtros__group">
                     <label class="vl-filtros__label">Agente</label>
-                    <select name="usuario" class="vl-filtros__input">
+                    <select name="usuario_id" class="vl-filtros__input">
                         <option value="">Todos</option>
                         {% for u in usuarios %}
-                        <option value="{{ u.id }}" {% if filtros.usuario == u.id|stringformat:"s" %}selected{% endif %}>
+                        <option value="{{ u.id }}" {% if filtros.usuario_id == u.id|stringformat:"s" %}selected{% endif %}>
                             {{ u.get_full_name|default:u.username }}
                         </option>
                         {% endfor %}

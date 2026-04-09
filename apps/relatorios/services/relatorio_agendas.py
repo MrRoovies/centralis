@@ -1,13 +1,8 @@
 from apps.agenda.models import Agenda, Acionamento, Situacao
 from apps.usuarios.models import Carteira
-from apps.campanhas.models import Campanha
 from django.contrib.auth.models import User
 from apps.core.regras_acesso import RegrasAcesso
 from django.db.models import Count
-from django.utils.dateparse import parse_date
-from datetime import datetime, time
-from django.utils import timezone
-
 
 
 class RelatorioAgendaService:

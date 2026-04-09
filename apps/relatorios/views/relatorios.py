@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
-from ..services.relatorio_vendas import FiltroRelatorioVendas, RelatorioVendasService
+from ..services.relatorio_vendas import RelatorioVendasService
 from django.utils import timezone
 from django.core.paginator import Paginator
 from apps.agenda.models import Agenda, Acionamento
@@ -42,27 +42,42 @@ def detalhe_venda(request, id):
 @login_required
 def relatorio_vendas(request):
     """ Criar visualização por níveis de perfil """
-    data = request.GET.copy()
     usuario = request.user
+    service = RelatorioVendasService()
+    params = request.GET.copy()
+    params.pop('page', None)
 
-    if not data:
+    campos_permitidos = [
+        'created_at__gte',
+        'created_at__lte',
+        'esteira_id',
+        'oferta__produto_id',
+        'oferta__parceiro_id',
+        'esteira__carteira_id',
+        'usuario_id'
+    ]
+    filtro = {
+        k: v
+        for k, v in params.dict().items()
+        if k in campos_permitidos and v != ''
+    }
+
+    if not any(filtro.values()):
         hoje = timezone.now().date()
-        data = {
-            "data_inicio": hoje.isoformat(),
-            "data_fim": hoje.isoformat()
+        filtro = {
+            "created_at__gte": hoje.isoformat(),
+            "created_at__lte": hoje.isoformat()
         }
 
-    filtro = FiltroRelatorioVendas(data)
+    queryset = service.gerar(request.empresa, filtro, usuario)
+    totais = service.calcular_totais(queryset)
 
-    vendas = RelatorioVendasService().gerar(request.empresa, filtro, usuario)
-    totais = RelatorioVendasService().calcular_totais(vendas)
-
-
-    paginator = Paginator(vendas, 50)
+    paginator = Paginator(queryset, 20)
     page = request.GET.get("page")
     vendas = paginator.get_page(page)
 
-    context = RelatorioVendasService().get_context_relatorio(request.empresa, vendas, totais, filtro)
+    context = service.get_context_relatorio(request.empresa, vendas, filtro, totais)
+    context['query_string'] = params.urlencode()
 
     return render(request, 'relatorios/vendas.html', context)
 
@@ -71,6 +86,11 @@ def relatorio_vendas(request):
 @login_required
 def agendas_list(request):
     from ..services.relatorio_agendas import RelatorioAgendaService
+    usuario = request.user
+    params = request.GET.copy()
+    params.pop('page', None)
+
+    service = RelatorioAgendaService()
     campos_permitidos = [
         'data_entrada__gte',
         'data_entrada__lte',
@@ -82,26 +102,26 @@ def agendas_list(request):
     ]
     filtro = {
         k: v
-        for k, v in request.GET.dict().items()
+        for k, v in params.dict().items()
         if k in campos_permitidos and v != ''
     }
-    usuario = request.user
 
-    if not filtro:
+    if not any(filtro.values()):
         hoje = timezone.now().date()
         filtro = {
             "data_entrada__gte": hoje.isoformat(),
             "data_entrada__lte": hoje.isoformat()
         }
 
-    agenda = RelatorioAgendaService().gerar(request.empresa, filtro, usuario)
-    totais = RelatorioAgendaService().calcular_totais(agenda)
+    queryset = service.gerar(request.empresa, filtro, usuario)
+    totais = service.calcular_totais(queryset)
 
-    paginator = Paginator(agenda, 20)
+    paginator = Paginator(queryset, 20)
     page = request.GET.get("page")
     agendas = paginator.get_page(page)
 
-    context = RelatorioAgendaService().get_context_relatorio(request.empresa, agendas, filtro, totais)
+    context = service.get_context_relatorio(request.empresa, agendas, filtro, totais)
+    context['query_string'] = params.urlencode()
 
     return render(request, 'relatorios/agendas_list.html', context)
 
