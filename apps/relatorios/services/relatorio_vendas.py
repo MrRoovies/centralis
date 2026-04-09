@@ -2,9 +2,6 @@ from apps.vendas.models import Venda, Esteira, Produto, Parceiro
 from apps.usuarios.models import Carteira
 from django.contrib.auth.models import User
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
-from django.utils.dateparse import parse_date
-from datetime import datetime, time
-from django.utils import timezone
 from apps.core.regras_acesso import RegrasAcesso
 
 
