@@ -1,0 +1,75 @@
+<!-- CARD: Valores — EDITÁVEL -->
+            <div class="vd-card vd-card--edit">
+                <div class="vd-card__head">
+                    <span class="vd-card__icon">💰</span>
+                    <h3 class="vd-card__title">Valores do Contrato</h3>
+                    <button class="vd-edit-toggle" id="btnEditValores"
+                            onclick="toggleEdit('valoresForm', this)">
+                        Editar
+                    </button>
+                </div>
+
+                <!-- modo leitura -->
+                <div class="vd-card__body" id="valoresRead">
+                    <div class="vd-valores-display">
+                        <div class="vd-valor-destaque">
+                            <span class="vd-valor-destaque__label">Valor do Contrato</span>
+                            <span class="vd-valor-destaque__num valor">
+                                R$ {{ venda.valor|floatformat:2 }}
+                            </span>
+                        </div>
+                        <div class="vd-info-grid vd-info-grid--3">
+                            <div class="vd-info-item">
+                                <span class="vd-info-label">Parcela</span>
+                                <span class="vd-info-value parcela">
+                                    R$ {{ venda.parcela|floatformat:2 }}
+                                </span>
+                            </div>
+                            <div class="vd-info-item">
+                                <span class="vd-info-label">Taxa</span>
+                                <span class="vd-info-value taxa">{{ venda.taxa }}%</span>
+                            </div>
+                        </div>
+                        <div class="vd-comissao-box">
+                            <span>Comissão estimada</span>
+                            <strong>R$ {{ comissao_valor|floatformat:2 }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- modo edição -->
+                <form id="valoresForm" class="vd-edit-form" style="display:none"
+                      onsubmit="salvarValores(event)">
+                    {% csrf_token %}
+                    <div class="vd-form-grid">
+                        <div class="vd-form-group">
+                            <label>Nº Contrato</label>
+                            <input type="text" name="contrato"
+                                   value="{{ venda.contrato }}" class="vd-input" required>
+                        </div>
+                        <div class="vd-form-group">
+                            <label>Valor do Contrato</label>
+                            <input type="number" name="valor" step="0.01" min="0"
+                                   value="{{ venda.valor }}" class="vd-input" required>
+                        </div>
+                        <div class="vd-form-group">
+                            <label>Parcela</label>
+                            <input type="number" name="parcela" step="0.01" min="0"
+                                   value="{{ venda.parcela }}" class="vd-input" required>
+                        </div>
+                        <div class="vd-form-group">
+                            <label>Taxa (%)</label>
+                            <input type="number" name="taxa" step="0.01" min="0"
+                                   value="{{ venda.taxa }}" class="vd-input" required>
+                        </div>
+                    </div>
+                    <div class="vd-form-actions">
+                        <button type="submit" class="vd-btn vd-btn--save">Salvar</button>
+                        <button type="button" class="vd-btn vd-btn--cancel"
+                                onclick="toggleEdit('valoresForm', document.getElementById('btnEditValores'))">
+                            Cancelar
+                        </button>
+                    </div>
+                    <div class="vd-form-feedback" id="valoresFeedback"></div>
+                </form>
+            </div>

@@ -1,0 +1,23 @@
+<!-- CARD: Dados do Cliente -->
+<div class="vd-card">
+    <div class="vd-card__head">
+        <span class="vd-card__icon">👤</span>
+        <h3 class="vd-card__title">Cliente</h3>
+        <a href="{% url 'clientes:cliente' venda.cliente.id %}"
+           class="vd-card__link">ver ficha →</a>
+    </div>
+    <div class="vd-card__body">
+        <div class="vd-info-grid">
+            <div class="vd-info-item">
+                <span class="vd-info-label">Nome</span>
+                <span class="vd-info-value vd-info-value--strong">
+                    {{ venda.cliente.nome }}
+                </span>
+            </div>
+            <div class="vd-info-item">
+                <span class="vd-info-label">Documento</span>
+                <span class="vd-info-value vd-mono">{{ venda.cliente.documento }}</span>
+            </div>
+        </div>
+    </div>
+</div>

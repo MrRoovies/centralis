@@ -1,0 +1,77 @@
+<!-- CARD: Produto / Oferta — EDITÁVEL -->
+<div class="vd-card vd-card--edit">
+    <div class="vd-card__head">
+        <span class="vd-card__icon">🏦</span>
+        <h3 class="vd-card__title">Produto & Oferta</h3>
+        <button class="vd-edit-toggle" id="btnEditOferta"
+                onclick="toggleEdit('ofertaForm', this)">
+            Editar
+        </button>
+    </div>
+
+    <!-- modo leitura -->
+    <div class="vd-card__body" id="ofertaRead">
+        <div class="vd-info-grid">
+            <div class="vd-info-item">
+                <span class="vd-info-label">Produto</span>
+                <span class="vd-info-value vd-info-value--strong" id="read-produto">
+                    {{ venda.produto_nome }} - {{ venda.prazo }}X
+                </span>
+            </div>
+            <div class="vd-info-item">
+                <span class="vd-info-label">Parceiro</span>
+                <span class="vd-info-value" id="read-parceiro">{{ venda.parceiro_nome }}</span>
+            </div>
+            <div class="vd-info-item">
+                <span class="vd-info-label">Comissão da Oferta</span>
+                <span class="vd-info-value vd-txt-amber" id="read-comissao">
+                    {{ venda.comissao }}%
+                </span>
+            </div>
+            <div class="vd-info-item">
+                <span class="vd-info-label">Boletado em</span>
+                <span class="vd-info-value vd-mono">
+                    {{ venda.created_at|date:"d/m/Y H:i" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- modo edição -->
+    <form id="ofertaForm" class="vd-edit-form" style="display:none"
+          onsubmit="salvarOferta(event)">
+        {% csrf_token %}
+        <div class="vd-form-grid">
+            <div class="vd-form-group">
+                <label>Parceiro</label>
+                <select id="id_venda-parceiro" name="parceiro" class="vd-input vd-select" required>
+                    <option value="">Carregando...</option>
+                </select>
+            </div>
+            <div class="vd-form-group">
+                <label>Produto</label>
+                <select id="id_venda-produto" name="produto" class="vd-input vd-select" required>
+                    <option value="">Selecione o parceiro</option>
+                </select>
+            </div>
+            <div class="vd-form-group vd-form-group--full">
+                <label>Oferta (prazo)</label>
+                <select id="id_venda-oferta" name="oferta" class="vd-input vd-select" required>
+                    <option value="">Selecione o produto</option>
+                </select>
+            </div>
+            <div class="vd-form-group vd-form-group--full">
+                <label>Prazo (meses)</label>
+                <input type="number" name="prazo" min="1"
+                       value="{{ venda.prazo }}" class="vd-input" required>
+            </div>
+        </div>
+        <div class="vd-form-actions">
+            <button type="submit" class="vd-btn vd-btn--save">Salvar</button>
+            <button type="button" class="vd-btn vd-btn--cancel"
+                    onclick="toggleEdit('ofertaForm', document.getElementById('btnEditOferta'))">
+                Cancelar
+            </button>
+        </div>
+    </form>
+</div>

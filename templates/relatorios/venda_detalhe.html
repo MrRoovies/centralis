@@ -1,0 +1,118 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/venda_detalhe.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content vd-main">
+<div class="vd-container">
+
+    <!-- ══ TOPBAR ══════════════════════════════════════════════ -->
+    <div class="vd-topbar">
+        <a href="{% url 'relatorios:relatorio_vendas' %}" class="vd-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Relatório de Vendas
+        </a>
+
+        <div class="vd-topbar__center">
+            <span class="vd-topbar__contrato">{{ venda.contrato }}</span>
+            <span class="vd-topbar__sep">·</span>
+            <span class="vd-topbar__cliente">{{ venda.cliente.nome }}</span>
+        </div>
+
+        <div class="vd-topbar__right">
+            <span class="vd-esteira-badge vd-esteira-badge--{{ venda.esteira.tipo|lower }}">
+                {{ venda.esteira.nome }}
+            </span>
+        </div>
+    </div>
+
+    <!-- ══ GRID PRINCIPAL ═══════════════════════════════════════ -->
+    <div class="vd-grid">
+
+        <!-- ─── COLUNA ESQUERDA ─────────────────────────────── -->
+        <div class="vd-left">
+
+            {% include 'relatorios/partials/vendas/card_cliente.html' %}
+
+            {% include 'relatorios/partials/vendas/card_oferta.html' %}
+
+            {% include 'relatorios/partials/vendas/card_valores.html' %}
+
+            {% include 'relatorios/partials/vendas/card_responsavel.html' %}
+
+        </div><!-- /vd-left -->
+
+        <!-- ─── COLUNA DIREITA: HISTÓRICO ──────────────────── -->
+        <div class="vd-right">
+
+            <!-- Adicionar comentário / mover esteira -->
+            <div class="vd-card vd-card--comment">
+                <div class="vd-card__head">
+                    <span class="vd-card__icon">✏️</span>
+                    <h3 class="vd-card__title">Adicionar Movimentação</h3>
+                </div>
+                <form id="comentarioForm" class="vd-card__body"
+                      onsubmit="Comentario_e_esteira(event)">
+                    {% csrf_token %}
+                    <div class="vd-form-group vd-form-group--full">
+                        <label>Esteira de destino</label>
+                        <select name="esteira" class="vd-input vd-select">
+                            {% for e in esteiras %}
+                            <option value="{{ e.id }}"
+                                {% if e.id == venda.esteira.id %}selected{% endif %}>
+                                {{ e.nome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="vd-form-group vd-form-group--full" style="margin-top:10px">
+                        <label>Comentário</label>
+                        <textarea name="comentario" class="vd-input vd-textarea"
+                                  placeholder="Descreva a movimentação ou observação..."></textarea>
+                    </div>
+                    <div class="vd-form-actions" style="margin-top:12px">
+                        <button type="submit" class="vd-btn vd-btn--primary">
+                            Registrar
+                        </button>
+                    </div>
+                    <div class="vd-form-feedback" id="comentarioFeedback"></div>
+                </form>
+            </div>
+
+            <!-- Timeline de Histórico -->
+            <div class="vd-card vd-card--timeline">
+                <div class="vd-card__head">
+                    <span class="vd-card__icon">📋</span>
+                    <h3 class="vd-card__title">Histórico de Movimentações</h3>
+                    <span class="vd-hist-count">{{ historico|length }}</span>
+                </div>
+                <div class="vd-card__body vd-card__body--no-pad" id="timelineContainer">
+                    {% include 'relatorios/partials/timeline_hist.html' %}
+                </div>
+            </div>
+
+        </div><!-- /vd-right -->
+
+    </div><!-- /vd-grid -->
+</div>
+</main>
+{% endblock %}
+{% block extra_js %}
+    <script>
+        const VENDA_ID = {{ venda.id }};
+        // estado atual da oferta para pré-selecionar ao abrir edição
+        const OFERTA_ATUAL = {
+            parceiro_id: {{ venda.oferta.parceiro_id|default:"null" }},
+            produto_id:  {{ venda.oferta.produto_id|default:"null" }},
+            oferta_id:   {{ venda.oferta_id|default:"null" }},
+        };
+    </script>
+    <script src="{% static 'js/formHandler.js' %}" defer></script>
+    <script src="{% static 'js/detalhe_vendas.js' %}" defer></script>
+    <script src="{% static 'js/vendas.js' %}" defer></script>
+{% endblock %}

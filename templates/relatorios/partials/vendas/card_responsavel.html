@@ -1,0 +1,61 @@
+<!-- CARD: Esteira & Agente — EDITÁVEL -->
+<div class="vd-card vd-card--edit">
+    <div class="vd-card__head">
+        <span class="vd-card__icon">⚙️</span>
+        <h3 class="vd-card__title">Agente Responsável</h3>
+        <button class="vd-edit-toggle" id="btnEditResponsavel"
+                onclick="toggleEdit('responsavelForm', this)">
+            Editar
+        </button>
+    </div>
+
+    <!-- modo leitura -->
+    <div class="vd-card__body" id="responsavelRead">
+        <div class="vd-info-grid">
+            <div class="vd-info-item">
+                <span class="vd-info-label">Agente Responsável</span>
+                <span class="vd-info-value vd-info-value--strong">
+                    {{ venda.usuario.get_full_name|default:venda.usuario.username }}
+                </span>
+
+            </div>
+            <div class="vd-info-item">
+                <span class="vd-info-label">Agenda Vinculada</span>
+                <span class="vd-info-value vd-mono">
+                    {% if venda.agenda %}#{{ venda.agenda.id }}{% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="vd-info-item">
+                <span class="vd-info-label">Carteira/Equipe</span>
+                <span class="vd-info-value vd-mono">{{ venda.carteira_nome }} - {{ venda.equipe_nome }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- modo edição -->
+    <form id="responsavelForm" class="vd-edit-form" style="display:none"
+          onsubmit="salvarResponsavel(event)">
+        {% csrf_token %}
+        <div class="vd-form-grid">
+            <div class="vd-form-group vd-form-group--full">
+                <label>Agente Responsável</label>
+                <select name="usuario" class="vd-input vd-select">
+                    {% for u in usuarios %}
+                    <option value="{{ u.id }}"
+                        {% if u.id == venda.usuario.id %}selected{% endif %}>
+                        {{ u.get_full_name|default:u.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="vd-form-actions">
+            <button type="submit" class="vd-btn vd-btn--save">Salvar</button>
+            <button type="button" class="vd-btn vd-btn--cancel"
+                    onclick="toggleEdit('responsavelForm', document.getElementById('btnEditResponsavel'))">
+                Cancelar
+            </button>
+        </div>
+        <div class="vd-form-feedback" id="esteiraFeedback"></div>
+    </form>
+</div>
