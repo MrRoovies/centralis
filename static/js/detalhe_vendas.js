@@ -25,7 +25,7 @@ function salvarValores(e) {
     const form = document.getElementById('valoresForm');
     const data = Object.fromEntries(new FormData(form));
 
-    fetch(`/relatorios/${VENDA_ID}/valores/`, {
+    fetch(`/vendas/${VENDA_ID}/valores/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': data.csrfmiddlewaretoken,
@@ -55,7 +55,7 @@ function salvarResponsavel(e) {
     const form = document.getElementById('responsavelForm');
     const data = Object.fromEntries(new FormData(form));
 
-    fetch(`/relatorios/${VENDA_ID}/responsavel/`, {
+    fetch(`/vendas/${VENDA_ID}/responsavel/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': data.csrfmiddlewaretoken,
@@ -90,7 +90,7 @@ function Comentario_e_esteira(e) {
     btn.disabled = true;
     btn.textContent = 'Salvando...';
 
-    fetch(`/relatorios/${VENDA_ID}/comentario_e_esteira/`, {
+    fetch(`/vendas/${VENDA_ID}/comentario_e_esteira/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': data.csrfmiddlewaretoken,
@@ -131,7 +131,7 @@ function salvarOferta(e) {
     const form = document.getElementById('ofertaForm');
     const data = Object.fromEntries(new FormData(form));
 
-    fetch(`/relatorios/${VENDA_ID}/oferta/`, {
+    fetch(`/vendas/${VENDA_ID}/oferta/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': data.csrfmiddlewaretoken,

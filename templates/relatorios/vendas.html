@@ -186,7 +186,7 @@
                     <td>{{ venda.usuario.get_full_name|default:venda.usuario.username }}</td>
                     <td class="vl-data">{{ venda.created_at|date:"d/m/Y H:i" }}</td>
                     <td>
-                        <a href="{% url 'vendas:detalhe_venda' venda.id %}" class="vl-btn-detail">↗</a>
+                        <a href="{% url 'relatorios:detalhe_venda' venda.id %}" class="vl-btn-detail">↗</a>
                     </td>
                 </tr>
                 {% endfor %}

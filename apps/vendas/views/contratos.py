@@ -1,11 +1,11 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
 from apps.vendas.forms import VendaForm
-from apps.vendas.models import Venda, Parceiro, Produto, Oferta, Esteira
 from apps.vendas.services.vendas_services import VendasService
-from django.contrib.auth.models import User
+from apps.vendas.models import Parceiro, Produto, Oferta
+
 
 @login_required
 def registrar_venda(request):
@@ -37,47 +37,6 @@ def registrar_venda(request):
         'cliente_id': ""
     }
     return render(request, 'vendas/registrar_venda.html', context)
-
-
-@require_GET
-@login_required
-def detalhe_venda(request, venda_id):
-    agente = request.user
-    venda = get_object_or_404(
-        Venda.objects
-        .select_related(
-            'cliente', 'oferta__produto', 'oferta__parceiro',
-            'esteira', 'usuario', 'agenda'
-        )
-        .prefetch_related('historico__esteira', 'historico__usuario'),
-        pk=venda_id,
-        empresa=request.empresa
-    )
-
-    historico = venda.historico.order_by('-data')
-
-    esteiras = Esteira.objects.filter(
-        empresa=request.empresa,
-        carteira=agente.agente.carteira,
-        ativo=True
-    ).order_by('ordem')
-
-    usuarios = User.objects.prefetch_related('agente').filter(
-        agente__carteira__empresa=request.empresa
-    ).order_by('first_name')
-
-    # comissão calculada: valor * comissao%
-    comissao_valor = (venda.valor * venda.comissao / 100).quantize(
-        __import__('decimal').Decimal('0.01')
-    )
-
-    return render(request, 'relatorios/venda_detalhe.html', {
-        'venda': venda,
-        'historico': historico,
-        'esteiras': esteiras,
-        'usuarios': usuarios,
-        'comissao_valor': comissao_valor,
-    })
 
 
 @require_GET
