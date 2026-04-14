@@ -220,7 +220,7 @@ class VendasService:
             venda=venda,
             esteira=venda.esteira,
             usuario=user,
-            comentario=f'{comentario} por {user.get_full_name() or user.user.username}.'
+            comentario=f'{comentario} por {user.get_full_name()}.'
         )
 
 
