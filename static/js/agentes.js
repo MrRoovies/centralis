@@ -122,6 +122,8 @@ function salvarNovoAgente() {
         if (!temErro && !Object.keys(msgs).length) {
             mostrarFeedback('Erro ao cadastrar agente. Tente novamente.', 'error');
         }
+
+        triggerShake(form.id);
     })
     .finally(() => {
         btn.disabled = false;

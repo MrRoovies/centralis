@@ -201,3 +201,10 @@ function flattenGroupedMessages(groupedErrors) {
     }
     return allErrors;
 }
+
+function triggerShake(form) {
+    const formBox = document.getElementById(form)
+    formBox.classList.remove('shake'); // reset
+    void formBox.offsetWidth;          // força reflow
+      formBox.classList.add('shake');
+}
