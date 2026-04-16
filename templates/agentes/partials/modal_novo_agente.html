@@ -1,0 +1,110 @@
+<!-- ── Modal Novo Agente ── -->
+<div class="ag-modal-overlay" id="agModalOverlay" onclick="fecharModalNovoAgente(event)">
+    <div class="ag-modal" id="agModal">
+
+        <div class="ag-modal__header">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="7" r="4" stroke="white" stroke-width="1.5"/>
+                <path d="M2 18c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="16" cy="4" r="3.5" fill="#27ae60" stroke="white" stroke-width="1"/>
+                <path d="M14.5 4l1 1 2-2" stroke="white" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <h3 class="ag-modal__title">Cadastrar Novo Agente</h3>
+            <button class="ag-modal__close" onclick="fecharModalNovoAgente()">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 1l12 12M13 1L1 13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="ag-modal__body">
+            <div id="agModalFeedback" class="ag-modal-feedback"></div>
+
+            <form id="novoAgenteForm">
+
+                <!-- Dados Pessoais -->
+                <p class="ag-modal__section">Dados Pessoais</p>
+                <div class="ag-form-grid">
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Nome <span class="req">*</span></label>
+                        <input type="text" name="first_name" class="ag-form-input"
+                               placeholder="Nome" required>
+                        <span class="ag-form-error" id="err-first_name"></span>
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Sobrenome</label>
+                        <input type="text" name="last_name" class="ag-form-input"
+                               placeholder="Sobrenome" required>
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">CPF <span class="req">*</span></label>
+                        <input type="text" name="cpf" class="ag-form-input"
+                               placeholder="Somente números" maxlength="11" required>
+                        <span class="ag-form-error" id="err-cpf"></span>
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Nascimento <span class="req">*</span></label>
+                        <input type="date" name="nascimento" class="ag-form-input" required>
+                        <span class="ag-form-error" id="err-nascimento"></span>
+                    </div>
+                    <div class="ag-form-group ag-form-group--full">
+                        <label class="ag-form-label">E-mail</label>
+                        <input type="email" name="email" class="ag-form-input"
+                               placeholder="email@empresa.com">
+                    </div>
+                </div>
+
+                <!-- Acesso -->
+                <p class="ag-modal__section">Acesso ao Sistema</p>
+                <div class="ag-form-grid">
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Usuário <span class="req">*</span></label>
+                        <input type="text" name="username" class="ag-form-input"
+                               placeholder="Login de acesso" required autocomplete="off">
+                        <span class="ag-form-error" id="err-username"></span>
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Senha <span class="req">*</span></label>
+                        <input type="password" name="password" class="ag-form-input"
+                               placeholder="Mín. 6 caracteres" required autocomplete="new-password">
+                        <span class="ag-form-error" id="err-password"></span>
+                    </div>
+                </div>
+
+                <!-- Vínculo Organizacional -->
+                <p class="ag-modal__section">Vínculo Organizacional</p>
+                <div class="ag-form-grid">
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Carteira <span class="req">*</span></label>
+                        <select name="carteira_id" class="ag-form-input" required id="selectCarteira">
+                            <option value="">Selecione...</option>
+                        </select>
+                        <span class="ag-form-error" id="err-carteira_id"></span>
+                    </div>
+                    <div class="ag-form-group">
+                        <label class="ag-form-label">Equipe <span class="req">*</span></label>
+                        <select name="equipe_id" class="ag-form-input" required id="selectEquipe">
+                            <option value="">Selecione...</option>
+                        </select>
+                        <span class="ag-form-error" id="err-equipe_id"></span>
+                    </div>
+                    <div class="ag-form-group ag-form-group--full">
+                        <label class="ag-form-label">Perfil de Acesso <span class="req">*</span></label>
+                        <select name="perfil_id" class="ag-form-input" required id="selectPerfil">
+                            <option value="">Selecione...</option>
+                        </select>
+                        <span class="ag-form-error" id="err-perfil_id"></span>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="ag-modal__footer">
+            <button class="ag-btn-cancelar" onclick="fecharModalNovoAgente()">Cancelar</button>
+            <button class="ag-btn-salvar" id="btnSalvarAgente" onclick="salvarNovoAgente()">
+                Cadastrar Agente
+            </button>
+        </div>
+    </div>
+</div>
