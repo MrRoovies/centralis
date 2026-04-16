@@ -43,17 +43,6 @@
     <form method="get" id="filtroForm">
         <div class="ag-filtros">
             <div class="ag-filtros__grid">
-
-                <!--
-                Remover por enquanto
-                <div class="ag-filtros__group">
-                    <label class="ag-filtros__label">Buscar</label>
-                    <input type="text" name="busca" class="ag-filtros__input"
-                           placeholder="Nome ..."
-                           value="{{ filtros.busca }}">
-                </div>
-                -->
-
                 <div class="ag-filtros__group">
                     <label class="ag-filtros__label">Carteira</label>
                     <select name="carteira_id" class="ag-filtros__input">
@@ -75,6 +64,19 @@
                         <option value="{{ p.id }}"
                             {% if filtros.perfil_id == p.id|stringformat:"s" %}selected{% endif %}>
                             {{ p.get_codigo_display }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="ag-filtros__group">
+                    <label class="ag-filtros__label">Equipe</label>
+                    <select name="equipe_id" class="ag-filtros__input">
+                        <option value="">Todas</option>
+                        {% for e in equipes %}
+                        <option value="{{ e.id }}"
+                            {% if filtros.equipe_id == e.id|stringformat:"s" %}selected{% endif %}>
+                            {{ e.nome }}
                         </option>
                         {% endfor %}
                     </select>
@@ -161,6 +163,17 @@
 
                     <td>
                         <div class="ag-actions">
+                            <!-- Botão Editar -->
+                            <button
+                                class="ag-btn-action ag-btn-action--edit"
+                                title="Editar agente"
+                                onclick="abrirDrawerEditar({{ agente.id }}, '{{ agente.usuario.get_full_name|default:agente.usuario.username }}')">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+
+                            <!-- Botão Ativar/Desativar -->
                             <button
                                 class="ag-btn-action ag-btn-action--danger"
                                 title="{% if agente.usuario.is_active %}Desativar{% else %}Ativar{% endif %} agente"
@@ -206,6 +219,136 @@
 
 </div>
 </main>
+
+
+<!-- ══════════════════════════════════════════
+     DRAWER DE EDIÇÃO DE AGENTE
+══════════════════════════════════════════ -->
+<div class="ag-drawer-overlay" id="agDrawerOverlay" onclick="fecharDrawerEditar()"></div>
+
+<aside class="ag-drawer" id="agDrawer">
+
+    <!-- Header -->
+    <div class="ag-drawer__header">
+        <div class="ag-drawer__header-info">
+            <div class="ag-drawer__avatar" id="drawerAvatar">--</div>
+            <div>
+                <h3 class="ag-drawer__title">Editar Agente</h3>
+                <span class="ag-drawer__subtitle" id="drawerNomeAgente"></span>
+            </div>
+        </div>
+        <button class="ag-drawer__close" onclick="fecharDrawerEditar()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Feedback -->
+    <div id="drawerFeedback" class="ag-drawer__feedback" style="display:none"></div>
+
+    <!-- Body -->
+    <div class="ag-drawer__body" id="agDrawerBody">
+        <!-- Spinner inicial -->
+        <div class="ag-drawer__spinner" id="drawerSpinner">
+            <div class="ag-spinner"></div>
+            <span>Carregando dados...</span>
+        </div>
+
+        <!-- Formulário (oculto até carregar) -->
+        <form id="editarAgenteForm" class="ag-drawer__form" style="display:none">
+
+            <!-- Seção: Dados Pessoais -->
+            <div class="ag-drawer__section-label">Dados Pessoais</div>
+
+            <div class="ag-drawer__form-row">
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">Nome <span class="req">*</span></label>
+                    <input type="text" name="first_name" id="edit_first_name"
+                           class="ag-drawer__input" placeholder="Nome" required>
+                    <span class="ag-drawer__error" id="err-edit-first_name"></span>
+                </div>
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">Sobrenome</label>
+                    <input type="text" name="last_name" id="edit_last_name"
+                           class="ag-drawer__input" placeholder="Sobrenome">
+                </div>
+            </div>
+
+            <div class="ag-drawer__form-row">
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">CPF <span class="req">*</span></label>
+                    <input type="text" name="cpf" id="edit_cpf"
+                           class="ag-drawer__input" placeholder="Somente números" maxlength="11" required>
+                    <span class="ag-drawer__error" id="err-edit-cpf"></span>
+                </div>
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">E-mail</label>
+                    <input type="email" name="email" id="edit_email"
+                           class="ag-drawer__input" placeholder="email@empresa.com">
+                </div>
+            </div>
+
+            <!-- Seção: Vínculo -->
+            <div class="ag-drawer__section-label" style="margin-top:20px">Vínculo Organizacional</div>
+
+            <div class="ag-drawer__form-row">
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">Perfil <span class="req">*</span></label>
+                    <select name="perfil_id" id="edit_perfil_id" class="ag-drawer__input" required>
+                        <option value="">Selecione...</option>
+                    </select>
+                    <span class="ag-drawer__error" id="err-edit-perfil_id"></span>
+                </div>
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">Equipe <span class="req">*</span></label>
+                    <select name="equipe_id" id="edit_equipe_id" class="ag-drawer__input" required>
+                        <option value="">Selecione...</option>
+                    </select>
+                    <span class="ag-drawer__error" id="err-edit-equipe_id"></span>
+                </div>
+            </div>
+
+            <!-- Seção: Senha -->
+            <div class="ag-drawer__section-label" style="margin-top:20px">Segurança</div>
+
+            <div class="ag-drawer__form-row ag-drawer__form-row--single">
+                <div class="ag-drawer__form-group">
+                    <label class="ag-drawer__label">
+                        Nova Senha
+                        <span class="ag-drawer__label-hint">(deixe em branco para manter a atual)</span>
+                    </label>
+                    <div class="ag-drawer__password-wrap">
+                        <input type="password" name="senha" id="edit_senha"
+                               class="ag-drawer__input" placeholder="Nova senha...">
+                        <button type="button" class="ag-drawer__toggle-pass"
+                                onclick="toggleSenhaVisibility()" title="Ver senha">
+                            <svg id="iconOlho" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <ellipse cx="8" cy="8" rx="6" ry="4" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="8" r="2" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="ag-drawer__footer">
+        <button class="ag-drawer__btn-cancelar" onclick="fecharDrawerEditar()">Cancelar</button>
+        <button class="ag-drawer__btn-salvar" id="btnSalvarEdicao" onclick="salvarEdicaoAgente()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Salvar Alterações
+        </button>
+    </div>
+</aside>
+
+
 
 <!-- ── Modal Novo Agente ── -->
 <div class="ag-modal-overlay" id="agModalOverlay" onclick="fecharModalNovoAgente(event)">
@@ -320,4 +463,5 @@
 {% endblock %}
 {% block extra_js %}
     <script src="{% static 'js/agentes.js' %}" defer></script>
+    <script src="{% static 'js/agente_editar.js' %}" defer></script>
 {% endblock %}
