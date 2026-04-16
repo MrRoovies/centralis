@@ -76,8 +76,8 @@ def novo_agente(request):
     # GET → retorna dados para o modal de criação
     context = {
         'carteiras': list(Carteira.objects.filter(empresa=empresa, ativo=True).values('id', 'nome')),
-        'equipes': list(Equipe.objects.filter(ativo=True).values('id', 'nome')),
-        'perfis': list(Perfil.objects.filter(ativo=True).values('id', 'codigo')),
+        'equipes': list(Equipe.objects.filter(ativo=True, empresa=empresa).values('id', 'nome')),
+        'perfis': list(Perfil.objects.filter(ativo=True, empresa=empresa).values('id', 'codigo')),
     }
     return JsonResponse(context)
 
@@ -133,8 +133,8 @@ def editar_agente(request, agente_id):
             'perfil_id': agente.perfil.id,
             'equipe_id': agente.equipe.id,
         },
-        'perfis': list(Perfil.objects.filter(ativo=True).values('id', 'codigo')),
-        'equipes': list(Equipe.objects.filter(ativo=True).values('id', 'nome')),
+        'perfis': list(Perfil.objects.filter(ativo=True, empresa=empresa).values('id', 'codigo')),
+        'equipes': list(Equipe.objects.filter(ativo=True, empresa=empresa).values('id', 'nome')),
     }
     return JsonResponse(context)
 
