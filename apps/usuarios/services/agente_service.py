@@ -26,7 +26,7 @@ class AgenteService:
     @staticmethod
     def campos_obrigatorios(data, empresa):
         for k, v in data.items():
-            if k == 'email':
+            if k == 'email' or k == 'senha':
                 continue
             if not data.get(k):
                 return ResponsePattern.error(k, [f"{k} não pode ser vazio"])
@@ -69,3 +69,26 @@ class AgenteService:
         except Exception as e:
             return ResponsePattern.error('agente', [str(e)])
 
+
+    @staticmethod
+    def edita_usuario(dados, agente, empresa):
+        perfil = get_object_or_404(Perfil, pk=dados['perfil_id'], empresa=empresa, ativo=True)
+        equipe = get_object_or_404(Equipe, pk=dados['equipe_id'], empresa=empresa, ativo=True)
+        try:
+            with transaction.atomic():
+                agente.usuario.first_name = dados['first_name']
+                agente.usuario.last_name = dados['last_name']
+                if dados['senha']:
+                    agente.usuario.set_password(dados['senha'])
+                agente.usuario.save()
+
+                agente.email = dados['email']
+                agente.cpf = dados['cpf']
+                agente.perfil = perfil
+                agente.equipe = equipe
+                agente.save()
+
+            return ResponsePattern.success('agente', ['Agente atualizado com sucesso!'])
+
+        except Exception as e:
+            return ResponsePattern.error('agente', [str(e)])
