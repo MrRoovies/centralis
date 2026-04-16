@@ -23,6 +23,7 @@ def lista_agentes(request):
     campos_permitidos = [
         'carteira_id',
         'perfil_id',
+        'equipe_id',
         'usuario__is_active',
     ]
     filtro = {
@@ -43,7 +44,8 @@ def lista_agentes(request):
     context = {
         'agentes': agentes_page,
         'carteiras': Carteira.objects.filter(empresa=empresa, ativo=True).order_by('nome'),
-        'perfis': Perfil.objects.filter(ativo=True).order_by('codigo'),
+        'perfis': Perfil.objects.filter(ativo=True, empresa=empresa).order_by('codigo'),
+        'equipes': Equipe.objects.filter(ativo=True, empresa=empresa).order_by('nome'),
         'filtros': filtro,
         'total': total,
         'ativos': ativos,
@@ -96,3 +98,44 @@ def toggle_ativo_agente(request, agente_id):
         'is_active': agente.usuario.is_active,
         'messages': {'agente': {'success': [f'Agente {status} com sucesso!']}}
     })
+
+
+@login_required
+def editar_agente(request, agente_id):
+    """Retorna dados do agente (GET) e salva edição (POST)."""
+    empresa = request.empresa
+    agente = get_object_or_404(
+        Agente.objects.select_related('usuario', 'perfil', 'equipe', 'carteira'),
+        pk=agente_id,
+        carteira__empresa=empresa
+    )
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'messages': {'agente': {'__all__': ['JSON inválido']}}}, status=400)
+
+        # campos_obrigatorios = AgenteService.campos_obrigatorios(data, agente, empresa)
+        edita_usuario = AgenteService.edita_usuario(data, agente, empresa)
+        if not edita_usuario['success']:
+            return JsonResponse(edita_usuario, status=400)
+
+        return JsonResponse(edita_usuario, status=200)
+
+    context = {
+        'agente': {
+            'id': agente.id,
+            'first_name': agente.usuario.first_name,
+            'last_name': agente.usuario.last_name,
+            'email': agente.email or '',
+            'cpf': agente.cpf or '',
+            'perfil_id': agente.perfil.id,
+            'equipe_id': agente.equipe.id,
+        },
+        'perfis': list(Perfil.objects.filter(ativo=True).values('id', 'codigo')),
+        'equipes': list(Equipe.objects.filter(ativo=True).values('id', 'nome')),
+    }
+    return JsonResponse(context)
+
+
