@@ -39,8 +39,8 @@ class AgenteService:
             return ResponsePattern.error('usuario', ['Usuário já existe.'])
 
         carteira = get_object_or_404(Carteira, pk=data['carteira_id'], empresa=empresa, ativo=True)
-        equipe = get_object_or_404(Equipe, pk=data['equipe_id'], ativo=True)
-        perfil = get_object_or_404(Perfil, pk=data['perfil_id'], ativo=True)
+        equipe = get_object_or_404(Equipe, pk=data['equipe_id'], empresa=empresa, ativo=True)
+        perfil = get_object_or_404(Perfil, pk=data['perfil_id'], empresa=empresa, ativo=True)
 
         try:
             with transaction.atomic():
