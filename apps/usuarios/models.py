@@ -99,6 +99,7 @@ class Equipe(models.Model):
     Funções:
     - Agrupa agentes para fins de visibilidade e metas.
     """
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     nome = models.CharField('Nome', max_length=100)
     responsavel = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -125,6 +126,7 @@ class Perfil(models.Model):
 
     Cada Perfil está ligado a um Group do Django para controle de permissões.
     """
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     codigo = models.CharField('Perfil', max_length=50, choices=PerfilAgente.choices)
     escopo = models.CharField(max_length=20, choices=EscopoAgente.choices)
     grupo = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
