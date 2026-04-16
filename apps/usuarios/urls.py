@@ -7,4 +7,5 @@ urlpatterns = [
     path('agentes/', agentes.lista_agentes, name='lista_agentes'),
     path('novo_agente/', agentes.novo_agente, name='novo_agente'),
     path('agente/<int:agente_id>/toggle/', agentes.toggle_ativo_agente, name='toggle_agente'),
+    path('agente/<int:agente_id>/editar/', agentes.editar_agente, name='editar_agente')
 ]
