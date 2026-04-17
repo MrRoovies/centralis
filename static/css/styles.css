@@ -380,3 +380,148 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+
+
+/* ============================================================
+   MENU CASCATA
+   ============================================================ */
+
+/* ── Item base ── */
+.menu-item {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* ── Link simples (sem filhos) ── */
+.menu-link {
+    display: flex;
+    align-items: center;
+    padding: 16px 25px;
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    transition: background 0.2s, padding-left 0.2s;
+    gap: 0;
+}
+
+.menu-link:hover {
+    background: #f8f9fa;
+    padding-left: 30px;
+}
+
+.menu-link.active {
+    background: linear-gradient(135deg, #0079a9 0%, #d3f3ff 100%);
+    color: white;
+    font-weight: 600;
+}
+
+/* ── Trigger de grupo (botão com chevron) ── */
+.menu-group-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 16px 25px;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, padding-left 0.2s;
+    gap: 0;
+}
+
+.menu-group-trigger:hover {
+    background: #f8f9fa;
+    padding-left: 30px;
+}
+
+.menu-group-trigger.open {
+    background: #f0f8ff;
+    color: #0079a9;
+    font-weight: 600;
+}
+
+/* Chevron: roda 180° quando aberto */
+.menu-chevron {
+    margin-left: auto;
+    color: #bbb;
+    flex-shrink: 0;
+    transition: transform 0.25s ease, color 0.2s;
+}
+
+.menu-group-trigger.open .menu-chevron {
+    transform: rotate(180deg);
+    color: #0079a9;
+}
+
+/* ── Label e ícone ── */
+.menu-label {
+    flex: 1;
+}
+
+.menu-icon-item {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── Submenu (colapsável) ── */
+.menu-submenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    background: #f7fbfd;
+    border-left: 3px solid #e0f0f8;
+    transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Sublink ── */
+.menu-sublink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 25px 11px 36px;
+    color: #555;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.15s, color 0.15s, padding-left 0.15s;
+}
+
+.menu-sublink:hover {
+    background: #e8f4fb;
+    color: #0079a9;
+    padding-left: 42px;
+}
+
+.menu-sublink.active {
+    color: #0079a9;
+    font-weight: 700;
+    background: #ddf0fa;
+}
+
+.menu-sublink.active .menu-sub-dot {
+    background: #0079a9;
+    transform: scale(1.4);
+}
+
+/* Bolinha indicadora antes do label */
+.menu-sub-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #c0d8e8;
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.menu-sublink:hover .menu-sub-dot {
+    background: #0079a9;
+}
