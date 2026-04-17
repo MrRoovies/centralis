@@ -4,9 +4,7 @@ from apps.core.responses.pattern import ResponsePattern
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-
 from apps.usuarios.models import Carteira, Equipe, Perfil
-
 
 class AgenteService:
     @staticmethod
@@ -15,7 +13,6 @@ class AgenteService:
             Agente.objects.filter(carteira__empresa=empresa)
             .select_related('usuario', 'perfil', 'carteira', 'equipe')
             .order_by('carteira__nome', 'usuario__first_name'))
-
         return qs
 
     @staticmethod
@@ -24,13 +21,12 @@ class AgenteService:
         return qs.filter(**filtro)
 
     @staticmethod
-    def campos_obrigatorios(data, empresa):
+    def campos_obrigatorios(data):
         for k, v in data.items():
-            if k == 'email' or k == 'senha':
+            if k in ['email', 'senha']:
                 continue
             if not data.get(k):
                 return ResponsePattern.error(k, [f"{k} não pode ser vazio"])
-
         return ResponsePattern.success('filtro', ['Filtros pareados com sucesso'])
 
     @staticmethod

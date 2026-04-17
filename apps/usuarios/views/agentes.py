@@ -2,12 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-
 from apps.usuarios.models import Agente, Carteira, Perfil, Equipe
 from django.views.decorators.http import require_GET, require_POST
-
 from apps.usuarios.services.agente_service import AgenteService
-
 import json
 
 @login_required
