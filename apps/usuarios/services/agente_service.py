@@ -31,7 +31,7 @@ class AgenteService:
             if not data.get(k):
                 return ResponsePattern.error(k, [f"{k} não pode ser vazio"])
 
-        return AgenteService.registra_usuario(data, empresa)
+        return ResponsePattern.success('filtro', ['Filtros pareados com sucesso'])
 
     @staticmethod
     def registra_usuario(data, empresa):
@@ -64,7 +64,7 @@ class AgenteService:
                     nascimento=data['nascimento'],
                     email=data['email'],
                 )
-            return ResponsePattern.success('agente', ['Agente criado com sucesso!'])
+            return ResponsePattern.success('agente', ['✓ Agente cadastrado com sucesso!'])
 
         except Exception as e:
             return ResponsePattern.error('agente', [str(e)])
@@ -88,7 +88,7 @@ class AgenteService:
                 agente.equipe = equipe
                 agente.save()
 
-            return ResponsePattern.success('agente', ['Agente atualizado com sucesso!'])
+            return ResponsePattern.success('agente', ['✓ Agente atualizado com sucesso!'])
 
         except Exception as e:
             return ResponsePattern.error('agente', [str(e)])

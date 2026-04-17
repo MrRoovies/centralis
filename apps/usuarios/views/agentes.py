@@ -67,11 +67,14 @@ def novo_agente(request):
             return JsonResponse({'success': False, 'messages': {'__all__': ['JSON inválido']}}, status=400)
 
         campos_obrigatorios = AgenteService.campos_obrigatorios(data, empresa)
-
         if not campos_obrigatorios['success']:
             return JsonResponse(campos_obrigatorios, status=400)
 
-        return JsonResponse(campos_obrigatorios, status=201)
+        registrar = AgenteService.registra_usuario(data, empresa)
+        if not registrar['success']:
+            return JsonResponse(registrar, status=400)
+
+        return JsonResponse(registrar, status=201)
 
     # GET → retorna dados para o modal de criação
     context = {
@@ -116,7 +119,10 @@ def editar_agente(request, agente_id):
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'messages': {'agente': {'__all__': ['JSON inválido']}}}, status=400)
 
-        # campos_obrigatorios = AgenteService.campos_obrigatorios(data, agente, empresa)
+        campos_obrigatorios = AgenteService.campos_obrigatorios(data, empresa)
+        if not campos_obrigatorios['success']:
+            return JsonResponse(campos_obrigatorios, status=400)
+
         edita_usuario = AgenteService.edita_usuario(data, agente, empresa)
         if not edita_usuario['success']:
             return JsonResponse(edita_usuario, status=400)
