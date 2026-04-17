@@ -14,9 +14,9 @@ form.addEventListener('submit', function(e) {
     })
     .then( data  => {
         // Caso erro de validação retornado via throw
-        const groupedErrors = data.messages;
-        let allErrors = flattenGroupedMessages(groupedErrors);
-        renderFormMessage(form, allErrors);
+        const groupedMessages = data.messages;
+        let allMessages = flattenGroupedMessages(groupedMessages);
+        renderFormMessage(form, allMessages);
         form.reset();
     })
     .catch( error => {

@@ -25,8 +25,12 @@ function abrirDrawerEditar(agenteId, nomeAgente) {
         .then(data => {
             _preencherFormulario(data);
         })
-        .catch(() => {
-            _mostrarFeedback('Erro ao carregar dados do agente.', 'error');
+        .catch((err) => {
+            const groupedErrors = err.messages;
+            let allErrors = flattenGroupedMessages(groupedErrors);
+            renderFormMessage(form, allErrors);
+
+            triggerShake(form.id);
         });
 }
 
@@ -118,37 +122,21 @@ function salvarEdicaoAgente() {
         return d;
     })
     .then(d => {
-        _mostrarFeedback('✓ Agente atualizado com sucesso!', 'success');
+        const groupedMessages = d.messages;
+        let allMessages = flattenGroupedMessages(groupedMessages);
+        renderFormMessage(form, allMessages);
+
         setTimeout(() => {
             fecharDrawerEditar();
             location.reload();
         }, 1000);
     })
     .catch(err => {
-        const msgs = err?.messages?.agente || {};
-        let temErroEspecifico = false;
+        const groupedErrors = err.messages;
+        let allErrors = flattenGroupedMessages(groupedErrors);
+        renderFormMessage(form, allErrors);
 
-        Object.entries(msgs).forEach(([campo, erros]) => {
-            if (campo === '__all__' || campo === 'success') {
-                _mostrarFeedback(
-                    Array.isArray(erros) ? erros.join(' ') : erros,
-                    campo === 'success' ? 'success' : 'error'
-                );
-                return;
-            }
-            const errEl = document.getElementById(`err-edit-${campo}`);
-            const inpEl = form.querySelector(`[name="${campo}"]`);
-            if (errEl) {
-                errEl.textContent = Array.isArray(erros) ? erros.join(' ') : erros;
-                errEl.style.display = 'block';
-            }
-            if (inpEl) inpEl.classList.add('ag-drawer__input--error');
-            temErroEspecifico = true;
-        });
-
-        if (!temErroEspecifico && !Object.keys(msgs).length) {
-            _mostrarFeedback('Erro ao salvar. Tente novamente.', 'error');
-        }
+        triggerShake(form.id);
     })
     .finally(() => {
         btn.disabled = false;
@@ -191,13 +179,6 @@ function _limparErros() {
     document.querySelectorAll('.ag-drawer__input--error').forEach(el => {
         el.classList.remove('ag-drawer__input--error');
     });
-}
-
-function _mostrarFeedback(msg, tipo) {
-    const el = document.getElementById('drawerFeedback');
-    el.textContent = msg;
-    el.className = `ag-drawer__feedback ag-drawer__feedback--${tipo}`;
-    el.style.display = 'block';
 }
 
 // Fecha com ESC

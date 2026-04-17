@@ -2,6 +2,7 @@
 let dadosModal = null;
 
 function abrirModalNovoAgente() {
+    form = document.getElementById('novoAgenteForm');
     document.getElementById('agModalOverlay').classList.add('active');
     limparModal();
 
@@ -9,15 +10,16 @@ function abrirModalNovoAgente() {
         preencherSelects(dadosModal);
         return;
     }
-
     fetch('/usuarios/novo_agente/')
         .then(r => r.json())
         .then(data => {
             dadosModal = data;
             preencherSelects(data);
         })
-        .catch(() => {
-            mostrarFeedback('Erro ao carregar formulário.', 'error');
+        .catch((err) => {
+            const groupedErrors = error.messages;
+            let allErrors = flattenGroupedMessages(groupedErrors);
+            renderFormMessage(form, allErrors);
         });
 }
 
@@ -56,12 +58,6 @@ function limparModal() {
     });
 }
 
-function mostrarFeedback(msg, tipo) {
-    const el = document.getElementById('agModalFeedback');
-    el.textContent = msg;
-    el.className = `ag-modal-feedback ag-modal-feedback--${tipo}`;
-}
-
 function salvarNovoAgente() {
     const form = document.getElementById('novoAgenteForm');
     const btn  = document.getElementById('btnSalvarAgente');
@@ -94,34 +90,19 @@ function salvarNovoAgente() {
         return d;
     })
     .then(d => {
-        mostrarFeedback('✓ Agente cadastrado com sucesso!', 'success');
+        const groupedMessages = d.messages;
+        let allMessages = flattenGroupedMessages(groupedMessages);
+        renderFormMessage(form, allMessages);
+
         setTimeout(() => {
             fecharModalNovoAgente();
             location.reload();
         }, 1200);
     })
     .catch(err => {
-        const msgs = err?.messages?.agente || {};
-        let temErro = false;
-
-        Object.entries(msgs).forEach(([campo, erros]) => {
-            if (campo === '__all__' || campo === 'success') {
-                mostrarFeedback(erros.join(' '), campo === 'success' ? 'success' : 'error');
-                return;
-            }
-            const errEl  = document.getElementById(`err-${campo}`);
-            const inpEl  = form.querySelector(`[name="${campo}"]`);
-            if (errEl) {
-                errEl.textContent = Array.isArray(erros) ? erros.join(' ') : erros;
-                errEl.classList.add('visible');
-            }
-            if (inpEl) inpEl.classList.add('error');
-            temErro = true;
-        });
-
-        if (!temErro && !Object.keys(msgs).length) {
-            mostrarFeedback('Erro ao cadastrar agente. Tente novamente.', 'error');
-        }
+        const groupedErrors = err.messages;
+        let allErrors = flattenGroupedMessages(groupedErrors);
+        renderFormMessage(form, allErrors);
 
         triggerShake(form.id);
     })
