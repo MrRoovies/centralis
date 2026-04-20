@@ -8,7 +8,7 @@ import json
 
 from apps.usuarios.models import Perfil, Equipe, Carteira
 from apps.core.choices import PerfilAgente, EscopoAgente
-
+from apps.usuarios.services.equipe_perfil_service import PerfilService
 
 # ═══════════════════════════════════════════
 # PERFIS
@@ -52,92 +52,35 @@ def lista_configuracoes(request):
 
 @login_required
 def perfil_detail(request, perfil_id=None):
-    """GET → dados para preencher drawer | POST → criar ou editar."""
     empresa = request.empresa
 
-    if request.method == 'GET':
-        if perfil_id:
-            perfil = get_object_or_404(Perfil, pk=perfil_id, empresa=empresa)
-            data = {
-                'id': perfil.id,
-                'codigo': perfil.codigo,
-                'escopo': perfil.escopo,
-                'grupo_id': perfil.grupo_id,
-                'ativo': perfil.ativo,
-            }
-        else:
-            data = {}
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {'success': False, 'messages': {'perfil': {'__all__': ['JSON inválido']}}},
+                status=400
+            )
 
-        return JsonResponse({
-            'perfil': data,
-            'perfil_choices': PerfilAgente.choices,
-            'escopo_choices': EscopoAgente.choices,
-            'groups': list(Group.objects.values('id', 'name').order_by('name')),
-        })
+        campos_obrigatorios = PerfilService.campos_obrigatorios(data)
+        if not campos_obrigatorios['success']:
+            return JsonResponse(campos_obrigatorios, status=400)
 
-    # POST — criar ou editar
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse(
-            {'success': False, 'messages': {'perfil': {'__all__': ['JSON inválido']}}},
-            status=400
-        )
+        cria_ou_edita = PerfilService.cria_ou_edita(data, perfil_id, empresa)
+        if not cria_ou_edita['success']:
+            return JsonResponse(cria_ou_edita, status=400)
 
-    codigo   = data.get('codigo', '').strip()
-    escopo   = data.get('escopo', '').strip()
-    grupo_id = data.get('grupo_id')
-    ativo    = data.get('ativo', True)
-    criar_grupo_nome = data.get('criar_grupo_nome', '').strip()
+        return JsonResponse(cria_ou_edita, status=200)
 
-    errors = {}
-    if not codigo:
-        errors['codigo'] = ['Código do perfil é obrigatório.']
-    if not escopo:
-        errors['escopo'] = ['Escopo é obrigatório.']
 
-    if errors:
-        return JsonResponse(
-            {'success': False, 'messages': {'perfil': errors}}, status=400
-        )
-
-    try:
-        with transaction.atomic():
-            # Resolve o grupo: cria novo ou usa existente
-            grupo = None
-            if criar_grupo_nome:
-                grupo, _ = Group.objects.get_or_create(name=criar_grupo_nome)
-            elif grupo_id:
-                grupo = get_object_or_404(Group, pk=grupo_id)
-
-            if perfil_id:
-                perfil = get_object_or_404(Perfil, pk=perfil_id, empresa=empresa)
-                perfil.codigo = codigo
-                perfil.escopo = escopo
-                perfil.grupo  = grupo
-                perfil.ativo  = ativo
-                perfil.save()
-                msg = 'Perfil atualizado com sucesso!'
-            else:
-                perfil = Perfil.objects.create(
-                    empresa=empresa,
-                    codigo=codigo,
-                    escopo=escopo,
-                    grupo=grupo,
-                    ativo=ativo,
-                )
-                msg = 'Perfil criado com sucesso!'
-
-        return JsonResponse({
-            'success': True,
-            'messages': {'perfil': {'success': [msg]}}
-        })
-
-    except Exception as e:
-        return JsonResponse(
-            {'success': False, 'messages': {'perfil': {'__all__': [str(e)]}}},
-            status=400
-        )
+    """GET → dados para preencher drawer | POST → criar ou editar."""
+    return JsonResponse({
+        'perfil': PerfilService.detalhes(perfil_id, empresa),
+        'perfil_choices': PerfilAgente.choices,
+        'escopo_choices': EscopoAgente.choices,
+        'groups': list(Group.objects.values('id', 'name').order_by('name')),
+    })
 
 
 @login_required
