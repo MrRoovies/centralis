@@ -1,0 +1,390 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/configuracoes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div class="cfg-page-header">
+        <div>
+            <h2 class="page-title">Perfil e Equipe</h2>
+            <span class="cfg-page-sub">Perfis de acesso e equipes da empresa</span>
+        </div>
+    </div>
+
+    <!-- ══ GRID PRINCIPAL: 2 colunas ════════════════════════ -->
+    <div class="cfg-grid">
+
+        <!-- ─────────────────────────────────────────────────
+             COLUNA ESQUERDA — PERFIS
+        ───────────────────────────────────────────────────── -->
+        <section class="cfg-panel">
+
+            <div class="cfg-panel__head">
+                <div class="cfg-panel__head-info">
+                    <div class="cfg-panel__icon cfg-panel__icon--perfil">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <circle cx="9" cy="6" r="3.5" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M2 16c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                            <circle cx="14" cy="3" r="2.5" fill="currentColor" opacity=".35"/>
+                            <path d="M13 3l.8.8 1.6-1.6" stroke="white" stroke-width="1.1" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="cfg-panel__title">Perfis de Acesso</h3>
+                        <span class="cfg-panel__count">{{ perfis|length }} perfil{{ perfis|length|pluralize }}</span>
+                    </div>
+                </div>
+                <button class="cfg-btn-novo cfg-btn-novo--perfil"
+                        onclick="abrirDrawer('perfil', null)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Novo Perfil
+                </button>
+            </div>
+
+            <div class="cfg-panel__body">
+                {% if perfis %}
+                    <ul class="cfg-list">
+                        {% for perfil in perfis %}
+                        <li class="cfg-list__item {% if not perfil.ativo %}cfg-list__item--inativo{% endif %}"
+                            id="perfil-row-{{ perfil.id }}">
+
+                            <div class="cfg-list__left">
+                                <div class="cfg-badge cfg-badge--{{ perfil.codigo|lower }}">
+                                    {{ perfil.get_codigo_display }}
+                                </div>
+                                <div class="cfg-list__info">
+                                    <span class="cfg-list__escopo">
+                                        Escopo: <strong>{{ perfil.get_escopo_display }}</strong>
+                                    </span>
+                                    <span class="cfg-list__grupo">
+                                        {% if perfil.grupo %}
+                                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                <path d="M1 5h8M5 1v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".5"/>
+                                            </svg>
+                                            Group: {{ perfil.grupo.name }}
+                                        {% else %}
+                                            <span class="cfg-list__sem-grupo">sem group vinculado</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="cfg-list__actions">
+                                <div class="cfg-status-pill {% if perfil.ativo %}cfg-status-pill--ativo{% else %}cfg-status-pill--inativo{% endif %}">
+                                    {{ perfil.ativo|yesno:"Ativo,Inativo" }}
+                                </div>
+                                <button class="cfg-btn-icon cfg-btn-icon--edit"
+                                        title="Editar"
+                                        onclick="abrirDrawer('perfil', {{ perfil.id }})">
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="cfg-btn-icon cfg-btn-icon--toggle"
+                                        title="{{ perfil.ativo|yesno:'Desativar,Ativar' }}"
+                                        onclick="toggleItem('perfil', {{ perfil.id }}, this)">
+                                    {% if perfil.ativo %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="cfg-empty">
+                        <div class="cfg-empty__icon">🔐</div>
+                        <p>Nenhum perfil cadastrado.</p>
+                        <button class="cfg-btn-novo cfg-btn-novo--perfil"
+                                onclick="abrirDrawer('perfil', null)">
+                            Criar primeiro perfil
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────
+             COLUNA DIREITA — EQUIPES
+        ───────────────────────────────────────────────────── -->
+        <section class="cfg-panel">
+
+            <div class="cfg-panel__head">
+                <div class="cfg-panel__head-info">
+                    <div class="cfg-panel__icon cfg-panel__icon--equipe">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <circle cx="6" cy="6" r="2.8" stroke="currentColor" stroke-width="1.6"/>
+                            <circle cx="12" cy="6" r="2.8" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M1 15c0-2.761 2.239-5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                            <path d="M9 15c0-2.761 2.239-5 5-5 2.761 0 5 2.239 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="cfg-panel__title">Equipes</h3>
+                        <span class="cfg-panel__count">{{ equipes|length }} equipe{{ equipes|length|pluralize }}</span>
+                    </div>
+                </div>
+                <button class="cfg-btn-novo cfg-btn-novo--equipe"
+                        onclick="abrirDrawer('equipe', null)">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Nova Equipe
+                </button>
+            </div>
+
+            <div class="cfg-panel__body">
+                {% if equipes %}
+                    <ul class="cfg-list">
+                        {% for equipe in equipes %}
+                        <li class="cfg-list__item {% if not equipe.ativo %}cfg-list__item--inativo{% endif %}"
+                            id="equipe-row-{{ equipe.id }}">
+
+                            <div class="cfg-list__left">
+                                <div class="cfg-equipe-avatar">
+                                    {{ equipe.nome|first|upper }}
+                                </div>
+                                <div class="cfg-list__info">
+                                    <span class="cfg-list__nome">{{ equipe.nome }}</span>
+                                    <span class="cfg-list__resp">
+                                        {% if equipe.responsavel %}
+                                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                                <circle cx="5" cy="3.5" r="2" stroke="currentColor" stroke-width="1.2"/>
+                                                <path d="M1 9c0-2.209 1.791-4 4-4s4 1.791 4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                                            </svg>
+                                            {{ equipe.responsavel.get_full_name|default:equipe.responsavel.username }}
+                                        {% else %}
+                                            <span class="cfg-list__sem-grupo">sem responsável</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="cfg-list__actions">
+                                <div class="cfg-status-pill {% if equipe.ativo %}cfg-status-pill--ativo{% else %}cfg-status-pill--inativo{% endif %}">
+                                    {{ equipe.ativo|yesno:"Ativa,Inativa" }}
+                                </div>
+                                <button class="cfg-btn-icon cfg-btn-icon--edit"
+                                        title="Editar"
+                                        onclick="abrirDrawer('equipe', {{ equipe.id }})">
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="cfg-btn-icon cfg-btn-icon--toggle"
+                                        title="{{ equipe.ativo|yesno:'Desativar,Ativar' }}"
+                                        onclick="toggleItem('equipe', {{ equipe.id }}, this)">
+                                    {% if equipe.ativo %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="cfg-empty">
+                        <div class="cfg-empty__icon">👥</div>
+                        <p>Nenhuma equipe cadastrada.</p>
+                        <button class="cfg-btn-novo cfg-btn-novo--equipe"
+                                onclick="abrirDrawer('equipe', null)">
+                            Criar primeira equipe
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+    </div><!-- /cfg-grid -->
+</div>
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     DRAWER LATERAL (compartilhado entre Perfil e Equipe)
+══════════════════════════════════════════════════════════ -->
+<div class="cfg-overlay" id="cfgOverlay" onclick="fecharDrawer()"></div>
+
+<aside class="cfg-drawer" id="cfgDrawer">
+
+    <!-- Header dinâmico -->
+    <div class="cfg-drawer__header" id="cfgDrawerHeader">
+        <div class="cfg-drawer__header-left">
+            <div class="cfg-drawer__header-icon" id="cfgDrawerIcon"></div>
+            <div>
+                <h3 class="cfg-drawer__title" id="cfgDrawerTitle">—</h3>
+                <span class="cfg-drawer__subtitle" id="cfgDrawerSubtitle"></span>
+            </div>
+        </div>
+        <button class="cfg-drawer__close" onclick="fecharDrawer()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Feedback -->
+    <div class="cfg-drawer__feedback" id="cfgFeedback" style="display:none"></div>
+
+    <!-- Body -->
+    <div class="cfg-drawer__body" id="cfgDrawerBody">
+        <div class="cfg-drawer__spinner" id="cfgSpinner">
+            <div class="cfg-spinner"></div>
+            <span>Carregando...</span>
+        </div>
+
+        <!-- ── FORM PERFIL ── -->
+        <form id="formPerfil" class="cfg-form" style="display:none">
+
+            <div class="cfg-form__section">Identificação</div>
+
+            <div class="cfg-form__row">
+                <div class="cfg-form__group">
+                    <label class="cfg-form__label">Código do Perfil <span class="req">*</span></label>
+                    <select name="codigo" id="pf_codigo" class="cfg-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for val, label in perfil_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="cfg-form__error" id="err-pf-codigo"></span>
+                </div>
+                <div class="cfg-form__group">
+                    <label class="cfg-form__label">Escopo <span class="req">*</span></label>
+                    <select name="escopo" id="pf_escopo" class="cfg-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for val, label in escopo_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="cfg-form__error" id="err-pf-escopo"></span>
+                </div>
+            </div>
+
+            <div class="cfg-form__section" style="margin-top:20px">
+                Group Django (Permissões)
+            </div>
+
+            <!-- Toggle: usar existente ou criar novo -->
+            <div class="cfg-group-toggle">
+                <button type="button" class="cfg-group-tab active" id="tabExistente"
+                        onclick="setGroupMode('existente')">
+                    Usar group existente
+                </button>
+                <button type="button" class="cfg-group-tab" id="tabNovo"
+                        onclick="setGroupMode('novo')">
+                    Criar novo group
+                </button>
+            </div>
+
+            <div id="modoExistente" class="cfg-form__group" style="margin-top:10px">
+                <label class="cfg-form__label">Group do Django</label>
+                <select name="grupo_id" id="pf_grupo_id" class="cfg-form__input">
+                    <option value="">Nenhum (sem permissões de group)</option>
+                </select>
+            </div>
+
+            <div id="modoNovo" class="cfg-form__group" style="display:none; margin-top:10px">
+                <label class="cfg-form__label">Nome do novo Group</label>
+                <input type="text" name="criar_grupo_nome" id="pf_criar_grupo_nome"
+                       class="cfg-form__input" placeholder="ex: Supervisores_Vendas">
+                <small class="cfg-form__hint">
+                    Será criado via <code>Group.objects.get_or_create(name=...)</code>
+                </small>
+            </div>
+
+            <div class="cfg-form__row" style="margin-top:20px">
+                <div class="cfg-form__group">
+                    <label class="cfg-form__label">Status</label>
+                    <div class="cfg-toggle-wrap">
+                        <input type="checkbox" id="pf_ativo" name="ativo" class="cfg-toggle-input" checked>
+                        <label class="cfg-toggle-label" for="pf_ativo">
+                            <span class="cfg-toggle-knob"></span>
+                        </label>
+                        <span class="cfg-toggle-text" id="pf_ativo_text">Ativo</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- ── FORM EQUIPE ── -->
+        <form id="formEquipe" class="cfg-form" style="display:none">
+
+            <div class="cfg-form__section">Identificação</div>
+
+            <div class="cfg-form__row cfg-form__row--single">
+                <div class="cfg-form__group">
+                    <label class="cfg-form__label">Nome da Equipe <span class="req">*</span></label>
+                    <input type="text" name="nome" id="eq_nome"
+                           class="cfg-form__input" placeholder="ex: Equipe Alfa" required>
+                    <span class="cfg-form__error" id="err-eq-nome"></span>
+                </div>
+            </div>
+
+            <div class="cfg-form__section" style="margin-top:20px">Responsável</div>
+
+            <div class="cfg-form__row cfg-form__row--single">
+                <div class="cfg-form__group">
+                    <label class="cfg-form__label">Responsável pela equipe</label>
+                    <select name="responsavel_id" id="eq_responsavel_id" class="cfg-form__input">
+                        <option value="">Nenhum</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="cfg-form__row" style="margin-top:20px">
+                <div class="cfg-form__group">
+                    <label class="cfg-form__label">Status</label>
+                    <div class="cfg-toggle-wrap">
+                        <input type="checkbox" id="eq_ativo" name="ativo" class="cfg-toggle-input" checked>
+                        <label class="cfg-toggle-label" for="eq_ativo">
+                            <span class="cfg-toggle-knob"></span>
+                        </label>
+                        <span class="cfg-toggle-text" id="eq_ativo_text">Ativa</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="cfg-drawer__footer">
+        <button class="cfg-drawer__btn-cancel" onclick="fecharDrawer()">Cancelar</button>
+        <button class="cfg-drawer__btn-save" id="cfgBtnSalvar" onclick="salvarDrawer()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="cfgBtnLabel">Salvar</span>
+        </button>
+    </div>
+</aside>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/configuracoes.js' %}" defer></script>
+{% endblock %}

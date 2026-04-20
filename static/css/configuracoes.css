@@ -1,0 +1,722 @@
+/* ============================================================
+   CONFIGURACOES.CSS — Perfis e Equipes
+   Depende de: base.css, styles.css
+   ============================================================ */
+
+/* ── Variáveis locais ── */
+:root {
+    --cfg-perfil:   #04375F;
+    --cfg-perfil2:  #007AAA;
+    --cfg-equipe:   #1A7A42;
+    --cfg-equipe2:  #27ae60;
+    --cfg-border:   #E8EDF2;
+    --cfg-bg:       #F4F7FA;
+    --cfg-radius:   10px;
+    --cfg-shadow:   0 2px 12px rgba(15,25,35,.08);
+}
+
+/* ── Page header ── */
+.cfg-page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cfg-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1a2e3b;
+    margin: 0;
+    letter-spacing: -.5px;
+}
+
+.cfg-page-sub {
+    display: block;
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+}
+
+/* ── Grid de 2 colunas ── */
+.cfg-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ── Painel (card) ── */
+.cfg-panel {
+    background: white;
+    border-radius: var(--cfg-radius);
+    box-shadow: var(--cfg-shadow);
+    border: 1px solid var(--cfg-border);
+    overflow: hidden;
+}
+
+/* ── Head do painel ── */
+.cfg-panel__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--cfg-border);
+    background: #FAFBFD;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cfg-panel__head-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cfg-panel__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cfg-panel__icon--perfil {
+    background: linear-gradient(135deg, var(--cfg-perfil), var(--cfg-perfil2));
+    color: white;
+}
+
+.cfg-panel__icon--equipe {
+    background: linear-gradient(135deg, var(--cfg-equipe), var(--cfg-equipe2));
+    color: white;
+}
+
+.cfg-panel__title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a2e3b;
+    margin: 0;
+}
+
+.cfg-panel__count {
+    font-size: 12px;
+    color: #aaa;
+    display: block;
+    margin-top: 1px;
+}
+
+/* ── Botão novo ── */
+.cfg-btn-novo {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.cfg-btn-novo--perfil {
+    background: linear-gradient(90deg, var(--cfg-perfil), var(--cfg-perfil2));
+    color: white;
+}
+
+.cfg-btn-novo--perfil:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(4,55,95,.3);
+}
+
+.cfg-btn-novo--equipe {
+    background: linear-gradient(90deg, var(--cfg-equipe), var(--cfg-equipe2));
+    color: white;
+}
+
+.cfg-btn-novo--equipe:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(26,122,66,.3);
+}
+
+/* ── Body do painel ── */
+.cfg-panel__body {
+    padding: 12px 0;
+    min-height: 120px;
+}
+
+/* ── Lista de itens ── */
+.cfg-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.cfg-list__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 22px;
+    border-bottom: 1px solid #f4f4f4;
+    gap: 12px;
+    transition: background .15s;
+}
+
+.cfg-list__item:last-child { border-bottom: none; }
+.cfg-list__item:hover { background: #f8fbfd; }
+
+.cfg-list__item--inativo {
+    opacity: 0.52;
+}
+
+.cfg-list__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Avatar letras (equipe) */
+.cfg-equipe-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cfg-equipe), var(--cfg-equipe2));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.cfg-list__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.cfg-list__nome {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a2e3b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cfg-list__escopo {
+    font-size: 11px;
+    color: #888;
+}
+
+.cfg-list__escopo strong { color: #555; }
+
+.cfg-list__grupo,
+.cfg-list__resp {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #aaa;
+}
+
+.cfg-list__sem-grupo {
+    font-style: italic;
+    color: #ccc;
+}
+
+/* ── Badges perfil ── */
+.cfg-badge {
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cfg-badge--adm        { background: #1a2e3b; color: white; }
+.cfg-badge--diretor    { background: #2d4a5e; color: white; }
+.cfg-badge--gerente    { background: #e8f4fd; color: #1a6fa8; }
+.cfg-badge--supervisor { background: #fef9e7; color: #9a6f00; }
+.cfg-badge--agente     { background: #eafaf1; color: #1e8449; }
+.cfg-badge--visitante  { background: #f4f4f4; color: #888; }
+
+/* ── Status pill ── */
+.cfg-status-pill {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cfg-status-pill--ativo {
+    background: #eafaf1;
+    color: #1e8449;
+}
+
+.cfg-status-pill--inativo {
+    background: #f4f4f4;
+    color: #aaa;
+}
+
+/* ── Botões de ação na lista ── */
+.cfg-list__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.cfg-btn-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    transition: all .2s;
+    flex-shrink: 0;
+}
+
+.cfg-btn-icon--edit:hover {
+    border-color: #007AAA;
+    color: #007AAA;
+    background: #f0f8ff;
+}
+
+.cfg-btn-icon--toggle:hover {
+    border-color: #e07070;
+    color: #e07070;
+    background: #fff5f5;
+}
+
+/* ── Empty state ── */
+.cfg-empty {
+    text-align: center;
+    padding: 40px 24px;
+    color: #bbb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.cfg-empty__icon { font-size: 36px; }
+
+.cfg-empty p {
+    font-size: 13px;
+    color: #aaa;
+    margin: 0;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   DRAWER LATERAL
+════════════════════════════════════════════════════════════ */
+
+/* ── Overlay ── */
+.cfg-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 20, 40, 0.45);
+    z-index: 1100;
+    backdrop-filter: blur(2px);
+}
+.cfg-overlay.active { display: block; }
+
+/* ── Drawer ── */
+.cfg-drawer {
+    position: fixed;
+    top: 0;
+    right: -520px;
+    width: 480px;
+    max-width: 96vw;
+    height: 100vh;
+    background: white;
+    z-index: 1101;
+    box-shadow: -6px 0 40px rgba(0,0,0,.15);
+    display: flex;
+    flex-direction: column;
+    transition: right .32s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+}
+.cfg-drawer.active { right: 0; }
+
+/* ── Header do drawer ── */
+.cfg-drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    color: white;
+    flex-shrink: 0;
+    gap: 14px;
+}
+
+.cfg-drawer__header--perfil {
+    background: linear-gradient(90deg, var(--cfg-perfil) 0%, var(--cfg-perfil2) 100%);
+}
+
+.cfg-drawer__header--equipe {
+    background: linear-gradient(90deg, var(--cfg-equipe) 0%, var(--cfg-equipe2) 100%);
+}
+
+.cfg-drawer__header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.cfg-drawer__header-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.18);
+    border: 1.5px solid rgba(255,255,255,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cfg-drawer__title {
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.cfg-drawer__subtitle {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+    display: block;
+    margin-top: 2px;
+}
+
+.cfg-drawer__close {
+    background: rgba(255,255,255,.15);
+    border: none;
+    border-radius: 7px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+.cfg-drawer__close:hover { background: rgba(255,255,255,.28); }
+
+/* ── Feedback ── */
+.cfg-drawer__feedback {
+    padding: 11px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.cfg-drawer__feedback--success {
+    background: #eafaf1;
+    color: #1e8449;
+    border-bottom: 1px solid #c3e6cb;
+}
+
+.cfg-drawer__feedback--error {
+    background: #fff5f5;
+    color: #c0392b;
+    border-bottom: 1px solid #f5c6c6;
+}
+
+/* ── Body ── */
+.cfg-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+/* ── Spinner ── */
+.cfg-drawer__spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 180px;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.cfg-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #007AAA;
+    border-radius: 50%;
+    animation: cfg-spin .7s linear infinite;
+}
+
+@keyframes cfg-spin { to { transform: rotate(360deg); } }
+
+/* ── Formulário dentro do drawer ── */
+.cfg-form {}
+
+.cfg-form__section {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #007AAA;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8f4f8;
+}
+
+.cfg-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.cfg-form__row--single {
+    grid-template-columns: 1fr;
+}
+
+.cfg-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cfg-form__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+
+.cfg-form__label .req { color: #e07070; margin-left: 2px; }
+
+.cfg-form__hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 3px;
+}
+
+.cfg-form__hint code {
+    background: #f4f4f4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    color: #555;
+}
+
+.cfg-form__input {
+    padding: 10px 13px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #333;
+    background: white;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+}
+
+.cfg-form__input:focus {
+    outline: none;
+    border-color: #007AAA;
+    box-shadow: 0 0 0 3px rgba(0,122,170,.1);
+}
+
+.cfg-form__input--error {
+    border-color: #e07070 !important;
+    box-shadow: 0 0 0 3px rgba(224,112,112,.12) !important;
+}
+
+.cfg-form__error {
+    font-size: 11px;
+    color: #e07070;
+    display: none;
+}
+
+/* ── Toggle tabs (group mode) ── */
+.cfg-group-toggle {
+    display: flex;
+    gap: 0;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.cfg-group-tab {
+    flex: 1;
+    padding: 9px 14px;
+    border: none;
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.cfg-group-tab + .cfg-group-tab {
+    border-left: 1.5px solid #e0e0e0;
+}
+
+.cfg-group-tab.active {
+    background: #007AAA;
+    color: white;
+}
+
+.cfg-group-tab:hover:not(.active) {
+    background: #f5f5f5;
+    color: #555;
+}
+
+/* ── Toggle switch (ativo/inativo) ── */
+.cfg-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.cfg-toggle-input {
+    display: none;
+}
+
+.cfg-toggle-label {
+    width: 44px;
+    height: 24px;
+    background: #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background .25s;
+    flex-shrink: 0;
+}
+
+.cfg-toggle-input:checked + .cfg-toggle-label {
+    background: #27ae60;
+}
+
+.cfg-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    transition: transform .25s;
+}
+
+.cfg-toggle-input:checked + .cfg-toggle-label .cfg-toggle-knob {
+    transform: translateX(20px);
+}
+
+.cfg-toggle-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* ── Footer ── */
+.cfg-drawer__footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
+    background: #fafbfc;
+    flex-shrink: 0;
+}
+
+.cfg-drawer__btn-cancel {
+    padding: 10px 22px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.cfg-drawer__btn-cancel:hover {
+    background: #f5f5f5;
+    color: #555;
+}
+
+.cfg-drawer__btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 7px;
+    background: linear-gradient(90deg, #04375F 0%, #007AAA 100%);
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+}
+
+.cfg-drawer__btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,122,170,.35);
+}
+
+.cfg-drawer__btn-save:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .cfg-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .cfg-drawer { width: 100%; max-width: 100%; }
+    .cfg-form__row { grid-template-columns: 1fr; }
+    .cfg-panel__head { flex-direction: column; align-items: flex-start; }
+}
