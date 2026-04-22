@@ -6,9 +6,9 @@ from django.views.decorators.http import require_GET, require_POST
 from django.db import transaction
 import json
 
-from apps.usuarios.models import Perfil, Equipe, Carteira
+from apps.usuarios.models import Perfil, Equipe, Carteira, Agente
 from apps.core.choices import PerfilAgente, EscopoAgente
-from apps.usuarios.services.equipe_perfil_service import PerfilService
+from apps.usuarios.services.equipe_perfil_service import EquipeService, PerfilService, campos_obrigatorios
 
 # ═══════════════════════════════════════════
 # PERFIS
@@ -63,12 +63,13 @@ def perfil_detail(request, perfil_id=None):
                 status=400
             )
 
-        campos_obrigatorios = PerfilService.campos_obrigatorios(data)
-        if not campos_obrigatorios['success']:
-            return JsonResponse(campos_obrigatorios, status=400)
+        campos = ['codigo', 'escopo', 'grupo_id']
+        validacao = campos_obrigatorios(data, 'perfil', campos)
+        if not validacao.get('success'):
+            return JsonResponse(validacao, status=400)
 
         cria_ou_edita = PerfilService.cria_ou_edita(data, perfil_id, empresa)
-        if not cria_ou_edita['success']:
+        if not cria_ou_edita.get('success'):
             return JsonResponse(cria_ou_edita, status=400)
 
         return JsonResponse(cria_ou_edita, status=200)
@@ -108,80 +109,34 @@ def equipe_detail(request, equipe_id=None):
     """GET → dados para drawer | POST → criar ou editar."""
     empresa = request.empresa
 
-    if request.method == 'GET':
-        usuarios = list(
-            User.objects
-            .filter(agente__carteira__empresa=empresa, is_active=True)
-            .values('id', 'first_name', 'last_name', 'username')
-            .order_by('first_name')
-        )
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {'success': False, 'messages': {'equipe': {'__all__': ['JSON inválido']}}},
+                status=400
+            )
 
-        if equipe_id:
-            equipe = get_object_or_404(Equipe, pk=equipe_id, empresa=empresa)
-            data = {
-                'id': equipe.id,
-                'nome': equipe.nome,
-                'responsavel_id': equipe.responsavel_id,
-                'ativo': equipe.ativo,
-            }
-        else:
-            data = {}
+        campos = ['nome', 'responsavel_id', 'ativo']
+        validacao = campos_obrigatorios(data, 'equipe', campos)
+        if not validacao.get('success'):
+            return JsonResponse(validacao, status=400)
 
-        return JsonResponse({'equipe': data, 'usuarios': usuarios})
+        cria_ou_edita = EquipeService.cria_ou_edita(data, equipe_id, empresa)
+        if not cria_ou_edita.get('success'):
+            return JsonResponse(cria_ou_edita, status=400)
 
-    # POST
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse(
-            {'success': False, 'messages': {'equipe': {'__all__': ['JSON inválido']}}},
-            status=400
-        )
+        return JsonResponse(cria_ou_edita, status=200)
 
-    nome           = data.get('nome', '').strip()
-    responsavel_id = data.get('responsavel_id') or None
-    ativo          = data.get('ativo', True)
 
-    if not nome:
-        return JsonResponse(
-            {'success': False, 'messages': {'equipe': {'nome': ['Nome é obrigatório.']}}},
-            status=400
-        )
+    # Detalhes de equipe - GET:
+    detalhes = EquipeService.detalhes(equipe_id, empresa)
+    if not detalhes.get('success'):
+        return JsonResponse(detalhes, status=400)
 
-    responsavel = None
-    if responsavel_id:
-        responsavel = get_object_or_404(
-            User, pk=responsavel_id, agente__carteira__empresa=empresa
-        )
+    return JsonResponse(detalhes['data'], status=200)
 
-    try:
-        with transaction.atomic():
-            if equipe_id:
-                equipe = get_object_or_404(Equipe, pk=equipe_id, empresa=empresa)
-                equipe.nome        = nome
-                equipe.responsavel = responsavel
-                equipe.ativo       = ativo
-                equipe.save()
-                msg = 'Equipe atualizada com sucesso!'
-            else:
-                equipe = Equipe.objects.create(
-                    empresa=empresa,
-                    nome=nome,
-                    responsavel=responsavel,
-                    ativo=ativo,
-                )
-                msg = 'Equipe criada com sucesso!'
-
-        return JsonResponse({
-            'success': True,
-            'messages': {'equipe': {'success': [msg]}}
-        })
-
-    except Exception as e:
-        return JsonResponse(
-            {'success': False, 'messages': {'equipe': {'__all__': [str(e)]}}},
-            status=400
-        )
 
 
 @login_required

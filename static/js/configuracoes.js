@@ -117,9 +117,9 @@ function _preencherForm(tipo, data) {
         selResp.innerHTML = '<option value="">Nenhum</option>';
         (data.usuarios || []).forEach(u => {
             const opt = document.createElement('option');
-            opt.value = u.id;
-            opt.textContent = (u.first_name + ' ' + u.last_name).trim() || u.username;
-            if (u.id === equipe.responsavel_id) opt.selected = true;
+            opt.value = u.usuario_id;
+            opt.textContent = (u.nome).trim() || u.usuario__username;
+            if (u.usuario_id === equipe.responsavel_id) opt.selected = true;
             selResp.appendChild(opt);
         });
 
