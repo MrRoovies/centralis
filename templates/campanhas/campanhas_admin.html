@@ -1,0 +1,482 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/campanhas_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div class="ca-header">
+        <div class="ca-header__left">
+            <h2 class="ca-title">Gestão de Campanhas</h2>
+            <span class="ca-subtitle">{{ total }} campanha{{ total|pluralize }} cadastrada{{ total|pluralize }}</span>
+        </div>
+
+        <div class="ca-counters">
+            <div class="ca-counter ca-counter--total">
+                <span class="ca-counter__num">{{ total }}</span>
+                <span class="ca-counter__label">Total</span>
+            </div>
+            <div class="ca-counter ca-counter--ativa">
+                <span class="ca-counter__num">{{ ativas }}</span>
+                <span class="ca-counter__label">Ativas</span>
+            </div>
+            <div class="ca-counter ca-counter--inativa">
+                <span class="ca-counter__num">{{ inativas }}</span>
+                <span class="ca-counter__label">Inativas</span>
+            </div>
+        </div>
+
+        <button class="ca-btn-novo" onclick="abrirDrawer('campanha', null)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Nova Campanha
+        </button>
+    </div>
+
+    <!-- ══ FILTROS ══════════════════════════════════════════ -->
+    <form method="get" id="filtroForm">
+        <div class="ca-filtros">
+            <div class="ca-filtros__grid">
+                <div class="ca-filtros__group">
+                    <label class="ca-filtros__label">Carteira</label>
+                    <select name="carteira_id" class="ca-filtros__input">
+                        <option value="">Todas</option>
+                        {% for c in carteiras %}
+                        <option value="{{ c.id }}"
+                            {% if filtros.carteira_id == c.id|stringformat:"s" %}selected{% endif %}>
+                            {{ c.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="ca-filtros__group">
+                    <label class="ca-filtros__label">Modo</label>
+                    <select name="modo_atendimento" class="ca-filtros__input">
+                        <option value="">Todos</option>
+                        {% for m in modos %}
+                        <option value="{{ m.value }}"
+                            {% if filtros.modo_atendimento == m.value %}selected{% endif %}>
+                            {{ m.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="ca-filtros__group">
+                    <label class="ca-filtros__label">Status</label>
+                    <select name="distribuicao_ativa" class="ca-filtros__input">
+                        <option value="">Todos</option>
+                        <option value="1" {% if filtros.distribuicao_ativa == "1" %}selected{% endif %}>Ativas</option>
+                        <option value="0" {% if filtros.distribuicao_ativa == "0" %}selected{% endif %}>Inativas</option>
+                    </select>
+                </div>
+
+                <div class="ca-filtros__group">
+                    <label class="ca-filtros__label">Nome</label>
+                    <input type="text" name="nome__icontains" class="ca-filtros__input"
+                           placeholder="Buscar por nome..."
+                           value="{{ filtros.nome__icontains }}">
+                </div>
+            </div>
+
+            <div class="ca-filtros__actions">
+                <button type="submit" class="ca-btn ca-btn--primary">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Filtrar
+                </button>
+                <a href="?" class="ca-btn ca-btn--ghost">Limpar</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- ══ TABELA ══════════════════════════════════════════ -->
+    <div class="ca-table-wrap">
+        {% if campanhas %}
+        <table class="ca-table">
+            <thead>
+                <tr>
+                    <th>Campanha</th>
+                    <th>Carteira</th>
+                    <th>Modo</th>
+                    <th>Distribuição</th>
+                    <th>Agentes</th>
+                    <th>Clientes</th>
+                    <th>Status</th>
+                    <th>Criada em</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for campanha in campanhas %}
+                <tr class="ca-row {% if not campanha.distribuicao_ativa %}ca-row--inativa{% endif %}"
+                    id="ca-row-{{ campanha.id }}">
+
+                    <td>
+                        <span class="ca-nome">{{ campanha.nome }}</span>
+                    </td>
+
+                    <td>
+                        <span class="ca-carteira">{{ campanha.carteira.nome }}</span>
+                    </td>
+
+                    <td>
+                        <span class="ca-badge ca-badge--{{ campanha.modo_atendimento|lower }}">
+                            {{ campanha.get_modo_atendimento_display }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="ca-dist">{{ campanha.get_metodo_distribuicao_display }}</span>
+                    </td>
+
+                    <td class="ca-num-cell">
+                        <span class="ca-pill ca-pill--agente">{{ campanha.total_agentes }}</span>
+                    </td>
+
+                    <td class="ca-num-cell">
+                        <span class="ca-pill ca-pill--mailing">{{ campanha.total_clientes }}</span>
+                    </td>
+
+                    <td>
+                        {% if campanha.distribuicao_ativa %}
+                            <span class="ca-status ca-status--ativa">Ativa</span>
+                        {% else %}
+                            <span class="ca-status ca-status--inativa">Inativa</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="ca-data">{{ campanha.created_at|date:"d/m/Y" }}</td>
+
+                    <td>
+                        <div class="ca-actions">
+                            <!-- Editar campanha -->
+                            <button class="ca-btn-action ca-btn-action--edit"
+                                    title="Editar campanha"
+                                    onclick="abrirDrawer('campanha', {{ campanha.id }})">
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+
+                            <!-- Gerenciar Agentes -->
+                            <button class="ca-btn-action ca-btn-action--agente"
+                                    title="Gerenciar agentes"
+                                    onclick="abrirDrawer('agentes', {{ campanha.id }})">
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+                                    <path d="M2 12c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+
+                            <!-- Importar Mailing -->
+                            <button class="ca-btn-action ca-btn-action--mailing"
+                                    title="Importar mailing / adicionar clientes"
+                                    onclick="abrirDrawer('mailing', {{ campanha.id }})">
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <path d="M7 2v7M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M2 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+
+                            <!-- Ativar/Desativar -->
+                            <button class="ca-btn-action ca-btn-action--toggle"
+                                    title="{% if campanha.distribuicao_ativa %}Desativar{% else %}Ativar{% endif %}"
+                                    onclick="toggleCampanha({{ campanha.id }}, this)">
+                                {% if campanha.distribuicao_ativa %}
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                    <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                </svg>
+                                {% else %}
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                    <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {% endif %}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Paginação -->
+        {% if campanhas.has_other_pages %}
+        <div class="ca-paginacao">
+            {% if campanhas.has_previous %}
+                <a href="?{{ query_string }}&page={{ campanhas.previous_page_number }}" class="ca-page-btn">←</a>
+            {% endif %}
+            {% for num in campanhas.paginator.page_range %}
+                {% if campanhas.number == num %}
+                    <span class="ca-page-btn ca-page-btn--active">{{ num }}</span>
+                {% elif num > campanhas.number|add:"-3" and num < campanhas.number|add:"3" %}
+                    <a href="?{{ query_string }}&page={{ num }}" class="ca-page-btn">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if campanhas.has_next %}
+                <a href="?{{ query_string }}&page={{ campanhas.next_page_number }}" class="ca-page-btn">→</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="ca-empty">
+            <div class="ca-empty__icon">📋</div>
+            <p class="ca-empty__title">Nenhuma campanha encontrada</p>
+            <p class="ca-empty__sub">Ajuste os filtros ou crie uma nova campanha.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     DRAWER LATERAL (compartilhado: campanha | agentes | mailing)
+══════════════════════════════════════════════════════════ -->
+<div class="ca-overlay" id="caOverlay" onclick="fecharDrawer()"></div>
+
+<aside class="ca-drawer" id="caDrawer">
+
+    <!-- Header dinâmico -->
+    <div class="ca-drawer__header" id="caDrawerHeader">
+        <div class="ca-drawer__header-left">
+            <div class="ca-drawer__header-icon" id="caDrawerIcon"></div>
+            <div>
+                <h3 class="ca-drawer__title" id="caDrawerTitle">—</h3>
+                <span class="ca-drawer__subtitle" id="caDrawerSubtitle"></span>
+            </div>
+        </div>
+        <button class="ca-drawer__close" onclick="fecharDrawer()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Feedback -->
+    <div class="ca-drawer__feedback" id="caFeedback" style="display:none"></div>
+
+    <!-- Body -->
+    <div class="ca-drawer__body" id="caDrawerBody">
+        <div class="ca-drawer__spinner" id="caSpinner">
+            <div class="ca-spinner"></div>
+            <span>Carregando...</span>
+        </div>
+
+        <!-- ══ FORM: CAMPANHA ══════════════════════════════ -->
+        <form id="formCampanha" class="ca-form" style="display:none">
+
+            <div class="ca-form__section">Identificação</div>
+            <div class="ca-form__row ca-form__row--single">
+                <div class="ca-form__group">
+                    <label class="ca-form__label">Nome da Campanha <span class="req">*</span></label>
+                    <input type="text" name="nome" id="cp_nome" class="ca-form__input"
+                           placeholder="ex: Campanha Agosto 2026" required>
+                    <span class="ca-form__error" id="err-cp-nome"></span>
+                </div>
+            </div>
+
+            <div class="ca-form__row">
+                <div class="ca-form__group">
+                    <label class="ca-form__label">Carteira <span class="req">*</span></label>
+                    <select name="carteira_id" id="cp_carteira" class="ca-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for c in carteiras %}
+                        <option value="{{ c.id }}">{{ c.nome }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="ca-form__error" id="err-cp-carteira"></span>
+                </div>
+                <div class="ca-form__group">
+                    <label class="ca-form__label">Modo de Atendimento <span class="req">*</span></label>
+                    <select name="modo_atendimento" id="cp_modo" class="ca-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for m in modos %}
+                        <option value="{{ m.value }}">{{ m.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="ca-form__error" id="err-cp-modo"></span>
+                </div>
+            </div>
+
+            <div class="ca-form__row">
+                <div class="ca-form__group">
+                    <label class="ca-form__label">Método de Distribuição <span class="req">*</span></label>
+                    <select name="metodo_distribuicao" id="cp_metodo" class="ca-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for o in ordens %}
+                        <option value="{{ o.value }}">{{ o.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="ca-form__error" id="err-cp-metodo"></span>
+                </div>
+                <div class="ca-form__group">
+                    <label class="ca-form__label">Status</label>
+                    <div class="ca-toggle-wrap">
+                        <input type="checkbox" id="cp_ativo" name="distribuicao_ativa" class="ca-toggle-input" checked>
+                        <label class="ca-toggle-label" for="cp_ativo">
+                            <span class="ca-toggle-knob"></span>
+                        </label>
+                        <span class="ca-toggle-text" id="cp_ativo_text">Ativa</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- ══ PAINEL: AGENTES ════════════════════════════ -->
+        <div id="painelAgentes" style="display:none">
+
+            <div class="ca-form__section">Agentes Vinculados</div>
+
+            <!-- Lista de agentes vinculados -->
+            <div id="listaAgentesVinculados" class="ca-agentes-lista"></div>
+
+            <div class="ca-form__section" style="margin-top:20px">Vincular Novo Agente</div>
+
+            <div class="ca-form__row ca-form__row--single">
+                <div class="ca-form__group">
+                    <label class="ca-form__label">Selecione o Agente</label>
+                    <select id="selectNovoAgente" class="ca-form__input">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+            </div>
+            <button class="ca-btn-inline ca-btn-inline--agente" onclick="vincularAgente()">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Vincular Agente
+            </button>
+        </div>
+
+        <!-- ══ PAINEL: MAILING ════════════════════════════ -->
+        <div id="painelMailing" style="display:none">
+
+            <!-- Tabs: busca individual / importação CSV -->
+            <div class="ca-mailing-tabs">
+                <button class="ca-mailing-tab active" id="tabBusca" onclick="setMailingMode('busca')">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/>
+                        <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                    Busca Individual
+                </button>
+                <button class="ca-mailing-tab" id="tabCsv" onclick="setMailingMode('csv')">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                        <path d="M2 2h7l3 3v7H2V2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                        <path d="M9 2v3h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 8h6M4 10h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                    Importar CSV
+                </button>
+            </div>
+
+            <!-- MODO BUSCA INDIVIDUAL -->
+            <div id="modoBusca">
+                <div class="ca-form__section" style="margin-top:16px">Buscar Cliente</div>
+
+                <div class="ca-search-tabs">
+                    <button class="ca-search-tab active" data-field="documento" onclick="setSearchField(this)">CPF</button>
+                    <button class="ca-search-tab" data-field="nome" onclick="setSearchField(this)">Nome</button>
+                    <button class="ca-search-tab" data-field="telefone" onclick="setSearchField(this)">Telefone</button>
+                </div>
+
+                <div class="ca-form__row ca-form__row--single" style="margin-top:10px">
+                    <div class="ca-form__group ca-search-input-wrap">
+                        <input type="text" id="inputBuscaCliente" class="ca-form__input"
+                               placeholder="Digite o CPF do cliente...">
+                        <button class="ca-btn-search" onclick="buscarClienteMailing()">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M10 10L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultadoBuscaMailing"></div>
+            </div>
+
+            <!-- MODO CSV -->
+            <div id="modoCsv" style="display:none">
+                <div class="ca-form__section" style="margin-top:16px">Importar via CSV</div>
+
+                <div class="ca-csv-info">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 7v4M8 5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>O CSV deve conter a coluna <strong>documento</strong> (CPF/CNPJ). Opcionalmente: <strong>prioridade</strong>.</span>
+                </div>
+
+                <div class="ca-csv-drop" id="csvDrop"
+                     ondragover="event.preventDefault(); this.classList.add('ca-csv-drop--over')"
+                     ondragleave="this.classList.remove('ca-csv-drop--over')"
+                     ondrop="handleCsvDrop(event)">
+                    <div class="ca-csv-drop__icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <path d="M16 4v16M10 14l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 24v2a2 2 0 002 2h16a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="ca-csv-drop__text">Arraste o CSV aqui ou</p>
+                    <label class="ca-btn-inline ca-btn-inline--csv" style="cursor:pointer">
+                        Selecionar arquivo
+                        <input type="file" id="csvFile" accept=".csv" style="display:none"
+                               onchange="handleCsvFile(this)">
+                    </label>
+                    <p class="ca-csv-drop__name" id="csvFileName"></p>
+                </div>
+
+                <div id="csvPreview" class="ca-csv-preview"></div>
+
+                <button class="ca-btn-inline ca-btn-inline--agente" id="btnImportarCsv"
+                        style="display:none; margin-top:12px" onclick="importarCsv()">
+                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                        <path d="M7 2v7M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                    Importar Clientes
+                </button>
+            </div>
+
+            <!-- Resumo mailing da campanha -->
+            <div class="ca-form__section" style="margin-top:24px">Resumo do Mailing</div>
+            <div id="resumoMailing" class="ca-mailing-resumo">
+                <div class="ca-spinner" style="margin:20px auto"></div>
+            </div>
+        </div>
+
+    </div><!-- /body -->
+
+    <!-- Footer (só para campanha) -->
+    <div class="ca-drawer__footer" id="caDrawerFooter">
+        <button class="ca-drawer__btn-cancel" onclick="fecharDrawer()">Cancelar</button>
+        <button class="ca-drawer__btn-save" id="caBtnSalvar" onclick="salvarDrawer()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="caBtnLabel">Salvar</span>
+        </button>
+    </div>
+</aside>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/formHandler.js' %}" defer></script>
+    <script src="{% static 'js/campanhas_admin.js' %}" defer></script>
+{% endblock %}
