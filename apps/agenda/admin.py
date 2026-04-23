@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Agenda, Acionamento, Situacao
+from .models import Agenda, Acionamento, Situacao, CarteiraSituacao
 
 # ===============================
 # Inline do Acionamento para Agenda
@@ -48,3 +48,10 @@ class SituacaoAdmin(admin.ModelAdmin):
     list_filter = ('tipo', 'ativo')
     search_fields = ('nome',)
     ordering = ('tipo', 'nome')
+
+@admin.register(CarteiraSituacao)
+class CarteiraSituacaoAdmin(admin.ModelAdmin):
+    list_display = ('carteira', 'situacao')
+    list_filter = ('carteira', )
+    search_fields = ('situacao__nome', 'carteira__nome')
+    ordering = ('carteira', )

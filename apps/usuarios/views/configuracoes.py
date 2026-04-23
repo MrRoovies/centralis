@@ -118,7 +118,7 @@ def equipe_detail(request, equipe_id=None):
                 status=400
             )
 
-        campos = ['nome', 'responsavel_id', 'ativo']
+        campos = ['nome', 'ativo']
         validacao = campos_obrigatorios(data, 'equipe', campos)
         if not validacao.get('success'):
             return JsonResponse(validacao, status=400)

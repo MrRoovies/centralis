@@ -90,6 +90,7 @@ class VendaAdmin(admin.ModelAdmin):
         "usuario",
         "esteira",
         "valor",
+        "taxa",
         "prazo",
         "created_at"
     )

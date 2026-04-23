@@ -63,7 +63,7 @@ def novo_agente(request):
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'messages': {'__all__': ['JSON inválido']}}, status=400)
 
-        campos_obrigatorios = AgenteService.campos_obrigatorios(data, empresa)
+        campos_obrigatorios = AgenteService.campos_obrigatorios(data)
         if not campos_obrigatorios['success']:
             return JsonResponse(campos_obrigatorios, status=400)
 
