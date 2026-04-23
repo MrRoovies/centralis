@@ -44,7 +44,7 @@ class AcionamentoAdmin(admin.ModelAdmin):
 # ===============================
 @admin.register(Situacao)
 class SituacaoAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'tipo', 'carteira', 'ativo')
-    list_filter = ('tipo', 'carteira', 'ativo')
+    list_display = ('nome', 'tipo', 'ativo')
+    list_filter = ('tipo', 'ativo')
     search_fields = ('nome',)
     ordering = ('tipo', 'nome')

@@ -81,6 +81,10 @@ class Carteira(models.Model):
     nome = models.CharField('Nome Carteira', max_length=50)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     ativo = models.BooleanField(default=True)
+    situacoes = models.ManyToManyField(
+        'agenda.Situacao',
+        through='agenda.CarteiraSituacao'
+    )
 
     def __str__(self):
         return f"{self.nome} ({self.empresa.nome})"

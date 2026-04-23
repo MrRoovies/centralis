@@ -163,12 +163,23 @@ class Situacao(models.Model):
     from apps.core.choices import TipoSituacao
     nome = models.CharField('Situacao', max_length=50, blank=False, null=False)
     tipo = models.CharField('Tipo', max_length=15, choices=TipoSituacao.choices, blank=False, null=False)
-    carteira = models.ForeignKey(Carteira, on_delete=models.SET_NULL, null=True, blank=True)
+    # carteira = models.ForeignKey(Carteira, on_delete=models.SET_NULL, null=True, blank=True)
     ativo = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('nome', 'carteira')
+        # unique_together = ('nome', 'carteira')
         ordering = ['tipo']
 
     def __str__(self):
         return f"{self.nome} ({self.tipo})"
+
+
+class CarteiraSituacao(models.Model):
+    carteira = models.ForeignKey(Carteira, on_delete=models.CASCADE)
+    situacao = models.ForeignKey('Situacao', on_delete=models.CASCADE)
+
+    # ativo = models.BooleanField(default=True)
+    # ordem = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('carteira', 'situacao')
