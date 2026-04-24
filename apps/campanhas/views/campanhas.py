@@ -97,7 +97,7 @@ def proximo_cliente(request, id_campanha):
     if not proximo:
         return JsonResponse({"fim_da_fila": True})
 
-    situacoes = Situacao.objects.filter(carteira=usuario.agente.carteira)
+    situacoes = campanha.carteira.situacoes.all()
     situacoes_tela = situacoes.filter(ativo=True)
 
     if proximo.situacao.tipo != "CURSO":
@@ -184,7 +184,7 @@ def adiantar_agenda(request, id_campanha):
     if not resultado["success"]:
         return JsonResponse({"erro": resultado["errors"]}, status=400)
 
-    situacoes = Situacao.objects.filter(carteira=usuario.agente.carteira)
+    situacoes = campanha_cliente.campanha.carteira.situacoes.all()
     situacoes_tela = situacoes.filter(ativo=True)
 
     situacao_curso = situacoes.filter(tipo="CURSO").first()

@@ -226,8 +226,8 @@ def adicionar_cliente_mailing(request, campanha_id):
 
     cliente = get_object_or_404(Cliente, pk=cliente_id, empresa=request.empresa)
 
-    situacao_inicial = Situacao.objects.filter(
-        tipo='INICIAL', carteira=campanha.carteira
+    situacao_inicial = campanha.carteira.situacoes.filter(
+        tipo='INICIAL'
     ).first()
 
     if not situacao_inicial:
@@ -285,8 +285,8 @@ def importar_csv_mailing(request, campanha_id):
             ResponsePattern.error('mailing', ['Nenhum cliente para importar.']), status=400
         )
 
-    situacao_inicial = Situacao.objects.filter(
-        tipo='INICIAL', carteira=campanha.carteira
+    situacao_inicial = campanha.carteira.situacoes.filter(
+        tipo='INICIAL'
     ).first()
 
     if not situacao_inicial:

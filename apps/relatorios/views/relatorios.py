@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET
 from django.utils import timezone
+from datetime import datetime, time
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -120,11 +121,13 @@ def agendas_list(request):
     }
 
     if not any(filtro.values()):
-        hoje = timezone.now().date()
-        filtro = {
-            "data_entrada__gte": hoje.isoformat(),
-            "data_entrada__lte": hoje.isoformat()
-        }
+        hoje = timezone.localdate()
+
+        inicio = timezone.make_aware(datetime.combine(hoje, time.min))
+        fim = timezone.make_aware(datetime.combine(hoje, time.max))
+
+        filtro["data_entrada__gte"] = inicio
+        filtro["data_entrada__lte"] = fim
 
     queryset = service.gerar(request.empresa, filtro, usuario)
     totais = service.calcular_totais(queryset)

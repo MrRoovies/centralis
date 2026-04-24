@@ -1,12 +1,36 @@
-from apps.agenda.models import Agenda, Acionamento, Situacao
+from apps.agenda.models import Agenda, Acionamento, Situacao, CarteiraSituacao
 from apps.usuarios.models import Carteira
 from django.contrib.auth.models import User
 from apps.core.regras_acesso import RegrasAcesso
 from django.db.models import Count
+from datetime import datetime, time
+from django.utils import timezone
 
 
 class RelatorioAgendaService:
     def gerar(self, empresa, filtro, usuario):
+        data_inicio = filtro.get("data_entrada__gte")
+        data_fim = filtro.get("data_entrada__lte")
+
+        if isinstance(data_inicio, str):
+            data_inicio = timezone.make_aware(
+                datetime.combine(
+                    datetime.strptime(data_inicio, "%Y-%m-%d").date(),
+                    time.min
+                )
+            )
+
+        if isinstance(data_fim, str):
+            data_fim = timezone.make_aware(
+                datetime.combine(
+                    datetime.strptime(data_fim, "%Y-%m-%d").date(),
+                    time.max
+                )
+            )
+
+        filtro["data_entrada__gte"] = data_inicio
+        filtro["data_entrada__lte"] = data_fim
+
         qs = listar_agendas(empresa, filtro, usuario)
 
         return qs.select_related(
@@ -23,9 +47,9 @@ class RelatorioAgendaService:
         return {
             'agendas': agendas,
             "carteiras": Carteira.objects.filter(empresa=empresa, ativo=True).order_by('nome'),
-            "situacoes": Situacao.objects.filter(
+            "situacoes": CarteiraSituacao.objects.filter(
                 carteira__empresa=empresa,
-                ativo=True).values('tipo').order_by('tipo', 'nome').distinct(),
+                situacao__ativo=True).values('situacao__tipo').order_by('situacao__tipo').distinct(),
             "modos": [
                 {"value": m[0], "label": m[1]}
                 for m in ModoAtendimento.choices
@@ -34,6 +58,7 @@ class RelatorioAgendaService:
             'filtros': filtro,
             'totais': totais
         }
+
 
     def calcular_totais(self, agenda):
         qs = agenda.annotate(total_acionamentos=Count('acionamento'))

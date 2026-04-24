@@ -34,13 +34,13 @@
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">De</label>
                     <input type="date" name="data_entrada__gte" class="al-filtros__input"
-                           value="{{ filtros.data_entrada__gte }}">
+                           value="{{ filtros.data_entrada__gte|date:'Y-m-d' }}">
                 </div>
 
                 <div class="al-filtros__group">
                     <label class="al-filtros__label">Até</label>
                     <input type="date" name="data_entrada__lte" class="al-filtros__input"
-                           value="{{ filtros.data_entrada__lte }}">
+                           value="{{ filtros.data_entrada__lte|date:'Y-m-d' }}">
                 </div>
 
                 <div class="al-filtros__group">
@@ -61,9 +61,9 @@
                     <select name="situacao__tipo" class="al-filtros__input">
                         <option value="">Todas</option>
                         {% for s in situacoes %}
-                        <option value="{{ s.tipo }}"
-                            {% if filtros.situacao__tipo == s.tipo|stringformat:"s" %}selected{% endif %}>
-                            {{ s.tipo }}
+                        <option value="{{ s.situacao__tipo }}"
+                            {% if filtros.situacao__tipo == s.situacao__tipo|stringformat:"s" %}selected{% endif %}>
+                            {{ s.situacao__tipo }}
                         </option>
                         {% endfor %}
                     </select>
@@ -88,7 +88,7 @@
                         <option value="">Todos</option>
                         {% for m in modos %}
                         <option value="{{ m.value }}"
-                            {% if filtros.modo == m %}selected{% endif %}>
+                            {% if filtros.modo == m.value %}selected{% endif %}>
                             {{ m.label }}
                         </option>
                         {% endfor %}
