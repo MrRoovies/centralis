@@ -131,7 +131,11 @@ class Venda(models.Model):
         on_delete=models.PROTECT,
         related_name="vendas"
     )
-
+    carteira = models.ForeignKey(
+        "usuarios.Carteira",
+        on_delete=models.CASCADE,
+        related_name="carteira"
+    )
     # snapshot da oferta
     produto_nome = models.CharField("Produto nome", max_length=150)
     parceiro_nome = models.CharField("Parceito nome", max_length=150)
