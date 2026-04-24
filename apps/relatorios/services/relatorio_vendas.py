@@ -3,11 +3,33 @@ from apps.usuarios.models import Carteira
 from django.contrib.auth.models import User
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from apps.core.regras_acesso import RegrasAcesso
-
+from datetime import datetime, time
+from django.utils import timezone
 
 
 class RelatorioVendasService:
     def gerar(self, empresa, filtro, usuario):
+        data_inicio = filtro.get("created_at__gte")
+        data_fim = filtro.get("created_at__lte")
+
+        if isinstance(data_inicio, str):
+            data_inicio = timezone.make_aware(
+                datetime.combine(
+                    datetime.strptime(data_inicio, "%Y-%m-%d").date(),
+                    time.min
+                )
+            )
+
+        if isinstance(data_fim, str):
+            data_fim = timezone.make_aware(
+                datetime.combine(
+                    datetime.strptime(data_fim, "%Y-%m-%d").date(),
+                    time.max
+                )
+            )
+
+        filtro["created_at__gte"] = data_inicio
+        filtro["created_at__lte"] = data_fim
         qs = listar_vendas(empresa, filtro, usuario)
 
         return qs.select_related(
@@ -56,6 +78,7 @@ class RelatorioVendasService:
             'total_comissao': total_comissao,
             'total_vendas': total_vendas,
             'qs': qs}
+
 
 def listar_vendas(empresa, filtro, usuario):
     qs = Venda.objects.filter(

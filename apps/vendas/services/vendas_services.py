@@ -69,6 +69,7 @@ class VendasService:
                 novo = venda_form.save(commit=False)
                 novo.cliente = cliente
                 novo.agenda = agenda
+                novo.carteira = usuario.agente.carteira
                 novo.carteira_nome = usuario.agente.carteira.nome
                 novo.equipe_nome = usuario.agente.equipe.nome
                 novo.empresa = usuario.agente.carteira.empresa

@@ -32,7 +32,6 @@
     <!-- Painel de Filtros -->
     <div class="vl-filtros" id="vl-filtros">
         <form method="get" id="filtroForm">
-            {% csrf_token %}
             <div class="vl-filtros__grid">
 
                 <!-- Data Início -->
@@ -42,7 +41,7 @@
                         type="date"
                         name="created_at__gte"
                         class="vl-filtros__input"
-                        value="{{ filtros.created_at__gte }}"
+                        value="{{ filtros.created_at__gte|date:'Y-m-d' }}"
                     >
                 </div>
 
@@ -53,7 +52,7 @@
                         type="date"
                         name="created_at__lte"
                         class="vl-filtros__input"
-                        value="{{ filtros.created_at__lte }}"
+                        value="{{ filtros.created_at__lte|date:'Y-m-d' }}"
                     >
                 </div>
 

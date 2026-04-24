@@ -37,11 +37,13 @@ def relatorio_vendas(request):
     }
 
     if not any(filtro.values()):
-        hoje = timezone.now().date()
-        filtro = {
-            "created_at__gte": hoje.isoformat(),
-            "created_at__lte": hoje.isoformat()
-        }
+        hoje = timezone.localdate()
+
+        inicio = timezone.make_aware(datetime.combine(hoje, time.min))
+        fim = timezone.make_aware(datetime.combine(hoje, time.max))
+
+        filtro["created_at__gte"] = inicio
+        filtro["created_at__lte"] = fim
 
     queryset = service.gerar(request.empresa, filtro, usuario)
     totais = service.calcular_totais(queryset)
@@ -75,7 +77,7 @@ def detalhe_venda(request, venda_id):
 
     esteiras = Esteira.objects.filter(
         empresa=request.empresa,
-        carteira=agente.agente.carteira,
+        carteira=venda.carteira,
         ativo=True
     ).order_by('ordem')
 
