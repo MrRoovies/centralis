@@ -1,0 +1,331 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/importar_clientes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div class="ic-header">
+        <div class="ic-header__left">
+            <h2 class="ic-title">Importar Clientes</h2>
+            <span class="ic-subtitle">Cadastro em lote via arquivo CSV</span>
+        </div>
+        <a href="{% url 'clientes:cliente_novo' %}" class="ic-btn ic-btn--ghost">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M2 13c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Cadastro Manual
+        </a>
+    </div>
+
+    <!-- ══ GRID PRINCIPAL ═══════════════════════════════════ -->
+    <div class="ic-grid">
+
+        <!-- ─── COLUNA ESQUERDA ───────────────────────────── -->
+        <div class="ic-left">
+
+            <!-- CARD: Formato esperado -->
+            <div class="ic-card ic-card--info">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">📋</span>
+                    <h3 class="ic-card__title">Formato do CSV</h3>
+                    <a href="#" class="ic-link-download" onclick="baixarModelo(event)">
+                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                            <path d="M7 2v7M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        Baixar modelo
+                    </a>
+                </div>
+                <div class="ic-card__body">
+
+                    <!-- Dados do cliente -->
+                    <p class="ic-secao-label">Dados do Cliente</p>
+                    <div class="ic-colunas-grid">
+                        <div class="ic-coluna-item ic-coluna-item--required">
+                            <span class="ic-coluna-nome">nome</span>
+                            <span class="ic-coluna-desc">Nome completo</span>
+                            <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                        </div>
+                        <div class="ic-coluna-item ic-coluna-item--required">
+                            <span class="ic-coluna-nome">documento</span>
+                            <span class="ic-coluna-desc">CPF (11 dígitos) ou CNPJ (14)</span>
+                            <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                        </div>
+                        <div class="ic-coluna-item ic-coluna-item--required">
+                            <span class="ic-coluna-nome">tipo_pessoa</span>
+                            <span class="ic-coluna-desc">PF ou PJ</span>
+                            <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                        </div>
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">data_nascimento</span>
+                            <span class="ic-coluna-desc">DD/MM/AAAA</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">nome_mae</span>
+                            <span class="ic-coluna-desc">Nome da mãe</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">estado_civil</span>
+                            <span class="ic-coluna-desc">SOLTEIRO · CASADO · DIVORCIADO · VIUVO · UNIAO_ESTAVEL</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                    </div>
+
+                    <!-- Telefones -->
+                    <p class="ic-secao-label" style="margin-top:12px">Telefones (até 3)</p>
+                    <div class="ic-colunas-grid">
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">telefone1</span>
+                            <span class="ic-coluna-desc">Somente dígitos (10 ou 11)</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">telefone1_tipo</span>
+                            <span class="ic-coluna-desc">FIXO · CELULAR · CORPORATIVO</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item ic-coluna-item--muted">
+                            <span class="ic-coluna-nome">telefone2 / telefone2_tipo</span>
+                            <span class="ic-coluna-desc">Mesmo padrão — segundo número</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item ic-coluna-item--muted">
+                            <span class="ic-coluna-nome">telefone3 / telefone3_tipo</span>
+                            <span class="ic-coluna-desc">Mesmo padrão — terceiro número</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                    </div>
+
+                    <!-- E-mails -->
+                    <p class="ic-secao-label" style="margin-top:12px">E-mails (até 3)</p>
+                    <div class="ic-colunas-grid">
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">email1</span>
+                            <span class="ic-coluna-desc">Endereço de e-mail</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item">
+                            <span class="ic-coluna-nome">email1_tipo</span>
+                            <span class="ic-coluna-desc">PESSOAL · CORPORATIVO</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item ic-coluna-item--muted">
+                            <span class="ic-coluna-nome">email2 / email2_tipo</span>
+                            <span class="ic-coluna-desc">Mesmo padrão — segundo e-mail</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                        <div class="ic-coluna-item ic-coluna-item--muted">
+                            <span class="ic-coluna-nome">email3 / email3_tipo</span>
+                            <span class="ic-coluna-desc">Mesmo padrão — terceiro e-mail</span>
+                            <span class="ic-coluna-badge">opcional</span>
+                        </div>
+                    </div>
+
+                    <p class="ic-nota" style="margin-top:14px">
+                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/>
+                            <path d="M7 6v4M7 4v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                        Separador: vírgula (<code>,</code>). Codificação: UTF-8. Primeira linha deve ser o cabeçalho.
+                        Se <code>telefone1_tipo</code> for omitido, o sistema detecta automaticamente (CELULAR para 11 dígitos, FIXO para 10).
+                    </p>
+                </div>
+            </div>
+
+            <!-- CARD: Upload -->
+            <div class="ic-card">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">📂</span>
+                    <h3 class="ic-card__title">Selecionar Arquivo</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div class="ic-drop" id="icDrop"
+                         ondragover="event.preventDefault(); icDrop.classList.add('ic-drop--over')"
+                         ondragleave="icDrop.classList.remove('ic-drop--over')"
+                         ondrop="handleDrop(event)">
+                        <div class="ic-drop__ilustracao" id="icDropIlustracao">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <rect x="6" y="8" width="36" height="32" rx="3" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M6 16h36" stroke="currentColor" stroke-width="1.8"/>
+                                <path d="M14 8V6M24 8V6M34 8V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <path d="M24 24v8M20 29l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M14 22h6M14 26h4M14 30h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".4"/>
+                            </svg>
+                        </div>
+                        <p class="ic-drop__titulo" id="icDropTitulo">Arraste o arquivo CSV aqui</p>
+                        <p class="ic-drop__sub">ou</p>
+                        <label class="ic-btn ic-btn--outline" style="cursor:pointer">
+                            Selecionar arquivo
+                            <input type="file" id="icFile" accept=".csv,.txt" style="display:none"
+                                   onchange="handleFileInput(this)">
+                        </label>
+                        <p class="ic-drop__hint">Apenas arquivos .csv — máx. 5 MB</p>
+                    </div>
+
+                    <div class="ic-arquivo-selecionado" id="icArquivoSelecionado" style="display:none">
+                        <div class="ic-arquivo-info">
+                            <span class="ic-arquivo-icone">📄</span>
+                            <div>
+                                <span class="ic-arquivo-nome" id="icArquivoNome"></span>
+                                <span class="ic-arquivo-tamanho" id="icArquivoTamanho"></span>
+                            </div>
+                        </div>
+                        <button class="ic-btn-remover" onclick="removerArquivo()" title="Remover arquivo">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD: Opções -->
+            <div class="ic-card" id="icCardOpcoes" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">⚙️</span>
+                    <h3 class="ic-card__title">Opções de Importação</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div class="ic-opcoes-grid">
+
+                        <!-- Upsert -->
+                        <label class="ic-opcao-item">
+                            <div class="ic-opcao-toggle">
+                                <input type="checkbox" id="optUpsert" checked>
+                                <span class="ic-opcao-knob"></span>
+                            </div>
+                            <div class="ic-opcao-texto">
+                                <span class="ic-opcao-label">Atualizar duplicados</span>
+                                <span class="ic-opcao-desc">
+                                    Quando o CPF/CNPJ já existir, atualiza nome, nome da mãe,
+                                    data de nascimento e estado civil. Telefones e e-mails novos
+                                    são adicionados sem remover os existentes.
+                                </span>
+                            </div>
+                        </label>
+
+                        <!-- Continuar em erros -->
+                        <label class="ic-opcao-item">
+                            <div class="ic-opcao-toggle">
+                                <input type="checkbox" id="optPularErros" checked>
+                                <span class="ic-opcao-knob"></span>
+                            </div>
+                            <div class="ic-opcao-texto">
+                                <span class="ic-opcao-label">Continuar em caso de erro</span>
+                                <span class="ic-opcao-desc">Linhas inválidas são registradas no log e puladas</span>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão importar -->
+            <button class="ic-btn ic-btn--primary ic-btn--full" id="icBtnImportar"
+                    style="display:none" onclick="iniciarImportacao()">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                Importar Clientes
+            </button>
+
+        </div><!-- /ic-left -->
+
+        <!-- ─── COLUNA DIREITA ────────────────────────────── -->
+        <div class="ic-right">
+
+            <!-- Placeholder -->
+            <div class="ic-placeholder" id="icPlaceholder">
+                <div class="ic-placeholder__icon">
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                        <rect x="8" y="10" width="40" height="36" rx="4" stroke="currentColor" stroke-width="1.8" opacity=".3"/>
+                        <path d="M8 18h40" stroke="currentColor" stroke-width="1.8" opacity=".3"/>
+                        <path d="M16 10V8M28 10V8M40 10V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".3"/>
+                        <path d="M16 26h24M16 31h18M16 36h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".2"/>
+                    </svg>
+                </div>
+                <p class="ic-placeholder__titulo">Nenhum arquivo selecionado</p>
+                <p class="ic-placeholder__sub">Selecione um CSV para visualizar o preview antes de importar</p>
+            </div>
+
+            <!-- Preview -->
+            <div class="ic-card" id="icCardPreview" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">👁</span>
+                    <h3 class="ic-card__title">Preview do Arquivo</h3>
+                    <span class="ic-preview-badge" id="icPreviewBadge"></span>
+                </div>
+                <div class="ic-card__body ic-card__body--no-pad">
+                    <div class="ic-preview-wrap">
+                        <table class="ic-preview-table" id="icPreviewTable"></table>
+                    </div>
+                    <p class="ic-preview-nota" id="icPreviewNota"></p>
+                </div>
+            </div>
+
+            <!-- Validação -->
+            <div class="ic-card" id="icCardValidacao" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon" id="icValidacaoIcone">✅</span>
+                    <h3 class="ic-card__title">Validação</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div id="icValidacaoResumo"></div>
+                    <div class="ic-erros-lista" id="icErrosLista"></div>
+                </div>
+            </div>
+
+            <!-- Progresso -->
+            <div class="ic-card" id="icCardProgresso" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">⏳</span>
+                    <h3 class="ic-card__title">Importando...</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div class="ic-progresso">
+                        <div class="ic-progresso__bar-wrap">
+                            <div class="ic-progresso__bar" id="icProgressoBar"></div>
+                        </div>
+                        <span class="ic-progresso__texto" id="icProgressoTexto">0%</span>
+                    </div>
+                    <p class="ic-progresso__detalhe" id="icProgressoDetalhe">Iniciando importação...</p>
+                </div>
+            </div>
+
+            <!-- Resultado -->
+            <div class="ic-card" id="icCardResultado" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">🏁</span>
+                    <h3 class="ic-card__title">Resultado da Importação</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div class="ic-resultado-grid" id="icResultadoGrid"></div>
+                    <div id="icLogErros"></div>
+                    <div class="ic-resultado-acoes">
+                        <button class="ic-btn ic-btn--ghost" onclick="reiniciar()">
+                            Importar outro arquivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /ic-right -->
+
+    </div><!-- /ic-grid -->
+
+</div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/importar_clientes.js' %}" defer></script>
+{% endblock %}
