@@ -7,9 +7,8 @@ from django.core.exceptions import ValidationError
 import json
 import re
 from datetime import datetime
-
-from apps.clientes.models import Cliente, Telefone, Email
-from apps.clientes.services.importacao_service import Extrator
+from apps.clientes.models import Cliente
+from apps.clientes.services.importacao_service import Extrator, CriarouAtualizar
 
 # ── Constantes ────────────────────────────────────────────────
 
@@ -133,11 +132,11 @@ def importar_csv(request):
             # ── UPSERT: atualiza cliente e acrescenta contatos ──
             try:
                 with transaction.atomic():
-                    _atualizar_cliente(
+                    CriarouAtualizar._atualizar_cliente(
                         cliente_existente, nome, nome_mae, data_nascimento, estado_civil
                     )
-                    _adicionar_telefones(cliente_existente, telefones)
-                    _adicionar_emails(cliente_existente, emails)
+                    CriarouAtualizar._adicionar_telefones(cliente_existente, telefones)
+                    CriarouAtualizar._adicionar_emails(cliente_existente, emails)
                 atualizados += 1
 
             except Exception as e:
@@ -150,20 +149,13 @@ def importar_csv(request):
             # ── CRIAÇÃO ──────────────────────────────────────
             try:
                 with transaction.atomic():
-                    cliente = Cliente(
-                        empresa=empresa,
-                        nome=nome,
-                        tipo_pessoa=tipo_pessoa,
-                        documento=documento_raw,
-                        data_nascimento=data_nascimento,
-                        nome_mae=nome_mae,
-                        estado_civil=estado_civil,
+                    CriarouAtualizar._criar_cliente(
+                        empresa, nome, tipo_pessoa, documento_raw,
+                        data_nascimento, nome_mae, estado_civil
                     )
-                    cliente.full_clean(exclude=['rg', 'nome_pai'])
-                    cliente.save()
 
-                    _adicionar_telefones(cliente, telefones)
-                    _adicionar_emails(cliente, emails)
+                    CriarouAtualizar._adicionar_telefones(cliente, telefones)
+                    CriarouAtualizar._adicionar_emails(cliente, emails)
 
                 criados += 1
 
@@ -202,96 +194,6 @@ def _parse_data(valor):
         except ValueError:
             continue
     return None
-
-
-def _atualizar_cliente(cliente, nome, nome_mae, data_nascimento, estado_civil):
-    """
-    Atualiza apenas os campos informativos do cliente.
-    Não altera documento nem tipo_pessoa.
-    """
-    atualizado = False
-
-    if nome and nome != cliente.nome:
-        cliente.nome = nome
-        atualizado = True
-    if nome_mae and nome_mae != cliente.nome_mae:
-        cliente.nome_mae = nome_mae
-        atualizado = True
-    if data_nascimento and data_nascimento != cliente.data_nascimento:
-        cliente.data_nascimento = data_nascimento
-        atualizado = True
-    if not data_nascimento and data_nascimento != cliente.data_nascimento:
-        cliente.data_nascimento = data_nascimento
-        atualizado = True
-    if estado_civil and estado_civil != cliente.estado_civil:
-        cliente.estado_civil = estado_civil
-        atualizado = True
-
-    if atualizado:
-        cliente.save(update_fields=['nome', 'nome_mae', 'data_nascimento', 'estado_civil'])
-
-
-def _adicionar_telefones(cliente, telefones):
-    """
-    Adiciona telefones que ainda não existem para o cliente.
-    Respeita a UniqueConstraint (cliente, telefone).
-    Diferentes tipos do mesmo número são aceitos pelo model (constraint é só no número).
-    """
-    numeros_existentes = set(
-        Telefone.objects
-        .filter(cliente=cliente)
-        .values_list('telefone', flat=True)
-    )
-
-    novos = []
-    vistos_neste_lote = set()  # evita duplicata dentro do próprio CSV
-
-    for fone in telefones:
-        numero = fone['numero']
-        if numero in numeros_existentes or numero in vistos_neste_lote:
-            continue
-        novos.append(Telefone(
-            cliente=cliente,
-            telefone=numero,
-            tipo=fone['tipo'],
-            whats_app=False,
-            ativo=True,
-        ))
-        vistos_neste_lote.add(numero)
-
-    if novos:
-        Telefone.objects.bulk_create(novos, ignore_conflicts=True)
-
-
-def _adicionar_emails(cliente, emails):
-    """
-    Adiciona e-mails que ainda não existem para o cliente.
-    Respeita a UniqueConstraint (cliente, email, tipo).
-    O mesmo endereço com tipo diferente é tratado como registro distinto.
-    """
-    existentes = set(
-        Email.objects
-        .filter(cliente=cliente)
-        .values_list('email', 'tipo')
-    )
-
-    novos = []
-    vistos_neste_lote = set()
-
-    for item in emails:
-        chave = (item['email'], item['tipo'])
-        if chave in existentes or chave in vistos_neste_lote:
-            continue
-        novos.append(Email(
-            cliente=cliente,
-            email=item['email'],
-            tipo=item['tipo'],
-            ativo=True,
-        ))
-        vistos_neste_lote.add(chave)
-
-    if novos:
-        Email.objects.bulk_create(novos, ignore_conflicts=True)
 
 
 def _msg_erro(exc):

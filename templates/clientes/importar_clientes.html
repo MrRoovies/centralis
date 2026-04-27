@@ -140,6 +140,86 @@
                 </div>
             </div>
 
+        </div><!-- /ic-left -->
+
+        <!-- ─── COLUNA DIREITA ────────────────────────────── -->
+        <div class="ic-right">
+
+            <!-- Placeholder -->
+            <div class="ic-placeholder ic-card" id="icPlaceholder">
+                <div class="ic-placeholder__icon">
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                        <rect x="8" y="10" width="40" height="36" rx="4" stroke="currentColor" stroke-width="1.8" opacity=".3"/>
+                        <path d="M8 18h40" stroke="currentColor" stroke-width="1.8" opacity=".3"/>
+                        <path d="M16 10V8M28 10V8M40 10V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".3"/>
+                        <path d="M16 26h24M16 31h18M16 36h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".2"/>
+                    </svg>
+                </div>
+                <p class="ic-placeholder__titulo">Nenhum arquivo selecionado</p>
+                <p class="ic-placeholder__sub">Selecione um CSV para visualizar o preview antes de importar</p>
+            </div>
+
+            <!-- Preview -->
+            <div class="ic-card" id="icCardPreview" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">👁</span>
+                    <h3 class="ic-card__title">Preview do Arquivo</h3>
+                    <span class="ic-preview-badge" id="icPreviewBadge"></span>
+                </div>
+                <div class="ic-card__body ic-card__body--no-pad">
+                    <div class="ic-preview-wrap">
+                        <table class="ic-preview-table" id="icPreviewTable"></table>
+                    </div>
+                    <p class="ic-preview-nota" id="icPreviewNota"></p>
+                </div>
+            </div>
+
+            <!-- Validação -->
+            <div class="ic-card" id="icCardValidacao" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon" id="icValidacaoIcone">✅</span>
+                    <h3 class="ic-card__title">Validação</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div id="icValidacaoResumo"></div>
+                    <div class="ic-erros-lista" id="icErrosLista"></div>
+                </div>
+            </div>
+
+            <!-- Progresso -->
+            <div class="ic-card" id="icCardProgresso" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">⏳</span>
+                    <h3 class="ic-card__title">Importando...</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div class="ic-progresso">
+                        <div class="ic-progresso__bar-wrap">
+                            <div class="ic-progresso__bar" id="icProgressoBar"></div>
+                        </div>
+                        <span class="ic-progresso__texto" id="icProgressoTexto">0%</span>
+                    </div>
+                    <p class="ic-progresso__detalhe" id="icProgressoDetalhe">Iniciando importação...</p>
+                </div>
+            </div>
+
+            <!-- Resultado -->
+            <div class="ic-card" id="icCardResultado" style="display:none">
+                <div class="ic-card__head">
+                    <span class="ic-card__icon">🏁</span>
+                    <h3 class="ic-card__title">Resultado da Importação</h3>
+                </div>
+                <div class="ic-card__body">
+                    <div class="ic-resultado-grid" id="icResultadoGrid"></div>
+                    <div id="icLogErros"></div>
+                    <div class="ic-resultado-acoes">
+                        <button class="ic-btn ic-btn--ghost" onclick="reiniciar()">
+                            Importar outro arquivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- CARD: Upload -->
             <div class="ic-card">
                 <div class="ic-card__head">
@@ -237,86 +317,6 @@
                 </svg>
                 Importar Clientes
             </button>
-
-        </div><!-- /ic-left -->
-
-        <!-- ─── COLUNA DIREITA ────────────────────────────── -->
-        <div class="ic-right">
-
-            <!-- Placeholder -->
-            <div class="ic-placeholder" id="icPlaceholder">
-                <div class="ic-placeholder__icon">
-                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                        <rect x="8" y="10" width="40" height="36" rx="4" stroke="currentColor" stroke-width="1.8" opacity=".3"/>
-                        <path d="M8 18h40" stroke="currentColor" stroke-width="1.8" opacity=".3"/>
-                        <path d="M16 10V8M28 10V8M40 10V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".3"/>
-                        <path d="M16 26h24M16 31h18M16 36h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".2"/>
-                    </svg>
-                </div>
-                <p class="ic-placeholder__titulo">Nenhum arquivo selecionado</p>
-                <p class="ic-placeholder__sub">Selecione um CSV para visualizar o preview antes de importar</p>
-            </div>
-
-            <!-- Preview -->
-            <div class="ic-card" id="icCardPreview" style="display:none">
-                <div class="ic-card__head">
-                    <span class="ic-card__icon">👁</span>
-                    <h3 class="ic-card__title">Preview do Arquivo</h3>
-                    <span class="ic-preview-badge" id="icPreviewBadge"></span>
-                </div>
-                <div class="ic-card__body ic-card__body--no-pad">
-                    <div class="ic-preview-wrap">
-                        <table class="ic-preview-table" id="icPreviewTable"></table>
-                    </div>
-                    <p class="ic-preview-nota" id="icPreviewNota"></p>
-                </div>
-            </div>
-
-            <!-- Validação -->
-            <div class="ic-card" id="icCardValidacao" style="display:none">
-                <div class="ic-card__head">
-                    <span class="ic-card__icon" id="icValidacaoIcone">✅</span>
-                    <h3 class="ic-card__title">Validação</h3>
-                </div>
-                <div class="ic-card__body">
-                    <div id="icValidacaoResumo"></div>
-                    <div class="ic-erros-lista" id="icErrosLista"></div>
-                </div>
-            </div>
-
-            <!-- Progresso -->
-            <div class="ic-card" id="icCardProgresso" style="display:none">
-                <div class="ic-card__head">
-                    <span class="ic-card__icon">⏳</span>
-                    <h3 class="ic-card__title">Importando...</h3>
-                </div>
-                <div class="ic-card__body">
-                    <div class="ic-progresso">
-                        <div class="ic-progresso__bar-wrap">
-                            <div class="ic-progresso__bar" id="icProgressoBar"></div>
-                        </div>
-                        <span class="ic-progresso__texto" id="icProgressoTexto">0%</span>
-                    </div>
-                    <p class="ic-progresso__detalhe" id="icProgressoDetalhe">Iniciando importação...</p>
-                </div>
-            </div>
-
-            <!-- Resultado -->
-            <div class="ic-card" id="icCardResultado" style="display:none">
-                <div class="ic-card__head">
-                    <span class="ic-card__icon">🏁</span>
-                    <h3 class="ic-card__title">Resultado da Importação</h3>
-                </div>
-                <div class="ic-card__body">
-                    <div class="ic-resultado-grid" id="icResultadoGrid"></div>
-                    <div id="icLogErros"></div>
-                    <div class="ic-resultado-acoes">
-                        <button class="ic-btn ic-btn--ghost" onclick="reiniciar()">
-                            Importar outro arquivo
-                        </button>
-                    </div>
-                </div>
-            </div>
 
         </div><!-- /ic-right -->
 

@@ -35,15 +35,13 @@ const TIPOS_EMAIL_VALIDOS    = ['PESSOAL','CORPORATIVO'];
 // Modelo para download
 const MODELO_CSV = [
     'nome,documento,tipo_pessoa,data_nascimento,nome_mae,estado_civil,' +
-    'telefone1,telefone1_tipo,telefone2,telefone2_tipo,telefone3,telefone3_tipo,' +
+    'telefone1,telefone1_tipo,telefone2,telefone2_tipo,telefone3,telefone3_tipo,'+
     'email1,email1_tipo,email2,email2_tipo',
 
-    'João Silva,12345678901,PF,15/06/1990,Maria Silva,SOLTEIRO,' +
-    '11987654321,CELULAR,1133334444,FIXO,,' +
-    'joao@email.com,PESSOAL,,',
+    'João Silva,12345678901,PF,15/06/1990,Maria Silva,SOLTEIRO,'+
+    '11987654321,CELULAR,1133334444,FIXO,,,joao@email.com,PESSOAL,,',
 
-    'Empresa LTDA,12345678000199,PJ,,,,' +
-    '1133334444,FIXO,11988887777,CORPORATIVO,,' +
+    'Empresa LTDA,12774041000165,PJ,,,,1133334444,FIXO,11988887777,CORPORATIVO,,,'+
     'contato@empresa.com,CORPORATIVO,financeiro@empresa.com,CORPORATIVO',
 ].join('\n');
 
@@ -190,7 +188,7 @@ function validarRegistros(registros) {
             erros.push({ linha, msg: 'Campo "documento" vazio.', tipo: 'erro' }); return;
         }
         if (doc.length !== 11 && doc.length !== 14) {
-            erros.push({ linha, msg: `Documento inválido: "${r.documento}" (deve ter 11 ou 14 dígitos).`, tipo: 'erro' }); return;
+            erros.push({ linha, msg: `Documento inválido: "${r.documento}" (deve ter 11 ou 14 dígitos).`, tipo: 'warn' }); return;
         }
 
         const tp = (r.tipo_pessoa || '').toUpperCase().trim();
