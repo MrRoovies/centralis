@@ -1,0 +1,732 @@
+/* ============================================================
+   VENDAS_ADMIN.CSS — Gestão de Parceiros, Produtos, Ofertas e Esteiras
+   Depende de: base.css, styles.css
+   ============================================================ */
+
+:root {
+    --va-parceiro:   #04375F;
+    --va-parceiro2:  #007AAA;
+    --va-produto:    #1A7A42;
+    --va-produto2:   #27ae60;
+    --va-oferta:     #D4930A;
+    --va-oferta2:    #f0a500;
+    --va-esteira:    #7c3aed;
+    --va-esteira2:   #9f5bff;
+    --va-border:     #E8EDF2;
+    --va-shadow:     0 2px 12px rgba(15,25,35,.08);
+    --va-radius:     10px;
+}
+
+/* ── Tabs de navegação ── */
+.va-tabs {
+    display: flex;
+    gap: 0;
+    background: white;
+    border-radius: var(--va-radius);
+    box-shadow: var(--va-shadow);
+    border: 1px solid var(--va-border);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.va-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border: none;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all .2s;
+    border-right: 1px solid var(--va-border);
+    position: relative;
+}
+
+.va-tab:last-child { border-right: none; }
+
+.va-tab:hover {
+    background: #f8fafc;
+    color: #555;
+}
+
+.va-tab.active {
+    color: white;
+    font-weight: 700;
+}
+
+.va-tab.active[data-tab="parceiros"]  { background: var(--va-parceiro); }
+.va-tab.active[data-tab="produtos"]   { background: var(--va-produto); }
+.va-tab.active[data-tab="ofertas"]    { background: var(--va-oferta); }
+.va-tab.active[data-tab="esteiras"]   { background: var(--va-esteira); }
+
+.va-tab__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255,255,255,.25);
+    color: inherit;
+}
+
+.va-tab:not(.active) .va-tab__count {
+    background: #f0f0f0;
+    color: #aaa;
+}
+
+/* ── Painéis ── */
+.va-panel { display: none; }
+.va-panel.active { display: block; }
+
+/* ── Header do painel ── */
+.va-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.va-panel-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a2e3b;
+    margin: 0;
+}
+
+.va-panel-sub {
+    font-size: 12px;
+    color: #aaa;
+    display: block;
+    margin-top: 2px;
+}
+
+/* ── Botão novo ── */
+.va-btn-novo {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+    color: white;
+}
+
+.va-btn-novo--parceiro { background: linear-gradient(90deg, var(--va-parceiro), var(--va-parceiro2)); }
+.va-btn-novo--produto  { background: linear-gradient(90deg, var(--va-produto), var(--va-produto2)); }
+.va-btn-novo--oferta   { background: linear-gradient(90deg, var(--va-oferta), var(--va-oferta2)); }
+.va-btn-novo--esteira  { background: linear-gradient(90deg, var(--va-esteira), var(--va-esteira2)); }
+
+.va-btn-novo:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+}
+
+/* ── Tabela ── */
+.va-table-wrap {
+    background: white;
+    border-radius: var(--va-radius);
+    box-shadow: var(--va-shadow);
+    overflow: hidden;
+}
+
+.va-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.va-table thead th {
+    background: #f0f4f8;
+    color: #556;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid #dce6f0;
+    white-space: nowrap;
+}
+
+.va-row {
+    border-bottom: 1px solid #f2f2f2;
+    transition: background .15s;
+}
+
+.va-row:hover { background: #f8fafc; }
+.va-row--inativo { opacity: 0.52; }
+
+.va-table td {
+    padding: 13px 16px;
+    color: #333;
+    vertical-align: middle;
+}
+
+/* Células especiais */
+.va-nome {
+    font-weight: 600;
+    color: #1a2e3b;
+    display: block;
+}
+
+.va-sub {
+    font-size: 11px;
+    color: #aaa;
+    display: block;
+    margin-top: 2px;
+}
+
+.va-mono {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #555;
+}
+
+.va-num {
+    font-weight: 700;
+    color: #1a2e3b;
+}
+
+/* Badges de tipo */
+.va-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    white-space: nowrap;
+}
+
+.va-badge--inicial      { background: #e8f4fd; color: #1a6fa8; }
+.va-badge--em_andamento { background: #fef9e7; color: #9a6f00; }
+.va-badge--sucesso      { background: #eafaf1; color: #1e8449; }
+.va-badge--insucesso    { background: #fdf2f2; color: #c0392b; }
+
+/* Status ativo */
+.va-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+.va-status--ativo {
+    background: #eafaf1;
+    color: #1e8449;
+}
+.va-status--ativo::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #27ae60;
+    flex-shrink: 0;
+    animation: va-pulso 1.8s infinite;
+    box-shadow: 0 0 0 2px rgba(39,174,96,.25);
+}
+
+.va-status--inativo {
+    background: #f4f4f4;
+    color: #888;
+}
+.va-status--inativo::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #bbb;
+    flex-shrink: 0;
+}
+
+@keyframes va-pulso {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(39,174,96,.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(39,174,96,.08); }
+}
+
+/* Ações */
+.va-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.va-btn-action {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    transition: all .2s;
+    flex-shrink: 0;
+}
+
+.va-btn-action--edit:hover {
+    border-color: #007AAA;
+    color: #007AAA;
+    background: #f0f8ff;
+}
+
+.va-btn-action--toggle:hover {
+    border-color: #e07070;
+    color: #e07070;
+    background: #fff5f5;
+}
+
+/* Empty state */
+.va-empty {
+    text-align: center;
+    padding: 60px 40px;
+    color: #bbb;
+}
+.va-empty__icon  { font-size: 36px; margin-bottom: 14px; }
+.va-empty__title { font-size: 16px; font-weight: 600; color: #999; margin-bottom: 6px; }
+.va-empty__sub   { font-size: 13px; }
+
+/* Pilha de números (prazo) */
+.va-prazo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    font-family: monospace;
+    font-weight: 700;
+}
+
+.va-prazo__sep {
+    color: #ccc;
+    font-weight: 400;
+}
+
+/* Comissão badge */
+.va-comissao {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: #fef3dc;
+    color: #92640A;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+/* Ordem badge */
+.va-ordem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #f0f4f8;
+    color: #556;
+    font-size: 12px;
+    font-weight: 800;
+    border: 1px solid #dce6f0;
+}
+
+/* ════════════════════════════════════════════════════════════
+   DRAWER LATERAL
+════════════════════════════════════════════════════════════ */
+
+.va-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,20,40,.45);
+    z-index: 1100;
+    backdrop-filter: blur(2px);
+}
+.va-overlay.active { display: block; }
+
+.va-drawer {
+    position: fixed;
+    top: 0;
+    right: -540px;
+    width: 500px;
+    max-width: 96vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 1101;
+    box-shadow: -6px 0 40px rgba(0,0,0,.15);
+    display: flex;
+    flex-direction: column;
+    transition: right .32s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+}
+.va-drawer.active { right: 0; }
+
+/* Header */
+.va-drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    color: white;
+    flex-shrink: 0;
+    gap: 14px;
+}
+
+.va-drawer__header--parceiro { background: linear-gradient(90deg, var(--va-parceiro), var(--va-parceiro2)); }
+.va-drawer__header--produto  { background: linear-gradient(90deg, var(--va-produto), var(--va-produto2)); }
+.va-drawer__header--oferta   { background: linear-gradient(90deg, #92640A, var(--va-oferta)); }
+.va-drawer__header--esteira  { background: linear-gradient(90deg, #5b21b6, var(--va-esteira)); }
+
+.va-drawer__header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.va-drawer__header-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.18);
+    border: 1.5px solid rgba(255,255,255,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.va-drawer__title {
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.va-drawer__subtitle {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+    display: block;
+    margin-top: 2px;
+}
+
+.va-drawer__close {
+    background: rgba(255,255,255,.15);
+    border: none;
+    border-radius: 7px;
+    width: 34px; height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+.va-drawer__close:hover { background: rgba(255,255,255,.28); }
+
+/* Feedback */
+.va-drawer__feedback {
+    padding: 11px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.va-drawer__feedback--success { background: #eafaf1; color: #1e8449; border-bottom: 1px solid #c3e6cb; }
+.va-drawer__feedback--error   { background: #fff5f5; color: #c0392b; border-bottom: 1px solid #f5c6c6; }
+
+/* Body */
+.va-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+/* Spinner */
+.va-drawer__spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    min-height: 180px;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.va-spinner {
+    width: 30px; height: 30px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #007AAA;
+    border-radius: 50%;
+    animation: va-spin .7s linear infinite;
+}
+@keyframes va-spin { to { transform: rotate(360deg); } }
+
+/* Footer */
+.va-drawer__footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
+    background: #fafbfc;
+    flex-shrink: 0;
+}
+
+.va-drawer__btn-cancel {
+    padding: 10px 22px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all .2s;
+}
+.va-drawer__btn-cancel:hover { background: #f5f5f5; color: #555; }
+
+.va-drawer__btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+    background: linear-gradient(90deg, #04375F, #007AAA);
+}
+
+.va-drawer__btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,122,170,.35);
+}
+
+.va-drawer__btn-save:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ════════════════════════════════════════════════════════════
+   FORMULÁRIO NO DRAWER
+════════════════════════════════════════════════════════════ */
+
+.va-form__section {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #007AAA;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e8f4f8;
+}
+
+.va-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.va-form__row--single { grid-template-columns: 1fr; }
+.va-form__row--3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.va-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.va-form__group--full { grid-column: 1 / -1; }
+
+.va-form__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+.va-form__label .req { color: #e07070; margin-left: 2px; }
+
+.va-form__hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 2px;
+}
+
+.va-form__input {
+    padding: 10px 13px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #333;
+    background: white;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+}
+
+.va-form__input:focus {
+    outline: none;
+    border-color: #007AAA;
+    box-shadow: 0 0 0 3px rgba(0,122,170,.1);
+}
+
+.va-form__input--error {
+    border-color: #e07070 !important;
+    box-shadow: 0 0 0 3px rgba(224,112,112,.12) !important;
+}
+
+.va-form__error {
+    font-size: 11px;
+    color: #e07070;
+    display: none;
+}
+
+/* Toggle switch */
+.va-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.va-toggle-input { display: none; }
+
+.va-toggle-label {
+    width: 44px; height: 24px;
+    background: #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background .25s;
+    flex-shrink: 0;
+}
+
+.va-toggle-input:checked + .va-toggle-label { background: #27ae60; }
+
+.va-toggle-knob {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    transition: transform .25s;
+}
+
+.va-toggle-input:checked + .va-toggle-label .va-toggle-knob {
+    transform: translateX(20px);
+}
+
+.va-toggle-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Stepper de ordem */
+.va-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.va-stepper__btn {
+    width: 36px; height: 40px;
+    border: none;
+    background: #f8f9fa;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.va-stepper__btn:hover { background: #e8f0f8; color: #007AAA; }
+
+.va-stepper__input {
+    flex: 1;
+    border: none !important;
+    border-left: 1.5px solid #e0e0e0 !important;
+    border-right: 1.5px solid #e0e0e0 !important;
+    border-radius: 0 !important;
+    text-align: center;
+    font-weight: 700;
+}
+.va-stepper__input:focus { box-shadow: none !important; }
+
+/* Destaque de comissão no formulário */
+.va-comissao-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fef3dc;
+    border: 1px solid #f0d060;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.va-comissao-preview__label {
+    font-size: 12px;
+    color: #92640A;
+    font-weight: 600;
+}
+
+.va-comissao-preview__value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #92640A;
+    font-family: monospace;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .va-tabs { flex-wrap: wrap; }
+    .va-tab { flex: 1 1 45%; }
+    .va-table-wrap { overflow-x: auto; }
+    .va-table { min-width: 600px; }
+}
+
+@media (max-width: 600px) {
+    .va-drawer { width: 100%; max-width: 100%; }
+    .va-form__row { grid-template-columns: 1fr; }
+    .va-form__row--3 { grid-template-columns: 1fr 1fr; }
+    .va-tabs { flex-direction: column; }
+    .va-tab { border-right: none; border-bottom: 1px solid var(--va-border); }
+}

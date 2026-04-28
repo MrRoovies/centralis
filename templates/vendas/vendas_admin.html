@@ -1,0 +1,650 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/vendas_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <div>
+            <h2 class="page-title" style="margin-bottom:4px">Configurações de Vendas</h2>
+            <span style="font-size:13px; color:#999;">Parceiros, produtos, ofertas e esteiras do funil</span>
+        </div>
+    </div>
+
+    <!-- ══ TABS DE NAVEGAÇÃO ════════════════════════════════ -->
+    <div class="va-tabs">
+
+        <button class="va-tab active" data-tab="parceiros" onclick="setTab('parceiros')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M5 4V3a2 2 0 012-2h2a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M8 8v4M6 10h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Parceiros
+            <span class="va-tab__count">{{ parceiros|length }}</span>
+        </button>
+
+        <button class="va-tab" data-tab="produtos" onclick="setTab('produtos')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2L2 5v6l6 3 6-3V5l-6-3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                <path d="M2 5l6 3m0 0l6-3m-6 3v6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Produtos
+            <span class="va-tab__count">{{ produtos|length }}</span>
+        </button>
+
+        <button class="va-tab" data-tab="ofertas" onclick="setTab('ofertas')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M8 4v8M5.5 6.5h4a1.5 1.5 0 010 3H7a1.5 1.5 0 010 3H10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Ofertas
+            <span class="va-tab__count">{{ ofertas|length }}</span>
+        </button>
+
+        <button class="va-tab" data-tab="esteiras" onclick="setTab('esteiras')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            Esteiras
+            <span class="va-tab__count">{{ esteiras|length }}</span>
+        </button>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         PAINEL: PARCEIROS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="va-panel active" id="panel-parceiros">
+        <div class="va-panel-header">
+            <div>
+                <h3 class="va-panel-title">Parceiros Comerciais</h3>
+                <span class="va-panel-sub">Empresas parceiras para as quais se vende produtos</span>
+            </div>
+            <button class="va-btn-novo va-btn-novo--parceiro" onclick="abrirDrawer('parceiro', null)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Novo Parceiro
+            </button>
+        </div>
+
+        <div class="va-table-wrap">
+            {% if parceiros %}
+            <table class="va-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for parceiro in parceiros %}
+                    <tr class="va-row {% if not parceiro.ativo %}va-row--inativo{% endif %}"
+                        id="parceiro-row-{{ parceiro.id }}">
+                        <td><span class="va-mono">#{{ parceiro.id }}</span></td>
+                        <td><span class="va-nome">{{ parceiro.nome }}</span></td>
+                        <td>
+                            <span class="va-status va-status--{% if parceiro.ativo %}ativo{% else %}inativo{% endif %}">
+                                {{ parceiro.ativo|yesno:"Ativo,Inativo" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="va-actions">
+                                <button class="va-btn-action va-btn-action--edit" title="Editar"
+                                        onclick="abrirDrawer('parceiro', {{ parceiro.id }})">
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="va-btn-action va-btn-action--toggle"
+                                        title="{{ parceiro.ativo|yesno:'Desativar,Ativar' }}"
+                                        onclick="toggleItem('parceiro', {{ parceiro.id }}, this)">
+                                    {% if parceiro.ativo %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="va-empty">
+                <div class="va-empty__icon">🏢</div>
+                <p class="va-empty__title">Nenhum parceiro cadastrado</p>
+                <p class="va-empty__sub">Adicione um parceiro para começar a criar ofertas.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         PAINEL: PRODUTOS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="va-panel" id="panel-produtos">
+        <div class="va-panel-header">
+            <div>
+                <h3 class="va-panel-title">Produtos</h3>
+                <span class="va-panel-sub">Produtos financeiros oferecidos aos clientes</span>
+            </div>
+            <button class="va-btn-novo va-btn-novo--produto" onclick="abrirDrawer('produto', null)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Novo Produto
+            </button>
+        </div>
+
+        <div class="va-table-wrap">
+            {% if produtos %}
+            <table class="va-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos %}
+                    <tr class="va-row {% if not produto.ativo %}va-row--inativo{% endif %}"
+                        id="produto-row-{{ produto.id }}">
+                        <td><span class="va-mono">#{{ produto.id }}</span></td>
+                        <td><span class="va-nome">{{ produto.nome }}</span></td>
+                        <td>
+                            <span class="va-status va-status--{% if produto.ativo %}ativo{% else %}inativo{% endif %}">
+                                {{ produto.ativo|yesno:"Ativo,Inativo" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="va-actions">
+                                <button class="va-btn-action va-btn-action--edit" title="Editar"
+                                        onclick="abrirDrawer('produto', {{ produto.id }})">
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="va-btn-action va-btn-action--toggle"
+                                        title="{{ produto.ativo|yesno:'Desativar,Ativar' }}"
+                                        onclick="toggleItem('produto', {{ produto.id }}, this)">
+                                    {% if produto.ativo %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="va-empty">
+                <div class="va-empty__icon">📦</div>
+                <p class="va-empty__title">Nenhum produto cadastrado</p>
+                <p class="va-empty__sub">Produtos são vinculados a parceiros através das ofertas.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         PAINEL: OFERTAS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="va-panel" id="panel-ofertas">
+        <div class="va-panel-header">
+            <div>
+                <h3 class="va-panel-title">Ofertas Comerciais</h3>
+                <span class="va-panel-sub">Combinação de parceiro + produto com faixas de prazo e comissão</span>
+            </div>
+            <button class="va-btn-novo va-btn-novo--oferta" onclick="abrirDrawer('oferta', null)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Nova Oferta
+            </button>
+        </div>
+
+        <div class="va-table-wrap">
+            {% if ofertas %}
+            <table class="va-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Parceiro</th>
+                        <th>Prazo</th>
+                        <th>Comissão</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oferta in ofertas %}
+                    <tr class="va-row {% if not oferta.ativo %}va-row--inativo{% endif %}"
+                        id="oferta-row-{{ oferta.id }}">
+                        <td>
+                            <span class="va-nome">{{ oferta.produto.nome }}</span>
+                        </td>
+                        <td>
+                            <span style="font-size:13px; color:#555;">{{ oferta.parceiro.nome }}</span>
+                        </td>
+                        <td>
+                            <span class="va-prazo">
+                                {{ oferta.prazo_min }}
+                                <span class="va-prazo__sep">→</span>
+                                {{ oferta.prazo_max }}
+                                <span style="font-size:11px; color:#aaa; font-weight:400; font-family:inherit;">meses</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="va-comissao">{{ oferta.comissao }}%</span>
+                        </td>
+                        <td>
+                            <span class="va-status va-status--{% if oferta.ativo %}ativo{% else %}inativo{% endif %}">
+                                {{ oferta.ativo|yesno:"Ativa,Inativa" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="va-actions">
+                                <button class="va-btn-action va-btn-action--edit" title="Editar"
+                                        onclick="abrirDrawer('oferta', {{ oferta.id }})">
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="va-btn-action va-btn-action--toggle"
+                                        title="{{ oferta.ativo|yesno:'Desativar,Ativar' }}"
+                                        onclick="toggleItem('oferta', {{ oferta.id }}, this)">
+                                    {% if oferta.ativo %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="va-empty">
+                <div class="va-empty__icon">💰</div>
+                <p class="va-empty__title">Nenhuma oferta cadastrada</p>
+                <p class="va-empty__sub">Crie parceiros e produtos antes de configurar ofertas.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         PAINEL: ESTEIRAS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="va-panel" id="panel-esteiras">
+        <div class="va-panel-header">
+            <div>
+                <h3 class="va-panel-title">Esteiras do Funil</h3>
+                <span class="va-panel-sub">Etapas do processo de venda por carteira</span>
+            </div>
+            <button class="va-btn-novo va-btn-novo--esteira" onclick="abrirDrawer('esteira', null)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Nova Esteira
+            </button>
+        </div>
+
+        <div class="va-table-wrap">
+            {% if esteiras %}
+            <table class="va-table">
+                <thead>
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Nome</th>
+                        <th>Carteira</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for esteira in esteiras %}
+                    <tr class="va-row {% if not esteira.ativo %}va-row--inativo{% endif %}"
+                        id="esteira-row-{{ esteira.id }}">
+                        <td>
+                            <span class="va-ordem">{{ esteira.ordem }}</span>
+                        </td>
+                        <td>
+                            <span class="va-nome">{{ esteira.nome }}</span>
+                            <span class="va-sub">{{ esteira.carteira.nome }}</span>
+                        </td>
+                        <td>
+                            <span style="font-size:13px; color:#555;">{{ esteira.carteira.nome }}</span>
+                        </td>
+                        <td>
+                            <span class="va-badge va-badge--{{ esteira.tipo|lower }}">
+                                {{ esteira.get_tipo_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="va-status va-status--{% if esteira.ativo %}ativo{% else %}inativo{% endif %}">
+                                {{ esteira.ativo|yesno:"Ativa,Inativa" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="va-actions">
+                                <button class="va-btn-action va-btn-action--edit" title="Editar"
+                                        onclick="abrirDrawer('esteira', {{ esteira.id }})">
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <button class="va-btn-action va-btn-action--toggle"
+                                        title="{{ esteira.ativo|yesno:'Desativar,Ativar' }}"
+                                        onclick="toggleItem('esteira', {{ esteira.id }}, this)">
+                                    {% if esteira.ativo %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    </svg>
+                                    {% else %}
+                                    <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                        <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                        <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="va-empty">
+                <div class="va-empty__icon">🔀</div>
+                <p class="va-empty__title">Nenhuma esteira cadastrada</p>
+                <p class="va-empty__sub">As esteiras definem as etapas do funil de vendas por carteira.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     DRAWER LATERAL COMPARTILHADO
+══════════════════════════════════════════════════════════ -->
+<div class="va-overlay" id="vaOverlay" onclick="fecharDrawer()"></div>
+
+<aside class="va-drawer" id="vaDrawer">
+
+    <!-- Header dinâmico -->
+    <div class="va-drawer__header" id="vaDrawerHeader">
+        <div class="va-drawer__header-left">
+            <div class="va-drawer__header-icon" id="vaDrawerIcon"></div>
+            <div>
+                <h3 class="va-drawer__title" id="vaDrawerTitle">—</h3>
+                <span class="va-drawer__subtitle" id="vaDrawerSubtitle"></span>
+            </div>
+        </div>
+        <button class="va-drawer__close" onclick="fecharDrawer()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Feedback -->
+    <div class="va-drawer__feedback" id="vaFeedback" style="display:none"></div>
+
+    <!-- Body -->
+    <div class="va-drawer__body">
+
+        <!-- Spinner -->
+        <div class="va-drawer__spinner" id="vaSpinner">
+            <div class="va-spinner"></div>
+            <span>Carregando...</span>
+        </div>
+
+        <!-- ══ FORM: PARCEIRO ══════════════════════════════ -->
+        <div id="form-parceiro" class="va-form-content" style="display:none">
+
+            <div class="va-form__section">Identificação</div>
+
+            <div class="va-form__row va-form__row--single">
+                <div class="va-form__group">
+                    <label class="va-form__label">Nome do Parceiro <span class="req">*</span></label>
+                    <input type="text" name="nome" id="pa_nome" class="va-form__input"
+                           placeholder="ex: Banco Bradesco, Caixa Econômica..." required>
+                    <span class="va-form__error" id="err-pa-nome"></span>
+                </div>
+            </div>
+
+            <div class="va-form__row">
+                <div class="va-form__group">
+                    <label class="va-form__label">Status</label>
+                    <div class="va-toggle-wrap">
+                        <input type="checkbox" id="pa_ativo" name="ativo" class="va-toggle-input" checked>
+                        <label class="va-toggle-label" for="pa_ativo">
+                            <span class="va-toggle-knob"></span>
+                        </label>
+                        <span class="va-toggle-text" id="pa_ativo_text">Ativo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ FORM: PRODUTO ═══════════════════════════════ -->
+        <div id="form-produto" class="va-form-content" style="display:none">
+
+            <div class="va-form__section">Identificação</div>
+
+            <div class="va-form__row va-form__row--single">
+                <div class="va-form__group">
+                    <label class="va-form__label">Nome do Produto <span class="req">*</span></label>
+                    <input type="text" name="nome" id="pr_nome" class="va-form__input"
+                           placeholder="ex: Crédito Consignado, Empréstimo Pessoal..." required>
+                    <span class="va-form__error" id="err-pr-nome"></span>
+                </div>
+            </div>
+
+            <div class="va-form__row">
+                <div class="va-form__group">
+                    <label class="va-form__label">Status</label>
+                    <div class="va-toggle-wrap">
+                        <input type="checkbox" id="pr_ativo" name="ativo" class="va-toggle-input" checked>
+                        <label class="va-toggle-label" for="pr_ativo">
+                            <span class="va-toggle-knob"></span>
+                        </label>
+                        <span class="va-toggle-text" id="pr_ativo_text">Ativo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ FORM: OFERTA ════════════════════════════════ -->
+        <div id="form-oferta" class="va-form-content" style="display:none">
+
+            <div class="va-form__section">Vínculo Comercial</div>
+
+            <div class="va-form__row">
+                <div class="va-form__group">
+                    <label class="va-form__label">Parceiro <span class="req">*</span></label>
+                    <select name="parceiro_id" id="of_parceiro" class="va-form__input" required>
+                        <option value="">Selecione...</option>
+                    </select>
+                    <span class="va-form__error" id="err-of-parceiro_id"></span>
+                </div>
+                <div class="va-form__group">
+                    <label class="va-form__label">Produto <span class="req">*</span></label>
+                    <select name="produto_id" id="of_produto" class="va-form__input" required>
+                        <option value="">Selecione...</option>
+                    </select>
+                    <span class="va-form__error" id="err-of-produto_id"></span>
+                </div>
+            </div>
+
+            <div class="va-form__section" style="margin-top:8px">Condições da Oferta</div>
+
+            <div class="va-form__row va-form__row--3">
+                <div class="va-form__group">
+                    <label class="va-form__label">Prazo Mínimo <span class="req">*</span></label>
+                    <input type="number" name="prazo_min" id="of_prazo_min" class="va-form__input"
+                           placeholder="ex: 12" min="1" required>
+                    <span class="va-form__hint">meses</span>
+                    <span class="va-form__error" id="err-of-prazo_min"></span>
+                </div>
+                <div class="va-form__group">
+                    <label class="va-form__label">Prazo Máximo <span class="req">*</span></label>
+                    <input type="number" name="prazo_max" id="of_prazo_max" class="va-form__input"
+                           placeholder="ex: 84" min="1" required>
+                    <span class="va-form__hint">meses</span>
+                    <span class="va-form__error" id="err-of-prazo_max"></span>
+                </div>
+                <div class="va-form__group">
+                    <label class="va-form__label">Comissão <span class="req">*</span></label>
+                    <input type="number" name="comissao" id="of_comissao" class="va-form__input"
+                           placeholder="ex: 3.50" min="0" step="0.01" required>
+                    <span class="va-form__hint">% sobre o valor</span>
+                    <span class="va-form__error" id="err-of-comissao"></span>
+                </div>
+            </div>
+
+            <!-- Preview comissão -->
+            <div class="va-comissao-preview">
+                <span class="va-comissao-preview__label">💰 Comissão configurada</span>
+                <span class="va-comissao-preview__value" id="ofComissaoPreview">0.00%</span>
+            </div>
+
+            <div class="va-form__row" style="margin-top:16px">
+                <div class="va-form__group">
+                    <label class="va-form__label">Status</label>
+                    <div class="va-toggle-wrap">
+                        <input type="checkbox" id="of_ativo" name="ativo" class="va-toggle-input" checked>
+                        <label class="va-toggle-label" for="of_ativo">
+                            <span class="va-toggle-knob"></span>
+                        </label>
+                        <span class="va-toggle-text" id="of_ativo_text">Ativa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ FORM: ESTEIRA ═══════════════════════════════ -->
+        <div id="form-esteira" class="va-form-content" style="display:none">
+
+            <div class="va-form__section">Identificação</div>
+
+            <div class="va-form__row va-form__row--single">
+                <div class="va-form__group">
+                    <label class="va-form__label">Nome da Esteira <span class="req">*</span></label>
+                    <input type="text" name="nome" id="es_nome" class="va-form__input"
+                           placeholder="ex: Análise de Crédito, Aprovado, Pago..." required>
+                    <span class="va-form__error" id="err-es-nome"></span>
+                </div>
+            </div>
+
+            <div class="va-form__row">
+                <div class="va-form__group">
+                    <label class="va-form__label">Carteira <span class="req">*</span></label>
+                    <select name="carteira_id" id="es_carteira" class="va-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for carteira in carteiras %}
+                        <option value="{{ carteira.id }}">{{ carteira.nome }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="va-form__error" id="err-es-carteira_id"></span>
+                </div>
+                <div class="va-form__group">
+                    <label class="va-form__label">Tipo <span class="req">*</span></label>
+                    <select name="tipo" id="es_tipo" class="va-form__input" required>
+                        <option value="">Selecione...</option>
+                        {% for val, label in tipo_choices %}
+                        <option value="{{ val }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="va-form__error" id="err-es-tipo"></span>
+                </div>
+            </div>
+
+            <div class="va-form__section" style="margin-top:8px">Posição no Funil</div>
+
+            <div class="va-form__row">
+                <div class="va-form__group">
+                    <label class="va-form__label">Ordem <span class="req">*</span></label>
+                    <div class="va-stepper">
+                        <button type="button" class="va-stepper__btn" onclick="stepOrdem(-1)">−</button>
+                        <input type="number" name="ordem" id="es_ordem" class="va-form__input va-stepper__input"
+                               value="1" min="1" required>
+                        <button type="button" class="va-stepper__btn" onclick="stepOrdem(1)">+</button>
+                    </div>
+                    <span class="va-form__hint">Posição no funil de vendas</span>
+                    <span class="va-form__error" id="err-es-ordem"></span>
+                </div>
+                <div class="va-form__group">
+                    <label class="va-form__label">Status</label>
+                    <div class="va-toggle-wrap" style="margin-top:6px">
+                        <input type="checkbox" id="es_ativo" name="ativo" class="va-toggle-input" checked>
+                        <label class="va-toggle-label" for="es_ativo">
+                            <span class="va-toggle-knob"></span>
+                        </label>
+                        <span class="va-toggle-text" id="es_ativo_text">Ativa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /body -->
+
+    <!-- Footer -->
+    <div class="va-drawer__footer">
+        <button class="va-drawer__btn-cancel" onclick="fecharDrawer()">Cancelar</button>
+        <button class="va-drawer__btn-save" id="vaBtnSalvar" onclick="salvarDrawer()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="vaBtnLabel">Salvar</span>
+        </button>
+    </div>
+</aside>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/vendas_admin.js' %}" defer></script>
+{% endblock %}
