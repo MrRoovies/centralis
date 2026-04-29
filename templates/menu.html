@@ -43,102 +43,38 @@
         <img class="logo" src="{% static 'img/logo_unificado_sem_fundo.png' %}">
 
         <ul class="sidebar-menu">
-
-            <!-- Home -->
-            <li class="menu-item">
-                <a href="{% url 'home' %}" class="menu-link">
-                    <span class="menu-icon-item">🏠</span>
-                    <span class="menu-label">Home</span>
-                </a>
-            </li>
-
-            <!-- Clientes -->
-            <li class="menu-item">
-                <a href="{% url 'clientes:cliente_novo' %}" class="menu-link">
-                    <span class="menu-icon-item">👤</span>
-                    <span class="menu-label">Cadastrar Cliente</span>
-                </a>
-            </li>
-
-            <!-- Campanhas -->
-            <li class="menu-item">
-                <a href="{% url 'campanhas:painel_campanhas' %}" class="menu-link">
-                    <span class="menu-icon-item">📋</span>
-                    <span class="menu-label">Campanhas</span>
-                </a>
-            </li>
-
-            <!-- Relatórios (cascata) -->
-            <li class="menu-item menu-item--group" id="group-relatorios">
-                <button class="menu-group-trigger" onclick="toggleGroup('relatorios')">
-                    <span class="menu-icon-item">📊</span>
-                    <span class="menu-label">Relatórios</span>
-                    <svg class="menu-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <ul class="menu-submenu" id="submenu-relatorios">
-                    <li>
-                        <a href="{% url 'relatorios:relatorio_vendas' %}" class="menu-sublink">
-                            <span class="menu-sub-dot"></span>
-                            Vendas
-                        </a>
+            {% for item in MENU_ITEMS %}
+                {% if not item.children %}
+                    <!-- ITEM COMUM -->
+                        <li class="menu-item">
+                            <a href="{{ item.url }}" class="menu-link">
+                                <span class="menu-icon-item">{{ item.icon }}</span>
+                                <span class="menu-label">{{ item.label }}</span>
+                            </a>
+                        </li>
+                {% else %}
+                    <li class="menu-item menu-item--group" id="group-{{ item.subgroup }}">
+                        <button class="menu-group-trigger" onclick="toggleGroup('{{ item.subgroup }}')">
+                            <span class="menu-icon-item">{{ item.icon }}</span>
+                            <span class="menu-label">{{ item.label }}</span>
+                            <svg class="menu-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <ul class="menu-submenu" id="submenu-{{ item.subgroup }}">
+                        {% for sub in item.children %}
+                            <li>
+                                <a href="{{ sub.url }}" class="menu-sublink">
+                                    <span class="menu-sub-dot"></span>
+                                    {{sub.label}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        </ul>
                     </li>
-                    <li>
-                        <a href="{% url 'relatorios:lista_agendas' %}" class="menu-sublink">
-                            <span class="menu-sub-dot"></span>
-                            Agendas
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- Administração (cascata) -->
-            <li class="menu-item menu-item--group" id="group-admin">
-                <button class="menu-group-trigger" onclick="toggleGroup('admin')">
-                    <span class="menu-icon-item">⚙️</span>
-                    <span class="menu-label">Administração</span>
-                    <svg class="menu-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <ul class="menu-submenu" id="submenu-admin">
-                    <li>
-                        <a href="{% url 'usuarios:lista_agentes' %}" class="menu-sublink">
-                            <span class="menu-sub-dot"></span>
-                            Agentes
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'usuarios:lista_configuracoes' %}" class="menu-sublink">
-                            <span class="menu-sub-dot"></span>
-                            Perfis e Equipes
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'campanhas:admin_campanhas' %}" class="menu-sublink">
-                            <span class="menu-sub-dot"></span>
-                            Campanhas Admin
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'clientes:importar_clientes' %}" class="menu-sublink">
-                            <!--<span class="menu-icon-item">📥</span>-->
-                            <span class="menu-sub-dot"></span>
-                            <span class="menu-label">Importar Clientes</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'vendas:lista_vendas_admin' %}" class="menu-sublink">
-                            <!--<span class="menu-icon-item">📥</span>-->
-                            <span class="menu-sub-dot"></span>
-                            <span class="menu-label">Vendas Admin</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+                {% endif %}
+            {% endfor %}
         </ul>
     </nav>
 

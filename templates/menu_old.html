@@ -1,0 +1,149 @@
+{% load static %}
+{% load admin_urls %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Sistema de Vendas</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <div class="menu-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <h1 class="header-title"></h1>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <input type="text" id="searchCliente" placeholder="Pesquisar cliente...">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="logout-btn">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <img class="logo" src="{% static 'img/logo_unificado_sem_fundo.png' %}">
+
+        <ul class="sidebar-menu">
+            <!-- Home -->
+            <li class="menu-item">
+                <a href="{% url 'home' %}" class="menu-link">
+                    <span class="menu-icon-item">🏠</span>
+                    <span class="menu-label">Home</span>
+                </a>
+            </li>
+
+            <!-- Clientes -->
+            <li class="menu-item">
+                <a href="{% url 'clientes:cliente_novo' %}" class="menu-link">
+                    <span class="menu-icon-item">👤</span>
+                    <span class="menu-label">Cadastrar Cliente</span>
+                </a>
+            </li>
+
+            <!-- Campanhas -->
+            <li class="menu-item">
+                <a href="{% url 'campanhas:painel_campanhas' %}" class="menu-link">
+                    <span class="menu-icon-item">📋</span>
+                    <span class="menu-label">Campanhas</span>
+                </a>
+            </li>
+
+            <!-- Relatórios (cascata) -->
+            <li class="menu-item menu-item--group" id="group-relatorios">
+                <button class="menu-group-trigger" onclick="toggleGroup('relatorios')">
+                    <span class="menu-icon-item">📊</span>
+                    <span class="menu-label">Relatórios</span>
+                    <svg class="menu-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <ul class="menu-submenu" id="submenu-relatorios">
+                    <li>
+                        <a href="{% url 'relatorios:relatorio_vendas' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            Vendas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'relatorios:lista_agendas' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            Agendas
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Administração (cascata) -->
+            <li class="menu-item menu-item--group" id="group-admin">
+                <button class="menu-group-trigger" onclick="toggleGroup('admin')">
+                    <span class="menu-icon-item">⚙️</span>
+                    <span class="menu-label">Administração</span>
+                    <svg class="menu-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <ul class="menu-submenu" id="submenu-admin">
+                    <li>
+                        <a href="{% url 'usuarios:lista_agentes' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            Agentes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'usuarios:lista_configuracoes' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            Perfis e Equipes
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'campanhas:admin_campanhas' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            Campanhas Admin
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'clientes:importar_clientes' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            <span class="menu-label">Importar Clientes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'vendas:lista_vendas_admin' %}" class="menu-sublink">
+                            <span class="menu-sub-dot"></span>
+                            <span class="menu-label">Vendas Admin</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'js/utils.js' %}" defer></script>
+    <script src="{% static 'js/menu.js' %}" defer></script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>
