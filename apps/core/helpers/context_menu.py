@@ -44,7 +44,8 @@ def get_menu(agente):
                 {"label": "Perfis e Equipes", "url_name": "usuarios:lista_configuracoes"},
                 {"label": "Campanhas Admin", "url_name": "campanhas:admin_campanhas"},
                 {"label": "Importar Clientes", "url_name": "clientes:importar_clientes"},
-                {"label": "Vendas Admin", "url_name": "vendas:lista_vendas_admin"}
+                {"label": "Vendas Admin", "url_name": "vendas:lista_vendas_admin"},
+                {"label": "Permissioes Admin", "url_name": "usuarios:view_permissions_list"}
             ],
         },
     ]

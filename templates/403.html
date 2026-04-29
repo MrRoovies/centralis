@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 — Acesso Negado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #EDEDED;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ── Card central ── */
+        .error-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+            max-width: 520px;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* ── Topo colorido ── */
+        .error-card__header {
+            background: linear-gradient(90deg, #04375F 0%, #007AAA 100%);
+            padding: 40px 32px 32px;
+            position: relative;
+        }
+
+        .error-card__header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: white;
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* ── Ícone de cadeado ── */
+        .error-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            margin-bottom: 18px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-6px); }
+        }
+
+        .error-icon svg {
+            color: white;
+        }
+
+        .error-code {
+            font-size: 72px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -3px;
+            line-height: 1;
+            opacity: 0.95;
+        }
+
+        /* ── Corpo ── */
+        .error-card__body {
+            padding: 28px 36px 36px;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a2e3b;
+            margin-bottom: 10px;
+        }
+
+        .error-desc {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        /* ── Info de perfil ── */
+        .error-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #fff8e6;
+            border: 1px solid #f0d060;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #9a6f00;
+            font-weight: 600;
+            margin-bottom: 28px;
+        }
+
+        .error-meta svg {
+            flex-shrink: 0;
+            color: #f0a500;
+        }
+
+        /* ── Botões ── */
+        .error-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn--primary {
+            background: linear-gradient(90deg, #04375F, #007AAA);
+            color: white;
+        }
+
+        .btn--ghost {
+            background: transparent;
+            color: #888;
+            border: 1px solid #ddd;
+        }
+
+        .btn--ghost:hover {
+            background: #f5f5f5;
+            color: #555;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ── Rodapé ── */
+        .error-footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .error-footer a {
+            color: #007AAA;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .error-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Divisor ── */
+        .error-divider {
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #04375F, #007AAA);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .error-card__body {
+                padding: 24px 24px 30px;
+            }
+            .error-code {
+                font-size: 56px;
+            }
+            .error-actions {
+                flex-direction: column;
+            }
+            .btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-card">
+
+        <!-- Topo -->
+        <div class="error-card__header">
+            <div class="error-icon">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                    <rect x="6" y="16" width="24" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
+                    <path d="M11 16v-5a7 7 0 0114 0v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="18" cy="24" r="2.5" fill="currentColor"/>
+                    <path d="M18 26.5v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="error-code">403</div>
+        </div>
+
+        <!-- Corpo -->
+        <div class="error-card__body">
+            <div class="error-divider"></div>
+
+            <h1 class="error-title">Acesso Negado</h1>
+            <p class="error-desc">
+                Você não tem permissão para acessar esta página.<br>
+                Verifique com o administrador se seu perfil possui o acesso necessário.
+            </p>
+
+            <div class="error-meta">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M8 7v4M8 5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Seu perfil não possui permissão para este recurso.
+            </div>
+
+            <div class="error-actions">
+                <a href="/home" class="btn btn--primary">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 8.5L8 3l6 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 7v6h3v-3h2v3h3V7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Voltar para o Início
+                </a>
+                <a href="javascript:history.back()" class="btn btn--ghost">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Página Anterior
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="error-footer">
+        Pratico-Sistemas &nbsp;·&nbsp; Precisa de ajuda? Fale com o
+        <a href="#">administrador</a>
+    </div>
+
+</body>
+</html>

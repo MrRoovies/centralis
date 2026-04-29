@@ -16,7 +16,7 @@ urlpatterns = [
     path('<int:venda_id>/comentario_e_esteira/', contratos_edicao.comentario_e_esteira, name='comentario_e_esteira'),
 
     # ── Criação de Recursos ──
-    path('/admin/vendas', vendas_admin.lista_vendas_admin, name='lista_vendas_admin'),
+    path('admin/vendas', vendas_admin.lista_vendas_admin, name='lista_vendas_admin'),
     path('admin/parceiro/<int:parceiro_id>/', vendas_admin.parceiro_detail, name='parceiro_detail'),
     path('admin/produto/<int:produto_id>/', vendas_admin.produto_detail, name='produto_detail'),
     path('admin/oferta/<int:oferta_id>/', vendas_admin.oferta_detail, name='oferta_detail'),

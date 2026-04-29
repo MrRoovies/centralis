@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
-from django.db import transaction
+from apps.core.decorators import role_required
 import json
 
 from apps.usuarios.models import Perfil, Equipe, Carteira, Agente

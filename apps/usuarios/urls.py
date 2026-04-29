@@ -1,5 +1,5 @@
 from django.urls import path
-from apps.usuarios.views import agentes, configuracoes
+from apps.usuarios.views import agentes, configuracoes, view_permission
 
 app_name = 'usuarios'
 
@@ -11,6 +11,11 @@ urlpatterns = [
 
     # ── Configurações: Perfis e Equipes ──
     path('configuracoes/', configuracoes.lista_configuracoes, name='lista_configuracoes'),
+
+    path('permissoes/', view_permission.view_permissions_list, name='view_permissions_list'),
+    path('permissoes/nova/', view_permission.view_permission_nova, name='view_permission_nova'),
+    path('permissoes/<int:perm_id>/', view_permission.view_permission_editar, name='view_permission_editar'),
+    path('permissoes/<int:perm_id>/excluir/', view_permission.view_permission_excluir, name='view_permission_excluir'),
 
     # Perfis
     path('perfil/', configuracoes.perfil_detail, name='perfil_criar'),

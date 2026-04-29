@@ -1,0 +1,315 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/view_permissions.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div class="vp-header">
+        <div class="vp-header__left">
+            <h2 class="vp-title">Permissões de Acesso</h2>
+            <span class="vp-subtitle">Controle quais perfis podem acessar cada URL do sistema</span>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+            <!-- Counters -->
+            <div class="vp-counters">
+                <div class="vp-counter vp-counter--total">
+                    <span class="vp-counter__num" id="cntTotal">{{ permissoes|length }}</span>
+                    <span class="vp-counter__label">Total</span>
+                </div>
+                <div class="vp-counter vp-counter--publico">
+                    <span class="vp-counter__num" id="cntPublico">{{ total_publico }}</span>
+                    <span class="vp-counter__label">Abertas</span>
+                </div>
+                <div class="vp-counter vp-counter--restrito">
+                    <span class="vp-counter__num" id="cntRestrito">{{ total_restrito }}</span>
+                    <span class="vp-counter__label">Restritas</span>
+                </div>
+            </div>
+
+            <button class="vp-btn-novo" onclick="abrirDrawer(null)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Nova Permissão
+            </button>
+        </div>
+    </div>
+
+    <!-- ══ FILTROS ══════════════════════════════════════════ -->
+    <div class="vp-filtros">
+        <span class="vp-filtros__label">Filtrar:</span>
+        <input type="text"
+               class="vp-filtros__input"
+               id="filtroUrl"
+               placeholder="Buscar por nome da URL..."
+               oninput="filtrarTabela()">
+        <select class="vp-filtros__select" id="filtroRole" onchange="filtrarTabela()">
+            <option value="">Todos os perfis</option>
+            {% for val, label in role_choices %}
+            <option value="{{ val }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+        <select class="vp-filtros__select" id="filtroTipo" onchange="filtrarTabela()">
+            <option value="">Todos os tipos</option>
+            <option value="aberta">Acesso aberto</option>
+            <option value="restrita">Restrita</option>
+        </select>
+    </div>
+
+    <!-- ══ TABELA ═══════════════════════════════════════════ -->
+    <div class="vp-table-wrap">
+        {% if permissoes %}
+        <table class="vp-table" id="vpTabela">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome da URL</th>
+                    <th>Perfis com Acesso</th>
+                    <th style="text-align:right">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="vpTableBody">
+                {% for perm in permissoes %}
+                <tr class="vp-row" id="vp-row-{{ perm.id }}"
+                    data-url="{{ perm.url_name }}"
+                    data-roles="{{ perm.roles|join:',' }}">
+
+                    <td>
+                        <span style="font-size:11px; color:#bbb; font-family:monospace; font-weight:700;">
+                            #{{ perm.id }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="vp-url-name" title="{{ perm.url_name }}">
+                            {{ perm.url_name }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="vp-roles-cell">
+                            {% if perm.roles %}
+                                {% for role in perm.roles %}
+                                <span class="vp-role-badge vp-role-badge--{{ role }}">
+                                    {{ role }}
+                                </span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="vp-role-badge vp-role-badge--empty">
+                                    nenhum acesso
+                                </span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="vp-actions" style="justify-content:flex-end;">
+                            <button class="vp-btn-action vp-btn-action--edit"
+                                    title="Editar permissão"
+                                    onclick="abrirDrawer({{ perm.id }})">
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10 2l2 2-7 7H3v-2l7-7z"
+                                          stroke="currentColor" stroke-width="1.4"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <button class="vp-btn-action vp-btn-action--delete"
+                                    title="Excluir"
+                                    onclick="confirmarExclusao({{ perm.id }}, '{{ perm.url_name }}')">
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 3h10M5 3V2h4v1M6 6v4M8 6v4M3 3l1 9h6l1-9"
+                                          stroke="currentColor" stroke-width="1.4"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="vp-empty">
+            <div class="vp-empty__icon">🔒</div>
+            <p class="vp-empty__title">Nenhuma permissão cadastrada</p>
+            <p class="vp-empty__sub">Configure o acesso às URLs do sistema por perfil de usuário.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     DRAWER LATERAL
+══════════════════════════════════════════════════════════ -->
+<div class="vp-overlay" id="vpOverlay" onclick="fecharDrawer()"></div>
+
+<aside class="vp-drawer" id="vpDrawer">
+
+    <!-- Header -->
+    <div class="vp-drawer__header">
+        <div class="vp-drawer__header-left">
+            <div class="vp-drawer__header-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="9" width="14" height="10" rx="2"
+                          stroke="white" stroke-width="1.6"/>
+                    <path d="M7 9V6a3 3 0 016 0v3"
+                          stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                    <circle cx="10" cy="14" r="1.5" fill="white"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="vp-drawer__title" id="vpDrawerTitle">Nova Permissão</h3>
+                <span class="vp-drawer__subtitle" id="vpDrawerSubtitle">
+                    Defina quais perfis acessam esta URL
+                </span>
+            </div>
+        </div>
+        <button class="vp-drawer__close" onclick="fecharDrawer()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Feedback -->
+    <div class="vp-drawer__feedback" id="vpFeedback" style="display:none"></div>
+
+    <!-- Body -->
+    <div class="vp-drawer__body">
+
+        <!-- Spinner -->
+        <div class="vp-drawer__spinner" id="vpSpinner">
+            <div class="vp-spinner"></div>
+            <span>Carregando...</span>
+        </div>
+
+        <!-- Formulário -->
+        <div id="vpForm" style="display:none">
+
+            <!-- ── URL NAME ── -->
+            <div class="vp-form__section">Identificação da Rota</div>
+
+            <div class="vp-form__group">
+                <label class="vp-form__label">
+                    Nome da URL <span class="req">*</span>
+                </label>
+                <input type="text"
+                       id="vp_url_name"
+                       class="vp-form__input"
+                       placeholder="ex: relatorios, clientes:lista, vendas:novo"
+                       autocomplete="off">
+                <span class="vp-form__error" id="err-url-name"></span>
+                <p class="vp-form__hint">
+                    Utilize o <code>name</code> definido nas <code>urls.py</code> do Django.
+                    Para URLs com namespace: <code>app:view_name</code>.
+                </p>
+            </div>
+
+            <!-- ── ROLES ── -->
+            <div class="vp-form__section" style="margin-top:4px">
+                Perfis com Acesso
+            </div>
+
+            <!-- Atalhos -->
+            <div class="vp-roles-shortcuts">
+                <button type="button" class="vp-shortcut-btn" onclick="selecionarTodos()">
+                    Selecionar todos
+                </button>
+                <button type="button" class="vp-shortcut-btn" onclick="limparSelecao()">
+                    Limpar
+                </button>
+                <button type="button" class="vp-shortcut-btn" onclick="selecionarGestores()">
+                    Só gestores
+                </button>
+            </div>
+
+            <!-- Lista de roles -->
+            <div class="vp-roles-selector" id="vpRolesSelector">
+                {% for val, label in role_choices %}
+                <div class="vp-role-option"
+                     data-role="{{ val }}"
+                     onclick="toggleRole(this)">
+                    <div class="vp-role-option__check">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M1.5 5l2.5 2.5 5-5"
+                                  stroke="white" stroke-width="1.8"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="vp-role-option__info">
+                        <span class="vp-role-badge vp-role-badge--{{ val }} vp-role-option__badge">
+                            {{ val }}
+                        </span>
+                        <span class="vp-role-option__desc">{{ label }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <span class="vp-form__error" id="err-roles"></span>
+
+            <!-- Resumo dos selecionados -->
+            <div class="vp-roles-summary" id="vpRolesSummary">
+                <span class="vp-roles-summary__empty">Nenhum perfil selecionado</span>
+            </div>
+
+        </div><!-- /vpForm -->
+    </div><!-- /body -->
+
+    <!-- Footer -->
+    <div class="vp-drawer__footer">
+        <button class="vp-drawer__btn-cancel" onclick="fecharDrawer()">
+            Cancelar
+        </button>
+        <button class="vp-drawer__btn-save" id="vpBtnSalvar" onclick="salvarPermissao()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="vpBtnLabel">Criar</span>
+        </button>
+    </div>
+</aside>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+══════════════════════════════════════════════════════════ -->
+<div class="vp-confirm-overlay" id="vpConfirmOverlay">
+    <div class="vp-confirm-modal">
+        <div class="vp-confirm-modal__icon">🗑️</div>
+        <h3 class="vp-confirm-modal__title">Excluir permissão?</h3>
+        <p class="vp-confirm-modal__body">
+            Você está prestes a remover a permissão para
+            <span class="vp-confirm-modal__url" id="vpConfirmUrl">—</span>.
+            Esta ação não pode ser desfeita.
+        </p>
+        <div class="vp-confirm-modal__actions">
+            <button class="vp-btn-cancel-confirm"
+                    onclick="fecharConfirm()">
+                Cancelar
+            </button>
+            <button class="vp-btn-confirm-delete"
+                    id="vpBtnConfirmDelete"
+                    onclick="executarExclusao()">
+                Sim, excluir
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/view_permissions.js' %}" defer></script>
+{% endblock %}
