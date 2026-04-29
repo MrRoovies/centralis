@@ -8,7 +8,8 @@ import json
 
 from apps.usuarios.models import Perfil, Equipe, Carteira, Agente
 from apps.core.choices import PerfilAgente, EscopoAgente
-from apps.usuarios.services.equipe_perfil_service import EquipeService, PerfilService, campos_obrigatorios
+from apps.usuarios.services.equipe_perfil_service import (
+    EquipeService, PerfilService, campos_obrigatorios, CarteiraService)
 
 # ═══════════════════════════════════════════
 # PERFIS
@@ -19,6 +20,12 @@ from apps.usuarios.services.equipe_perfil_service import EquipeService, PerfilSe
 def lista_configuracoes(request):
     """Tela principal de configurações: Perfis e Equipes."""
     empresa = request.empresa
+
+    carteiras = (
+        Carteira.objects
+        .filter(empresa=empresa)
+        .order_by('nome')
+    )
 
     perfis = (
         Perfil.objects
@@ -43,6 +50,7 @@ def lista_configuracoes(request):
         'perfis': perfis,
         'equipes': equipes,
         'usuarios': usuarios,
+        'carteiras': carteiras,
         'groups': groups,
         'perfil_choices': PerfilAgente.choices,
         'escopo_choices': EscopoAgente.choices,
@@ -151,5 +159,53 @@ def equipe_toggle(request, equipe_id):
         'ativo': equipe.ativo,
         'messages': {'equipe': {'success': [
             f'Equipe {"ativada" if equipe.ativo else "desativada"} com sucesso!'
+        ]}}
+    })
+
+
+@login_required
+def carteira_detail(request, carteira_id=None):
+    empresa = request.empresa
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {'success': False, 'messages': {'carteira': {'__all__': ['JSON inválido']}}},
+                status=400
+            )
+        print(data)
+        campos = ['nome', 'ativo']
+        validacao = campos_obrigatorios(data, 'carteira', campos)
+        if not validacao.get('success'):
+            return JsonResponse(validacao, status=400)
+
+        cria_ou_edita = CarteiraService.cria_ou_edita(data, carteira_id, empresa)
+        if not cria_ou_edita.get('success'):
+            return JsonResponse(cria_ou_edita, status=400)
+
+        return JsonResponse(cria_ou_edita, status=200)
+
+    # --- GET ---
+    detalhes = CarteiraService.detalhes(carteira_id, empresa)
+    if not detalhes.get('success'):
+        return JsonResponse(detalhes['data'], status=400)
+
+    return JsonResponse(detalhes['data'], status=200)
+
+
+@login_required
+@require_POST
+def carteira_toggle(request, carteira_id):
+    """Ativa / desativa uma equipe."""
+    carteira = get_object_or_404(Carteira, pk=carteira_id, empresa=request.empresa)
+    carteira.ativo = not carteira.ativo
+    carteira.save(update_fields=['ativo'])
+    return JsonResponse({
+        'success': True,
+        'ativo': carteira.ativo,
+        'messages': {'equipe': {'success': [
+            f'Equipe {"ativada" if carteira.ativo else "desativada"} com sucesso!'
         ]}}
     })

@@ -5,6 +5,8 @@
 
 /* ── Variáveis locais ── */
 :root {
+    --cfg-carteira:   #e76f07;
+    --cfg-carteira2:  #FF9800;
     --cfg-perfil:   #04375F;
     --cfg-perfil2:  #007AAA;
     --cfg-equipe:   #1A7A42;
@@ -40,10 +42,11 @@
     margin-top: 4px;
 }
 
+
 /* ── Grid de 2 colunas ── */
 .cfg-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 24px;
     align-items: start;
 }
@@ -85,6 +88,11 @@
     flex-shrink: 0;
 }
 
+.cfg-panel__icon--carteira {
+    background: linear-gradient(135deg, var(--cfg-carteira), var(--cfg-carteira2));
+    color: white;
+}
+
 .cfg-panel__icon--perfil {
     background: linear-gradient(135deg, var(--cfg-perfil), var(--cfg-perfil2));
     color: white;
@@ -124,6 +132,18 @@
     white-space: nowrap;
     text-decoration: none;
 }
+
+.cfg-btn-novo--carteira {
+    background: linear-gradient(90deg, var(--cfg-carteira), var(--cfg-carteira2));
+    color: white;
+}
+
+.cfg-btn-novo--carteira:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(4,55,95,.3);
+}
+
 
 .cfg-btn-novo--perfil {
     background: linear-gradient(90deg, var(--cfg-perfil), var(--cfg-perfil2));
@@ -191,6 +211,20 @@
     height: 36px;
     border-radius: 8px;
     background: linear-gradient(135deg, var(--cfg-equipe), var(--cfg-equipe2));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.cfg-carteira-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cfg-carteira), var(--cfg-carteira2));
     color: white;
     display: flex;
     align-items: center;
@@ -376,6 +410,10 @@
     color: white;
     flex-shrink: 0;
     gap: 14px;
+}
+
+.cfg-drawer__header--carteira {
+    background: linear-gradient(90deg, var(--cfg-carteira) 0%, var(--cfg-carteira2) 100%);
 }
 
 .cfg-drawer__header--perfil {

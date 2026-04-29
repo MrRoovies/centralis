@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.db import transaction
 from django.db.models import Value
 from django.db.models.functions import Concat
-from apps.usuarios.models import Equipe, Agente
+from apps.usuarios.models import Equipe, Agente, Carteira
 
 
 def campos_obrigatorios(data, local, campos):
@@ -151,3 +151,43 @@ class EquipeService:
 
         except Exception as e:
             return ResponsePattern.error('equipe', [str(e)])
+
+
+class CarteiraService:
+    @staticmethod
+    def detalhes(carteira_id, empresa):
+        if carteira_id:
+            carteira = Carteira.objects.get(empresa=empresa, pk=carteira_id)
+            data = {
+                'id': carteira.id,
+                'nome': carteira.nome,
+                'ativo': carteira.ativo,
+            }
+
+            return ResponsePattern.success_data({'carteira': data})
+
+        return ResponsePattern.success_data({'carteira': {}})
+
+
+    @staticmethod
+    def cria_ou_edita(data, carteira_id, empresa):
+        try:
+            with transaction.atomic():
+                if carteira_id:
+                    carteira = Carteira.objects.get(pk=carteira_id, empresa=empresa)
+                    carteira.nome = data.get('nome').strip()
+                    carteira.ativo = data.get('ativo')
+                    carteira.save()
+                    msg = ['Carteira atualizada com sucesso!']
+                else:
+                    Carteira.objects.create(
+                        empresa=empresa,
+                        nome=data.get('nome').strip(),
+                        ativo=data.get('ativo'),
+                    )
+                    msg = ['Carteira criada com sucesso!']
+
+            return ResponsePattern.success('carteira', msg)
+
+        except Exception as e:
+            return ResponsePattern.error('carteira', [str(e)])

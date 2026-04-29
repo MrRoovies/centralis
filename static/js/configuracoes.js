@@ -1,4 +1,10 @@
 // configuracoes.js — Perfis e Equipes
+import { DRAWER_CONFIG } from './drawer/drawer.js';
+window.abrirDrawer = abrirDrawer;
+window.fecharDrawer = fecharDrawer;
+window.salvarDrawer = salvarDrawer;
+window.toggleItem = toggleItem;
+
 
 // ── Estado ──────────────────────────────────────────────────
 let _tipo    = null;   // 'perfil' | 'equipe'
@@ -9,52 +15,50 @@ let _groupMode = 'existente';  // 'existente' | 'novo'
 const URLS = {
     perfil: (id) => id ? `/usuarios/perfil/${id}/` : '/usuarios/perfil/',
     equipe: (id) => id ? `/usuarios/equipe/${id}/` : '/usuarios/equipe/',
+    carteira: (id) => id ? `/usuarios/carteira/${id}/` : '/usuarios/carteira/',
     perfilToggle: (id) => `/usuarios/perfil/${id}/toggle/`,
     equipeToggle: (id) => `/usuarios/equipe/${id}/toggle/`,
+    carteiraToggle: (id) => `/usuarios/carteira/${id}/toggle/`,
 };
 
-// ── Abrir drawer ─────────────────────────────────────────────
+
 function abrirDrawer(tipo, itemId) {
     _tipo   = tipo;
     _itemId = itemId;
 
-    // Reset visual
+    const cfg = DRAWER_CONFIG[tipo];
+    if (!cfg) {
+        console.error('Tipo não configurado:', tipo);
+        return;
+    }
+
     _resetDrawer();
 
-    // Configura header
-    const ehPerfil = tipo === 'perfil';
-    const ehNovo   = itemId === null;
+    const ehNovo = itemId === null;
 
+    // TEXTOS
     document.getElementById('cfgDrawerTitle').textContent =
-        ehNovo
-            ? (ehPerfil ? 'Novo Perfil' : 'Nova Equipe')
-            : (ehPerfil ? 'Editar Perfil' : 'Editar Equipe');
+        ehNovo ? cfg.tituloNovo : cfg.tituloEditar;
 
     document.getElementById('cfgDrawerSubtitle').textContent =
         ehNovo ? 'Preencha os dados abaixo' : 'Altere os campos desejados';
 
+    // HEADER STYLE
     document.getElementById('cfgDrawerHeader').className =
         `cfg-drawer__header cfg-drawer__header--${tipo}`;
 
-    document.getElementById('cfgDrawerIcon').innerHTML = ehPerfil
-        ? `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-               <circle cx="10" cy="7" r="3.5" stroke="white" stroke-width="1.6"/>
-               <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-           </svg>`
-        : `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-               <circle cx="7" cy="7" r="3" stroke="white" stroke-width="1.6"/>
-               <circle cx="14" cy="7" r="3" stroke="white" stroke-width="1.6"/>
-               <path d="M1 17c0-3.314 2.686-6 6-6" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-               <path d="M11 17c0-3.314 2.686-6 6-6 3.314 0 6 2.686 6 6" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-           </svg>`;
+    // ÍCONE
+    document.getElementById('cfgDrawerIcon').innerHTML = cfg.icon;
 
-    document.getElementById('cfgBtnLabel').textContent = ehNovo ? 'Criar' : 'Salvar';
+    // BOTÃO
+    document.getElementById('cfgBtnLabel').textContent =
+        ehNovo ? 'Criar' : 'Salvar';
 
-    // Abre overlay + drawer
+    // OPEN
     document.getElementById('cfgOverlay').classList.add('active');
     document.getElementById('cfgDrawer').classList.add('active');
 
-    // Carrega dados
+    // FETCH
     fetch(URLS[tipo](itemId))
         .then(r => r.json())
         .then(data => _preencherForm(tipo, data))
@@ -106,7 +110,24 @@ function _preencherForm(tipo, data) {
 
         form.style.display = 'block';
 
-    } else {
+    }
+    if (tipo === 'carteira') {
+        const form   = document.getElementById('formCarteira');
+        const carteira = data.carteira || {};
+
+        _setVal('ct_nome', carteira.nome || '');
+
+        // Toggle de ativo
+        const chk = document.getElementById('ct_ativo');
+        chk.checked = carteira.ativo !== false;
+        _atualizarToggleText('ct_ativo_text', chk.checked, 'Ativa', 'Inativa');
+        chk.addEventListener('change', () =>
+            _atualizarToggleText('ct_ativo_text', chk.checked, 'Ativa', 'Inativa')
+        );
+
+        form.style.display = 'block';
+    }
+     else {
         const form   = document.getElementById('formEquipe');
         const equipe = data.equipe || {};
 
@@ -194,9 +215,7 @@ function salvarDrawer() {
 
 // ── Toggle ativo/inativo (lista) ─────────────────────────────
 function toggleItem(tipo, itemId, btn) {
-    const url = tipo === 'perfil'
-        ? URLS.perfilToggle(itemId)
-        : URLS.equipeToggle(itemId);
+    const url = URLS[`${tipo}Toggle`](itemId);
 
     fetch(url, {
         method: 'POST',
@@ -255,7 +274,15 @@ function _coletarPayload(tipo) {
             criar_grupo_nome: _groupMode === 'novo'      ? document.getElementById('pf_criar_grupo_nome').value.trim() : '',
             ativo:            chk.checked,
         };
-    } else {
+    }
+    if (tipo === 'carteira') {
+        const chk = document.getElementById('ct_ativo');
+        return {
+            nome:           document.getElementById('ct_nome').value.trim(),
+            ativo:          chk.checked,
+        };
+    }
+    else {
         const chk = document.getElementById('eq_ativo');
         return {
             nome:           document.getElementById('eq_nome').value.trim(),
@@ -279,6 +306,7 @@ function _resetDrawer() {
     document.getElementById('cfgSpinner').style.display       = 'flex';
     document.getElementById('formPerfil').style.display       = 'none';
     document.getElementById('formEquipe').style.display       = 'none';
+    document.getElementById('formCarteira').style.display     = 'none';
     document.getElementById('cfgFeedback').style.display      = 'none';
     _limparErros();
 }

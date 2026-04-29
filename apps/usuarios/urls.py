@@ -21,4 +21,9 @@ urlpatterns = [
     path('equipe/', configuracoes.equipe_detail, name='equipe_criar'),
     path('equipe/<int:equipe_id>/', configuracoes.equipe_detail, name='equipe_detalhe'),
     path('equipe/<int:equipe_id>/toggle/', configuracoes.equipe_toggle, name='equipe_toggle'),
+
+    # Carteiras
+    path('carteira/', configuracoes.carteira_detail, name='carteira_detail'),
+    path('carteira/<int:carteira_id>/', configuracoes.carteira_detail, name='carteira_detail'),
+    path('carteira/<int:carteira_id>/toggle/', configuracoes.carteira_toggle, name='carteira_toggle'),
 ]
