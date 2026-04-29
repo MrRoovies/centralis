@@ -1,64 +1,93 @@
-// configuracoes.js — Perfis e Equipes
+// configuracoes.js — Carteiras, Perfis e Equipes
 import { DRAWER_CONFIG } from './drawer/drawer.js';
-window.abrirDrawer = abrirDrawer;
+
+window.abrirDrawer  = abrirDrawer;
 window.fecharDrawer = fecharDrawer;
 window.salvarDrawer = salvarDrawer;
-window.toggleItem = toggleItem;
+window.toggleItem   = toggleItem;
+window.setTab       = setTab;
+window.setGroupMode = setGroupMode;
 
-
-// ── Estado ──────────────────────────────────────────────────
-let _tipo    = null;   // 'perfil' | 'equipe'
-let _itemId  = null;   // null = criação, number = edição
-let _groupMode = 'existente';  // 'existente' | 'novo'
+// ── Estado ───────────────────────────────────────────────────
+let _tipo      = null;       // 'carteira' | 'perfil' | 'equipe'
+let _itemId    = null;       // null = criação, number = edição
+let _groupMode = 'existente';
 
 // ── URLs ─────────────────────────────────────────────────────
 const URLS = {
-    perfil: (id) => id ? `/usuarios/perfil/${id}/` : '/usuarios/perfil/',
-    equipe: (id) => id ? `/usuarios/equipe/${id}/` : '/usuarios/equipe/',
-    carteira: (id) => id ? `/usuarios/carteira/${id}/` : '/usuarios/carteira/',
-    perfilToggle: (id) => `/usuarios/perfil/${id}/toggle/`,
-    equipeToggle: (id) => `/usuarios/equipe/${id}/toggle/`,
+    carteira:       (id) => id ? `/usuarios/carteira/${id}/`        : '/usuarios/carteira/',
+    perfil:         (id) => id ? `/usuarios/perfil/${id}/`          : '/usuarios/perfil/',
+    equipe:         (id) => id ? `/usuarios/equipe/${id}/`          : '/usuarios/equipe/',
     carteiraToggle: (id) => `/usuarios/carteira/${id}/toggle/`,
+    perfilToggle:   (id) => `/usuarios/perfil/${id}/toggle/`,
+    equipeToggle:   (id) => `/usuarios/equipe/${id}/toggle/`,
 };
 
+// ── Navegação por tabs ────────────────────────────────────────
+function setTab(tabName) {
+    document.querySelectorAll('.cfg-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.cfg-panel').forEach(p => p.classList.remove('active'));
 
+    document.querySelector(`.cfg-tab[data-tab="${tabName}"]`).classList.add('active');
+    document.getElementById(`panel-${tabName}`).classList.add('active');
+}
+
+// ── Abrir drawer ──────────────────────────────────────────────
 function abrirDrawer(tipo, itemId) {
     _tipo   = tipo;
     _itemId = itemId;
-
-    const cfg = DRAWER_CONFIG[tipo];
-    if (!cfg) {
-        console.error('Tipo não configurado:', tipo);
-        return;
-    }
 
     _resetDrawer();
 
     const ehNovo = itemId === null;
 
-    // TEXTOS
-    document.getElementById('cfgDrawerTitle').textContent =
-        ehNovo ? cfg.tituloNovo : cfg.tituloEditar;
+    // Config de cada tipo
+    const configs = {
+        carteira: {
+            title:    ehNovo ? 'Nova Carteira'      : 'Editar Carteira',
+            subtitle: ehNovo ? 'Preencha os dados'  : 'Altere os dados da carteira',
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                       <rect x="2" y="5" width="16" height="12" rx="2" stroke="white" stroke-width="1.6"/>
+                       <path d="M12 9h6v4h-6a2 2 0 010-4z" stroke="white" stroke-width="1.4" stroke-linejoin="round"/>
+                       <circle cx="15.5" cy="11" r="1" fill="white"/>
+                   </svg>`,
+        },
+        perfil: {
+            title:    ehNovo ? 'Novo Perfil'        : 'Editar Perfil',
+            subtitle: ehNovo ? 'Preencha os dados'  : 'Altere os dados do perfil',
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                       <circle cx="10" cy="7" r="3.5" stroke="white" stroke-width="1.6"/>
+                       <path d="M3 18c0-3.866 3.134-7 7-7s7 3.134 7 7"
+                             stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                   </svg>`,
+        },
+        equipe: {
+            title:    ehNovo ? 'Nova Equipe'        : 'Editar Equipe',
+            subtitle: ehNovo ? 'Preencha os dados'  : 'Altere os dados da equipe',
+            icon: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                       <circle cx="7" cy="7" r="3" stroke="white" stroke-width="1.6"/>
+                       <circle cx="14" cy="7" r="3" stroke="white" stroke-width="1.6"/>
+                       <path d="M1 17c0-3.314 2.686-6 6-6"
+                             stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                       <path d="M11 17c0-3.314 2.686-6 6-6"
+                             stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                   </svg>`,
+        },
+    };
 
-    document.getElementById('cfgDrawerSubtitle').textContent =
-        ehNovo ? 'Preencha os dados abaixo' : 'Altere os campos desejados';
+    const cfg = configs[tipo];
 
-    // HEADER STYLE
+    document.getElementById('cfgDrawerTitle').textContent    = cfg.title;
+    document.getElementById('cfgDrawerSubtitle').textContent = cfg.subtitle;
+    document.getElementById('cfgDrawerIcon').innerHTML       = cfg.icon;
     document.getElementById('cfgDrawerHeader').className =
         `cfg-drawer__header cfg-drawer__header--${tipo}`;
+    document.getElementById('cfgBtnLabel').textContent = ehNovo ? 'Criar' : 'Salvar';
 
-    // ÍCONE
-    document.getElementById('cfgDrawerIcon').innerHTML = cfg.icon;
-
-    // BOTÃO
-    document.getElementById('cfgBtnLabel').textContent =
-        ehNovo ? 'Criar' : 'Salvar';
-
-    // OPEN
     document.getElementById('cfgOverlay').classList.add('active');
     document.getElementById('cfgDrawer').classList.add('active');
 
-    // FETCH
+    // Carrega dados via GET
     fetch(URLS[tipo](itemId))
         .then(r => r.json())
         .then(data => _preencherForm(tipo, data))
@@ -73,21 +102,31 @@ function fecharDrawer() {
     _itemId = null;
 }
 
-// ── Preencher formulário ─────────────────────────────────────
+// ── Preencher formulário ──────────────────────────────────────
 function _preencherForm(tipo, data) {
     document.getElementById('cfgSpinner').style.display = 'none';
 
-    if (tipo === 'perfil') {
-        const form   = document.getElementById('formPerfil');
-        const perfil = data.perfil || {};
+    // Oculta todos os forms, exibe o correto
+    document.querySelectorAll('.cfg-form-content').forEach(f => f.style.display = 'none');
+    document.getElementById(`form-${tipo}`).style.display = 'block';
 
-        // Preenche selects de choices (já estão no HTML via Django)
-        _setVal('pf_codigo', perfil.codigo  || '');
-        _setVal('pf_escopo', perfil.escopo  || '');
+    if (tipo === 'carteira') {
+        const carteira = data.carteira || {};
+        _setVal('ct_nome', carteira.nome || '');
+
+        const chk = document.getElementById('ct_ativo');
+        chk.checked = carteira.ativo !== false;
+        _updateToggleText('ct_ativo_text', chk.checked, 'Ativa', 'Inativa');
+    }
+
+    if (tipo === 'perfil') {
+        const perfil = data.perfil || {};
+        _setVal('pf_codigo', perfil.codigo || '');
+        _setVal('pf_escopo', perfil.escopo || '');
 
         // Popular select de groups
         const selGroup = document.getElementById('pf_grupo_id');
-        selGroup.innerHTML = '<option value="">Nenhum</option>';
+        selGroup.innerHTML = '<option value="">Nenhum (sem permissões de group)</option>';
         (data.groups || []).forEach(g => {
             const opt = document.createElement('option');
             opt.value = g.id;
@@ -96,41 +135,17 @@ function _preencherForm(tipo, data) {
             selGroup.appendChild(opt);
         });
 
-        // Toggle de ativo
         const chk = document.getElementById('pf_ativo');
         chk.checked = perfil.ativo !== false;
-        _atualizarToggleText('pf_ativo_text', chk.checked, 'Ativo', 'Inativo');
-        chk.addEventListener('change', () =>
-            _atualizarToggleText('pf_ativo_text', chk.checked, 'Ativo', 'Inativo')
-        );
+        _updateToggleText('pf_ativo_text', chk.checked, 'Ativo', 'Inativo');
 
-        // Modo group (reset para existente)
+        // Reset group mode
         setGroupMode('existente');
         document.getElementById('pf_criar_grupo_nome').value = '';
-
-        form.style.display = 'block';
-
     }
-    if (tipo === 'carteira') {
-        const form   = document.getElementById('formCarteira');
-        const carteira = data.carteira || {};
 
-        _setVal('ct_nome', carteira.nome || '');
-
-        // Toggle de ativo
-        const chk = document.getElementById('ct_ativo');
-        chk.checked = carteira.ativo !== false;
-        _atualizarToggleText('ct_ativo_text', chk.checked, 'Ativa', 'Inativa');
-        chk.addEventListener('change', () =>
-            _atualizarToggleText('ct_ativo_text', chk.checked, 'Ativa', 'Inativa')
-        );
-
-        form.style.display = 'block';
-    }
-     else {
-        const form   = document.getElementById('formEquipe');
+    if (tipo === 'equipe') {
         const equipe = data.equipe || {};
-
         _setVal('eq_nome', equipe.nome || '');
 
         // Popular select de responsáveis
@@ -139,20 +154,14 @@ function _preencherForm(tipo, data) {
         (data.usuarios || []).forEach(u => {
             const opt = document.createElement('option');
             opt.value = u.usuario_id;
-            opt.textContent = (u.nome).trim() || u.usuario__username;
+            opt.textContent = (u.nome || '').trim() || u.usuario__username;
             if (u.usuario_id === equipe.responsavel_id) opt.selected = true;
             selResp.appendChild(opt);
         });
 
-        // Toggle de ativo
         const chk = document.getElementById('eq_ativo');
         chk.checked = equipe.ativo !== false;
-        _atualizarToggleText('eq_ativo_text', chk.checked, 'Ativa', 'Inativa');
-        chk.addEventListener('change', () =>
-            _atualizarToggleText('eq_ativo_text', chk.checked, 'Ativa', 'Inativa')
-        );
-
-        form.style.display = 'block';
+        _updateToggleText('eq_ativo_text', chk.checked, 'Ativa', 'Inativa');
     }
 }
 
@@ -164,8 +173,7 @@ function salvarDrawer() {
 
     const btn   = document.getElementById('cfgBtnSalvar');
     const label = document.getElementById('cfgBtnLabel');
-
-    btn.disabled    = true;
+    btn.disabled      = true;
     label.textContent = 'Salvando...';
 
     const payload = _coletarPayload(_tipo);
@@ -181,7 +189,7 @@ function salvarDrawer() {
     .then(async r => { const d = await r.json(); if (!r.ok) throw d; return d; })
     .then(d => {
         _mostrarFeedback(
-            d.messages?.[_tipo]?.success?.[0] || 'Salvo com sucesso!',
+            d.messages?.[_tipo]?.success?.[0] || '✓ Salvo com sucesso!',
             'success'
         );
         setTimeout(() => { fecharDrawer(); location.reload(); }, 900);
@@ -190,15 +198,17 @@ function salvarDrawer() {
         const msgs = err?.messages?.[_tipo] || {};
         let temCampo = false;
 
+        const prefixMap = { carteira: 'ct', perfil: 'pf', equipe: 'eq' };
+        const prefixo = prefixMap[_tipo];
+
         Object.entries(msgs).forEach(([campo, erros]) => {
-            const txt  = Array.isArray(erros) ? erros.join(' ') : erros;
+            const txt = Array.isArray(erros) ? erros.join(' ') : erros;
             if (campo === '__all__' || campo === 'success') {
                 _mostrarFeedback(txt, campo === 'success' ? 'success' : 'error');
                 return;
             }
-            const prefixo = _tipo === 'perfil' ? 'err-pf-' : 'err-eq-';
-            const errEl = document.getElementById(`${prefixo}${campo}`);
-            const inpEl = document.querySelector(`#form${_tipo.charAt(0).toUpperCase()+_tipo.slice(1)} [name="${campo}"]`);
+            const errEl = document.getElementById(`err-${prefixo}-${campo}`);
+            const inpEl = document.querySelector(`#form-${_tipo} [name="${campo}"]`);
             if (errEl) { errEl.textContent = txt; errEl.style.display = 'block'; }
             if (inpEl) inpEl.classList.add('cfg-form__input--error');
             temCampo = true;
@@ -208,35 +218,38 @@ function salvarDrawer() {
             _mostrarFeedback('Erro ao salvar. Tente novamente.', 'error');
     })
     .finally(() => {
-        btn.disabled = false;
+        btn.disabled      = false;
         label.textContent = _itemId ? 'Salvar' : 'Criar';
     });
 }
 
-// ── Toggle ativo/inativo (lista) ─────────────────────────────
+// ── Toggle ativo/inativo na tabela ───────────────────────────
 function toggleItem(tipo, itemId, btn) {
-    const url = URLS[`${tipo}Toggle`](itemId);
+    const urlMap = {
+        carteira: URLS.carteiraToggle,
+        perfil:   URLS.perfilToggle,
+        equipe:   URLS.equipeToggle,
+    };
 
-    fetch(url, {
+    fetch(urlMap[tipo](itemId), {
         method: 'POST',
         headers: { 'X-CSRFToken': getCookie('csrftoken') },
     })
     .then(async r => { const d = await r.json(); if (!r.ok) throw d; return d; })
     .then(d => {
         const row   = document.getElementById(`${tipo}-row-${itemId}`);
-        const pill  = row.querySelector('.cfg-status-pill');
+        const pill  = row.querySelector('.cfg-status');
         const ativo = d.ativo;
 
-        // Atualiza classe da row
-        row.classList.toggle('cfg-list__item--inativo', !ativo);
+        row.classList.toggle('cfg-row--inativo', !ativo);
 
-        // Atualiza pill
-        pill.className = `cfg-status-pill ${ativo ? 'cfg-status-pill--ativo' : 'cfg-status-pill--inativo'}`;
-        pill.textContent = ativo
-            ? (tipo === 'equipe' ? 'Ativa' : 'Ativo')
-            : (tipo === 'equipe' ? 'Inativa' : 'Inativo');
+        // Feminino para carteira/equipe, masculino para perfil
+        const labelOn  = tipo === 'perfil' ? 'Ativo'  : 'Ativa';
+        const labelOff = tipo === 'perfil' ? 'Inativo' : 'Inativa';
 
-        // Troca ícone do botão toggle
+        pill.className = `cfg-status cfg-status--${ativo ? 'ativo' : 'inativo'}`;
+        pill.textContent = ativo ? labelOn : labelOff;
+
         btn.innerHTML = ativo
             ? `<svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                    <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
@@ -250,7 +263,7 @@ function toggleItem(tipo, itemId, btn) {
     .catch(() => alert('Erro ao alterar status.'));
 }
 
-// ── Modo de group (Perfil) ───────────────────────────────────
+// ── Modo de group (Perfil) ────────────────────────────────────
 function setGroupMode(mode) {
     _groupMode = mode;
     document.getElementById('modoExistente').style.display = mode === 'existente' ? 'block' : 'none';
@@ -258,56 +271,50 @@ function setGroupMode(mode) {
     document.getElementById('tabExistente').classList.toggle('active', mode === 'existente');
     document.getElementById('tabNovo').classList.toggle('active',      mode === 'novo');
 
-    // Limpa o campo que não está em uso
     if (mode === 'existente') document.getElementById('pf_criar_grupo_nome').value = '';
-    else document.getElementById('pf_grupo_id').value = '';
+    else                      document.getElementById('pf_grupo_id').value = '';
 }
 
-// ── Helpers ──────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────
 function _coletarPayload(tipo) {
+    if (tipo === 'carteira') {
+        return {
+            nome:  document.getElementById('ct_nome').value.trim(),
+            ativo: document.getElementById('ct_ativo').checked,
+        };
+    }
     if (tipo === 'perfil') {
-        const chk = document.getElementById('pf_ativo');
         return {
             codigo:           document.getElementById('pf_codigo').value,
             escopo:           document.getElementById('pf_escopo').value,
             grupo_id:         _groupMode === 'existente' ? document.getElementById('pf_grupo_id').value : null,
             criar_grupo_nome: _groupMode === 'novo'      ? document.getElementById('pf_criar_grupo_nome').value.trim() : '',
-            ativo:            chk.checked,
+            ativo:            document.getElementById('pf_ativo').checked,
         };
     }
-    if (tipo === 'carteira') {
-        const chk = document.getElementById('ct_ativo');
-        return {
-            nome:           document.getElementById('ct_nome').value.trim(),
-            ativo:          chk.checked,
-        };
-    }
-    else {
-        const chk = document.getElementById('eq_ativo');
+    if (tipo === 'equipe') {
         return {
             nome:           document.getElementById('eq_nome').value.trim(),
             responsavel_id: document.getElementById('eq_responsavel_id').value || null,
-            ativo:          chk.checked,
+            ativo:          document.getElementById('eq_ativo').checked,
         };
     }
 }
 
 function _setVal(id, val) {
     const el = document.getElementById(id);
-    if (el) el.value = val;
+    if (el && val !== undefined && val !== null) el.value = val;
 }
 
-function _atualizarToggleText(spanId, checked, labelOn, labelOff) {
+function _updateToggleText(spanId, checked, labelOn, labelOff) {
     const el = document.getElementById(spanId);
     if (el) el.textContent = checked ? labelOn : labelOff;
 }
 
 function _resetDrawer() {
-    document.getElementById('cfgSpinner').style.display       = 'flex';
-    document.getElementById('formPerfil').style.display       = 'none';
-    document.getElementById('formEquipe').style.display       = 'none';
-    document.getElementById('formCarteira').style.display     = 'none';
-    document.getElementById('cfgFeedback').style.display      = 'none';
+    document.getElementById('cfgSpinner').style.display = 'flex';
+    document.querySelectorAll('.cfg-form-content').forEach(f => f.style.display = 'none');
+    document.getElementById('cfgFeedback').style.display = 'none';
     _limparErros();
 }
 
@@ -326,9 +333,25 @@ function _mostrarFeedback(msg, tipo) {
     el.textContent = msg;
     el.className = `cfg-drawer__feedback cfg-drawer__feedback--${tipo}`;
     el.style.display = 'block';
+    if (tipo === 'success') {
+        setTimeout(() => { el.style.display = 'none'; }, 3000);
+    }
 }
 
 // Fecha com ESC
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') fecharDrawer();
+});
+
+// Toggle texts reativos
+document.addEventListener('DOMContentLoaded', () => {
+    const toggles = [
+        { id: 'ct_ativo', textId: 'ct_ativo_text', on: 'Ativa',  off: 'Inativa' },
+        { id: 'pf_ativo', textId: 'pf_ativo_text', on: 'Ativo',  off: 'Inativo' },
+        { id: 'eq_ativo', textId: 'eq_ativo_text', on: 'Ativa',  off: 'Inativa' },
+    ];
+    toggles.forEach(({ id, textId, on, off }) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', () => _updateToggleText(textId, el.checked, on, off));
+    });
 });

@@ -1,5 +1,5 @@
 /* ============================================================
-   CONFIGURACOES.CSS — Perfis e Equipes
+   CONFIGURACOES.CSS — Carteiras, Perfis e Equipes
    Depende de: base.css, styles.css
    ============================================================ */
 
@@ -7,114 +7,103 @@
 :root {
     --cfg-carteira:   #e76f07;
     --cfg-carteira2:  #FF9800;
-    --cfg-perfil:   #04375F;
-    --cfg-perfil2:  #007AAA;
-    --cfg-equipe:   #1A7A42;
-    --cfg-equipe2:  #27ae60;
-    --cfg-border:   #E8EDF2;
-    --cfg-bg:       #F4F7FA;
-    --cfg-radius:   10px;
-    --cfg-shadow:   0 2px 12px rgba(15,25,35,.08);
+    --cfg-perfil:     #04375F;
+    --cfg-perfil2:    #007AAA;
+    --cfg-equipe:     #1A7A42;
+    --cfg-equipe2:    #27ae60;
+    --cfg-border:     #E8EDF2;
+    --cfg-radius:     10px;
+    --cfg-shadow:     0 2px 12px rgba(15,25,35,.08);
 }
 
-/* ── Page header ── */
-.cfg-page-header {
+/* ══ TABS DE NAVEGAÇÃO ══════════════════════════════════════ */
+.cfg-tabs {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.cfg-page-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #1a2e3b;
-    margin: 0;
-    letter-spacing: -.5px;
-}
-
-.cfg-page-sub {
-    display: block;
-    font-size: 13px;
-    color: #999;
-    margin-top: 4px;
-}
-
-
-/* ── Grid de 2 colunas ── */
-.cfg-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px;
-    align-items: start;
-}
-
-/* ── Painel (card) ── */
-.cfg-panel {
+    gap: 0;
     background: white;
     border-radius: var(--cfg-radius);
     box-shadow: var(--cfg-shadow);
     border: 1px solid var(--cfg-border);
     overflow: hidden;
+    margin-bottom: 24px;
 }
 
-/* ── Head do painel ── */
-.cfg-panel__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--cfg-border);
-    background: #FAFBFD;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.cfg-panel__head-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.cfg-panel__icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+.cfg-tab {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    gap: 8px;
+    padding: 14px 20px;
+    border: none;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all .2s;
+    border-right: 1px solid var(--cfg-border);
+    font-family: inherit;
 }
 
-.cfg-panel__icon--carteira {
-    background: linear-gradient(135deg, var(--cfg-carteira), var(--cfg-carteira2));
-    color: white;
+.cfg-tab:last-child { border-right: none; }
+
+.cfg-tab:hover {
+    background: #f8fafc;
+    color: #555;
 }
 
-.cfg-panel__icon--perfil {
-    background: linear-gradient(135deg, var(--cfg-perfil), var(--cfg-perfil2));
-    color: white;
+.cfg-tab.active { color: white; font-weight: 700; }
+
+.cfg-tab.active[data-tab="carteiras"] { background: var(--cfg-carteira); }
+.cfg-tab.active[data-tab="perfis"]    { background: var(--cfg-perfil); }
+.cfg-tab.active[data-tab="equipes"]   { background: var(--cfg-equipe); }
+
+.cfg-tab__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255,255,255,.25);
+    color: inherit;
 }
 
-.cfg-panel__icon--equipe {
-    background: linear-gradient(135deg, var(--cfg-equipe), var(--cfg-equipe2));
-    color: white;
+.cfg-tab:not(.active) .cfg-tab__count {
+    background: #f0f0f0;
+    color: #aaa;
 }
 
-.cfg-panel__title {
-    font-size: 15px;
+/* ══ PAINÉIS ════════════════════════════════════════════════ */
+.cfg-panel { display: none; }
+.cfg-panel.active { display: block; }
+
+/* ── Header do painel ── */
+.cfg-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cfg-panel-title {
+    font-size: 18px;
     font-weight: 700;
     color: #1a2e3b;
     margin: 0;
 }
 
-.cfg-panel__count {
+.cfg-panel-sub {
     font-size: 12px;
     color: #aaa;
     display: block;
-    margin-top: 1px;
+    margin-top: 2px;
 }
 
 /* ── Botão novo ── */
@@ -122,166 +111,114 @@
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 8px 18px;
+    padding: 9px 20px;
     border: none;
-    border-radius: 7px;
+    border-radius: 8px;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     transition: all .2s;
     white-space: nowrap;
-    text-decoration: none;
-}
-
-.cfg-btn-novo--carteira {
-    background: linear-gradient(90deg, var(--cfg-carteira), var(--cfg-carteira2));
     color: white;
+    font-family: inherit;
 }
 
-.cfg-btn-novo--carteira:hover {
+.cfg-btn-novo--carteira { background: linear-gradient(90deg, var(--cfg-carteira), var(--cfg-carteira2)); }
+.cfg-btn-novo--perfil   { background: linear-gradient(90deg, var(--cfg-perfil),   var(--cfg-perfil2)); }
+.cfg-btn-novo--equipe   { background: linear-gradient(90deg, var(--cfg-equipe),   var(--cfg-equipe2)); }
+
+.cfg-btn-novo:hover {
     filter: brightness(1.1);
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(4,55,95,.3);
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
 }
 
-
-.cfg-btn-novo--perfil {
-    background: linear-gradient(90deg, var(--cfg-perfil), var(--cfg-perfil2));
-    color: white;
+/* ══ TABELA ═════════════════════════════════════════════════ */
+.cfg-table-wrap {
+    background: white;
+    border-radius: var(--cfg-radius);
+    box-shadow: var(--cfg-shadow);
+    overflow: hidden;
 }
 
-.cfg-btn-novo--perfil:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(4,55,95,.3);
+.cfg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
 }
 
-.cfg-btn-novo--equipe {
-    background: linear-gradient(90deg, var(--cfg-equipe), var(--cfg-equipe2));
-    color: white;
+.cfg-table thead th {
+    background: #f0f4f8;
+    color: #556;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid #dce6f0;
+    white-space: nowrap;
 }
 
-.cfg-btn-novo--equipe:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(26,122,66,.3);
-}
-
-/* ── Body do painel ── */
-.cfg-panel__body {
-    padding: 12px 0;
-    min-height: 120px;
-}
-
-/* ── Lista de itens ── */
-.cfg-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.cfg-list__item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 22px;
-    border-bottom: 1px solid #f4f4f4;
-    gap: 12px;
+.cfg-row {
+    border-bottom: 1px solid #f2f2f2;
     transition: background .15s;
 }
 
-.cfg-list__item:last-child { border-bottom: none; }
-.cfg-list__item:hover { background: #f8fbfd; }
+.cfg-row:hover { background: #f8fafc; }
+.cfg-row--inativo { opacity: 0.52; }
 
-.cfg-list__item--inativo {
-    opacity: 0.52;
+.cfg-table td {
+    padding: 13px 16px;
+    color: #333;
+    vertical-align: middle;
 }
 
-.cfg-list__left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-}
-
-/* Avatar letras (equipe) */
-.cfg-equipe-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--cfg-equipe), var(--cfg-equipe2));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: 800;
-    flex-shrink: 0;
-}
-
-.cfg-carteira-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--cfg-carteira), var(--cfg-carteira2));
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: 800;
-    flex-shrink: 0;
-}
-
-.cfg-list__info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-.cfg-list__nome {
-    font-size: 14px;
-    font-weight: 700;
+/* Células especiais */
+.cfg-nome {
+    font-weight: 600;
     color: #1a2e3b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
-.cfg-list__escopo {
-    font-size: 11px;
-    color: #888;
+.cfg-mono {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: 700;
 }
 
-.cfg-list__escopo strong { color: #555; }
-
-.cfg-list__grupo,
-.cfg-list__resp {
+/* Avatares */
+.cfg-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    color: #aaa;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
 }
 
-.cfg-list__sem-grupo {
-    font-style: italic;
-    color: #ccc;
+.cfg-avatar--carteira {
+    background: linear-gradient(135deg, var(--cfg-carteira), var(--cfg-carteira2));
 }
 
-/* ── Badges perfil ── */
+.cfg-avatar--equipe {
+    background: linear-gradient(135deg, var(--cfg-equipe), var(--cfg-equipe2));
+}
+
+/* Badges de perfil */
 .cfg-badge {
     display: inline-block;
-    padding: 4px 11px;
+    padding: 3px 10px;
     border-radius: 20px;
     font-size: 11px;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: .4px;
+    letter-spacing: .3px;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .cfg-badge--adm        { background: #1a2e3b; color: white; }
@@ -291,39 +228,74 @@
 .cfg-badge--agente     { background: #eafaf1; color: #1e8449; }
 .cfg-badge--visitante  { background: #f4f4f4; color: #888; }
 
-/* ── Status pill ── */
-.cfg-status-pill {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .3px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
+/* Pill de group django */
+.cfg-group-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: #f0f4f8;
+    color: #556;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    border: 1px solid #dce6f0;
 }
 
-.cfg-status-pill--ativo {
+/* Status */
+.cfg-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+.cfg-status--ativo {
     background: #eafaf1;
     color: #1e8449;
 }
 
-.cfg-status-pill--inativo {
-    background: #f4f4f4;
-    color: #aaa;
+.cfg-status--ativo::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #27ae60;
+    flex-shrink: 0;
+    animation: cfg-pulso 1.8s infinite;
+    box-shadow: 0 0 0 2px rgba(39,174,96,.25);
 }
 
-/* ── Botões de ação na lista ── */
-.cfg-list__actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.cfg-status--inativo {
+    background: #f4f4f4;
+    color: #888;
+}
+
+.cfg-status--inativo::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #bbb;
     flex-shrink: 0;
 }
 
-.cfg-btn-icon {
-    width: 30px;
-    height: 30px;
+@keyframes cfg-pulso {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(39,174,96,.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(39,174,96,.08); }
+}
+
+/* Ações */
+.cfg-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.cfg-btn-action {
+    width: 30px; height: 30px;
     border-radius: 6px;
     border: 1px solid #e0e0e0;
     background: white;
@@ -336,43 +308,34 @@
     flex-shrink: 0;
 }
 
-.cfg-btn-icon--edit:hover {
+.cfg-btn-action--edit:hover {
     border-color: #007AAA;
     color: #007AAA;
     background: #f0f8ff;
 }
 
-.cfg-btn-icon--toggle:hover {
+.cfg-btn-action--toggle:hover {
     border-color: #e07070;
     color: #e07070;
     background: #fff5f5;
 }
 
-/* ── Empty state ── */
+/* Empty state */
 .cfg-empty {
     text-align: center;
-    padding: 40px 24px;
+    padding: 60px 40px;
     color: #bbb;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
 }
 
-.cfg-empty__icon { font-size: 36px; }
-
-.cfg-empty p {
-    font-size: 13px;
-    color: #aaa;
-    margin: 0;
-}
+.cfg-empty__icon  { font-size: 40px; margin-bottom: 14px; }
+.cfg-empty__title { font-size: 16px; font-weight: 600; color: #999; margin-bottom: 6px; }
+.cfg-empty__sub   { font-size: 13px; }
 
 
 /* ════════════════════════════════════════════════════════════
    DRAWER LATERAL
 ════════════════════════════════════════════════════════════ */
 
-/* ── Overlay ── */
 .cfg-overlay {
     display: none;
     position: fixed;
@@ -383,7 +346,6 @@
 }
 .cfg-overlay.active { display: block; }
 
-/* ── Drawer ── */
 .cfg-drawer {
     position: fixed;
     top: 0;
@@ -401,7 +363,7 @@
 }
 .cfg-drawer.active { right: 0; }
 
-/* ── Header do drawer ── */
+/* ── Header ── */
 .cfg-drawer__header {
     display: flex;
     justify-content: space-between;
@@ -412,17 +374,9 @@
     gap: 14px;
 }
 
-.cfg-drawer__header--carteira {
-    background: linear-gradient(90deg, var(--cfg-carteira) 0%, var(--cfg-carteira2) 100%);
-}
-
-.cfg-drawer__header--perfil {
-    background: linear-gradient(90deg, var(--cfg-perfil) 0%, var(--cfg-perfil2) 100%);
-}
-
-.cfg-drawer__header--equipe {
-    background: linear-gradient(90deg, var(--cfg-equipe) 0%, var(--cfg-equipe2) 100%);
-}
+.cfg-drawer__header--carteira { background: linear-gradient(90deg, var(--cfg-carteira), var(--cfg-carteira2)); }
+.cfg-drawer__header--perfil   { background: linear-gradient(90deg, var(--cfg-perfil),   var(--cfg-perfil2)); }
+.cfg-drawer__header--equipe   { background: linear-gradient(90deg, var(--cfg-equipe),   var(--cfg-equipe2)); }
 
 .cfg-drawer__header-left {
     display: flex;
@@ -433,8 +387,7 @@
 }
 
 .cfg-drawer__header-icon {
-    width: 42px;
-    height: 42px;
+    width: 42px; height: 42px;
     border-radius: 10px;
     background: rgba(255,255,255,.18);
     border: 1.5px solid rgba(255,255,255,.3);
@@ -463,8 +416,7 @@
     background: rgba(255,255,255,.15);
     border: none;
     border-radius: 7px;
-    width: 34px;
-    height: 34px;
+    width: 34px; height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -515,8 +467,7 @@
 }
 
 .cfg-spinner {
-    width: 32px;
-    height: 32px;
+    width: 32px; height: 32px;
     border: 3px solid #e0e0e0;
     border-top-color: #007AAA;
     border-radius: 50%;
@@ -525,8 +476,8 @@
 
 @keyframes cfg-spin { to { transform: rotate(360deg); } }
 
-/* ── Formulário dentro do drawer ── */
-.cfg-form {}
+/* ── Formulário ── */
+.cfg-form-content {}
 
 .cfg-form__section {
     font-size: 11px;
@@ -546,9 +497,7 @@
     margin-bottom: 14px;
 }
 
-.cfg-form__row--single {
-    grid-template-columns: 1fr;
-}
+.cfg-form__row--single { grid-template-columns: 1fr; }
 
 .cfg-form__group {
     display: flex;
@@ -627,23 +576,16 @@
     color: #888;
     cursor: pointer;
     transition: all .2s;
+    font-family: inherit;
 }
 
-.cfg-group-tab + .cfg-group-tab {
-    border-left: 1.5px solid #e0e0e0;
-}
+.cfg-group-tab + .cfg-group-tab { border-left: 1.5px solid #e0e0e0; }
 
-.cfg-group-tab.active {
-    background: #007AAA;
-    color: white;
-}
+.cfg-group-tab.active { background: #007AAA; color: white; }
 
-.cfg-group-tab:hover:not(.active) {
-    background: #f5f5f5;
-    color: #555;
-}
+.cfg-group-tab:hover:not(.active) { background: #f5f5f5; color: #555; }
 
-/* ── Toggle switch (ativo/inativo) ── */
+/* ── Toggle switch ativo/inativo ── */
 .cfg-toggle-wrap {
     display: flex;
     align-items: center;
@@ -651,13 +593,10 @@
     padding: 8px 0;
 }
 
-.cfg-toggle-input {
-    display: none;
-}
+.cfg-toggle-input { display: none; }
 
 .cfg-toggle-label {
-    width: 44px;
-    height: 24px;
+    width: 44px; height: 24px;
     background: #ddd;
     border-radius: 12px;
     cursor: pointer;
@@ -666,16 +605,12 @@
     flex-shrink: 0;
 }
 
-.cfg-toggle-input:checked + .cfg-toggle-label {
-    background: #27ae60;
-}
+.cfg-toggle-input:checked + .cfg-toggle-label { background: #27ae60; }
 
 .cfg-toggle-knob {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
     background: white;
     border-radius: 50%;
     box-shadow: 0 1px 4px rgba(0,0,0,.2);
@@ -713,12 +648,10 @@
     color: #888;
     cursor: pointer;
     transition: all .2s;
+    font-family: inherit;
 }
 
-.cfg-drawer__btn-cancel:hover {
-    background: #f5f5f5;
-    color: #555;
-}
+.cfg-drawer__btn-cancel:hover { background: #f5f5f5; color: #555; }
 
 .cfg-drawer__btn-save {
     display: inline-flex;
@@ -734,6 +667,7 @@
     cursor: pointer;
     transition: all .2s;
     letter-spacing: .3px;
+    font-family: inherit;
 }
 
 .cfg-drawer__btn-save:hover {
@@ -750,11 +684,14 @@
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-    .cfg-grid { grid-template-columns: 1fr; }
+    .cfg-table-wrap { overflow-x: auto; }
+    .cfg-table { min-width: 560px; }
 }
 
 @media (max-width: 600px) {
+    .cfg-tabs { flex-direction: column; }
+    .cfg-tab { border-right: none; border-bottom: 1px solid var(--cfg-border); }
     .cfg-drawer { width: 100%; max-width: 100%; }
     .cfg-form__row { grid-template-columns: 1fr; }
-    .cfg-panel__head { flex-direction: column; align-items: flex-start; }
+    .cfg-panel-header { flex-direction: column; align-items: flex-start; }
 }
