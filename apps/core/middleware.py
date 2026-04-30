@@ -82,6 +82,8 @@ class RolePermissionMiddleware:
         except:
             return self.get_response(request)
 
+
+
         # 🔥 1. libera views públicas
         if view_name in PUBLIC_VIEWS:
             return self.get_response(request)
@@ -91,7 +93,7 @@ class RolePermissionMiddleware:
             return self.get_response(request)
 
         # 🔥 3. sem agente → ignora
-        agente = getattr(request.user, 'agente', None)
+        agente = getattr(request.user.agente, 'agente', None)
         if not agente:
             return self.get_response(request)
 
