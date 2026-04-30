@@ -45,6 +45,7 @@ class EmpresaMiddleware:
 
 
 PUBLIC_VIEWS = [
+    'home',
     'login_template',
     'login',
     'logout',
