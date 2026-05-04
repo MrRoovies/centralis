@@ -1,13 +1,12 @@
 # core/context_menu.py
 from django.urls import reverse
-from apps.core.middleware import get_permissions
+from apps.core.middleware import get_permissions, PUBLIC_VIEWS
 
 def has_permission(agente, view_name):
     if not agente:
         return False
 
-    perfil = getattr(agente, 'perfil', None)
-    role = getattr(perfil, 'codigo', None)
+    role = getattr(agente.perfil, 'codigo', None)
 
     # 🔥 ADM bypass (mesma regra do middleware)
     if role == 'ADM':
@@ -75,21 +74,35 @@ def get_menu(agente):
 
         # 🔥 ITEM SIMPLES (sem filhos)
         if "url_name" in item and "children" not in item:
-            if not has_permission(agente, item["url_name"]):
+            url_name = item["url_name"]
+
+            if url_name in PUBLIC_VIEWS:
+                permitido = True
+            else:
+                permitido = has_permission(agente, url_name)
+
+            if not permitido:
                 continue
 
             item_copy["url"] = reverse(item["url_name"])
+
 
         # 🔥 ITEM COM FILHOS (submenu)
         if "children" in item:
             filhos = []
 
             for child in item["children"]:
-                if not has_permission(agente, child["url_name"]):
+                url_name = child["url_name"]
+                if url_name in PUBLIC_VIEWS:
+                    permitido = True
+                else:
+                    permitido = has_permission(agente, url_name)
+
+                if not permitido:
                     continue
 
                 child_copy = child.copy()
-                child_copy["url"] = reverse(child["url_name"])
+                child_copy["url"] = reverse(url_name)
                 filhos.append(child_copy)
 
             # 🔥 só adiciona o grupo se tiver pelo menos 1 filho visível
@@ -99,3 +112,4 @@ def get_menu(agente):
             item_copy["children"] = filhos
 
         menu_final.append(item_copy)
+    return menu_final
