@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models import Q
-
+from django.db.models import Q, UniqueConstraint
+from django.db.models.functions import Lower
 
 # Create your models here.
 class Empresa(models.Model):
@@ -12,7 +12,11 @@ class Empresa(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
+            UniqueConstraint(
+                Lower("nome"),
+                name="unique_nome_case_insensitive"
+            ),
+            UniqueConstraint(
                 fields=["cnpj"],
                 condition=Q(cnpj__isnull=False),
                 name="unique_cnpj_not_null"
