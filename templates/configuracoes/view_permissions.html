@@ -55,10 +55,11 @@
             <option value="{{ val }}">{{ label }}</option>
             {% endfor %}
         </select>
-        <select class="vp-filtros__select" id="filtroTipo" onchange="filtrarTabela()">
-            <option value="">Todos os tipos</option>
-            <option value="aberta">Acesso aberto</option>
-            <option value="restrita">Restrita</option>
+        <select class="vp-filtros__select" id="filtroApp" onchange="filtrarTabela()">
+            <option value="">Todos os Apps</option>
+            {% for app in apps %}
+            <option value="{{app}}">{{ app|title }}</option>
+            {% endfor %}
         </select>
     </div>
 
@@ -69,7 +70,8 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Nome da URL</th>
+                    <th>App</th>
+                    <th>URL</th>
                     <th>Perfis com Acesso</th>
                     <th style="text-align:right">Ações</th>
                 </tr>
@@ -78,6 +80,7 @@
                 {% for perm in permissoes %}
                 <tr class="vp-row" id="vp-row-{{ perm.id }}"
                     data-url="{{ perm.url_name }}"
+                    data-apps="{{perm.app_name}}"
                     data-roles="{{ perm.roles|join:',' }}">
 
                     <td>
@@ -86,6 +89,11 @@
                         </span>
                     </td>
 
+                    <td>
+                        <span class="vp-url-name" title="{{ perm.app_name }}">
+                            {{ perm.app_name }}
+                        </span>
+                    </td>
                     <td>
                         <span class="vp-url-name" title="{{ perm.url_name }}">
                             {{ perm.url_name }}

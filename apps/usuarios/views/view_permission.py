@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from apps.core.models import ViewPermission
+from collections import defaultdict
 
 
 # ── Choices que espelham os códigos de perfil do sistema ──────
@@ -41,12 +42,18 @@ def _error(campo, msg, status=400):
 @login_required
 def view_permissions_list(request):
     """Tela principal — listagem de ViewPermission."""
-    permissoes    = ViewPermission.objects.all().order_by('url_name')
+    permissoes = ViewPermission.objects.exclude(app_name=None).order_by('app_name')
+
+    apps = defaultdict(list)
+    for p in permissoes:
+        apps[p.app_name].append(p)
+
     total_publico = permissoes.filter(roles=[]).count()
     total_restrito = permissoes.exclude(roles=[]).count()
 
     return render(request, 'configuracoes/view_permissions.html', {
         'permissoes':     permissoes,
+        'apps': apps,
         'total_publico':  total_publico,
         'total_restrito': total_restrito,
         'role_choices':   ROLE_CHOICES,

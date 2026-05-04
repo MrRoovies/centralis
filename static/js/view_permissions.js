@@ -259,7 +259,7 @@ function executarExclusao() {
 function filtrarTabela() {
     const termoBusca = document.getElementById('filtroUrl').value.toLowerCase().trim();
     const roleFilter = document.getElementById('filtroRole').value;
-    const tipoFilter = document.getElementById('filtroTipo').value;
+    const appFilter = document.getElementById('filtroApp').value;
 
     const rows = document.querySelectorAll('#vpTableBody .vp-row');
     let visiveis = 0;
@@ -267,14 +267,14 @@ function filtrarTabela() {
     rows.forEach(row => {
         const url   = (row.dataset.url   || '').toLowerCase();
         const roles = (row.dataset.roles || '');
+        const apps = (row.dataset.apps || '');
 
         const passaBusca = !termoBusca || url.includes(termoBusca);
         const passaRole  = !roleFilter || roles.split(',').includes(roleFilter);
-        const passaTipo  = !tipoFilter
-            || (tipoFilter === 'aberta'   && roles.length === 0)
-            || (tipoFilter === 'restrita' && roles.length > 0);
+        const passaApp  = !appFilter || apps.includes(appFilter);
 
-        const visivel = passaBusca && passaRole && passaTipo;
+        const visivel = passaBusca && passaRole && passaApp;
+
         row.style.display = visivel ? '' : 'none';
         if (visivel) visiveis++;
     });
