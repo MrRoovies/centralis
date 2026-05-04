@@ -15,9 +15,13 @@ class Command(BaseCommand):
 
         # 🔥 cria os que não existem
         for url in urls:
+            app_name = url.split(":")[0] if ":" in url else None
+            print(app_name, url)
+
             obj, created = ViewPermission.objects.get_or_create(
                 url_name=url,
-                defaults={"roles": ["ADM"]}
+                defaults={"roles": ["ADM"]},
+                app_name=app_name
             )
             if created:
                 criados += 1
