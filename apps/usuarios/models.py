@@ -2,7 +2,8 @@ from datetime import date
 from django.db import models
 from django.conf import settings
 from ..core.models import Empresa
-
+from django.db.models import UniqueConstraint
+from django.db.models.functions import Lower
 
 # ==========================================
 # MODELS DE NEGÓCIO - AGENTES E ORGANIZAÇÃO
@@ -85,7 +86,13 @@ class Carteira(models.Model):
         'agenda.Situacao',
         through='agenda.CarteiraSituacao'
     )
-
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower("nome"), "empresa",
+                name="unique_nome_empresa_case_insensitive"
+            )
+        ]
     def __str__(self):
         return f"{self.nome} ({self.empresa.nome})"
 
