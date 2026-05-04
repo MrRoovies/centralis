@@ -15,6 +15,7 @@ class Empresa(models.Model):
 class ViewPermission(models.Model):
     url_name = models.CharField(max_length=100)  # ex: 'relatorios'
     roles = models.JSONField(default=list)       # ['ADM', 'SUPERVISOR']
+    app_name = models.CharField(max_length=100, null=True) # ex: clientes, agendas
 
     def __str__(self):
         return f"{self.url_name} -> {self.roles}"

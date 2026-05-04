@@ -8,4 +8,4 @@ admin.site.register(Empresa, EmpresaAdmin)
 
 @admin.register(ViewPermission)
 class ViewPermissionAdmin(admin.ModelAdmin):
-    list_display = ('url_name', 'roles')
+    list_display = ('app_name', 'url_name', 'roles')
