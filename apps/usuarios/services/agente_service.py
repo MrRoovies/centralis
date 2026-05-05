@@ -10,7 +10,7 @@ class AgenteService:
     @staticmethod
     def get_agentes(empresa):
         qs = (
-            Agente.objects.filter(carteira__empresa=empresa)
+            Agente.objects.filter(perfil__empresa=empresa)
             .select_related('usuario', 'perfil', 'carteira', 'equipe')
             .order_by('carteira__nome', 'usuario__first_name'))
         return qs
