@@ -31,7 +31,7 @@ class Agente(models.Model):
     equipe = models.ForeignKey(
         "Equipe",
         on_delete=models.PROTECT,
-        null=False, blank=False
+        null=True, blank=True
     )
     perfil = models.ForeignKey(
         "Perfil",
@@ -39,7 +39,10 @@ class Agente(models.Model):
         null=False,
         blank=False # Perfil ativo do agente. Para multi-perfil futuro, ver AgentePerfil.
     )
-    carteira = models.ForeignKey("Carteira", on_delete=models.PROTECT, null=False, blank=False)
+    carteira = models.ForeignKey(
+        "Carteira",
+        on_delete=models.PROTECT, null=True, blank=True)
+
     email = models.EmailField('E-mail', max_length=200, null=True, blank=True)
     nascimento = models.DateField('Nascimento')
     cpf = models.CharField('Cpf', max_length=11, blank=False, null=False)
@@ -143,6 +146,12 @@ class Perfil(models.Model):
     grupo = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     data_create = models.DateTimeField('Data Criacao', auto_now=True)
     ativo = models.BooleanField(default=True)
+
+    class Meta:
+        UniqueConstraint(
+            fields=["codigo", "empresa"],
+            name="unique_perfil_empresa"
+        )
 
     def __str__(self):
         return self.get_codigo_display()
