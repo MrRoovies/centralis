@@ -2,7 +2,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group
 from apps.core.models import Empresa
-from apps.usuarios.models import Carteira
+from apps.usuarios.models import Perfil, Agente
 
 class Command(BaseCommand):
     help = 'Cria Empresa'
@@ -19,28 +19,48 @@ class Command(BaseCommand):
         subdominio = options["subdominio"]
 
         # primeiro de tudo cria empresa
-        empresa, create = Empresa.objects.get_or_create(
+        empresa, created = Empresa.objects.get_or_create(
             subdominio=subdominio,
             defaults={
                 "nome": nome,
                 "cnpj": cnpj,
             }
         )
-        if create:
+        if created:
             self.stdout.write(self.style.SUCCESS("Empresa criada!"))
         else:
-            self.stdout.write(self.style.ERROR("Já existe uma empresa com esse subdomínio"))
+            self.stdout.write(self.style.WARNING("Já existe uma empresa com esse subdomínio"))
 
+        perfil = self.create_perfil(empresa)
+        user = self.create_user(empresa)
+        self.create_agente(user, perfil)
 
-    def create_carteira(self, empresa):
-        carteira, create = Carteira.objects.get_or_create(
-            nome="Admin",
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Bootstrap concluído 🚀 | Empresa: {empresa.nome} | User: {user.username}"
+            )
         )
 
 
-    def create_user(self):
+    def create_perfil(self, empresa):
+        admin_group, _ = Group.objects.get_or_create(name="Admin")
+        perfil, created = Perfil.objects.get_or_create(
+            codigo="ADM",
+            empresa=empresa,
+            defaults={
+                "escopo": "GLOBAL",
+                "grupo": admin_group
+            }
+        )
+        if created:
+            self.stdout.write(self.style.SUCCESS("Perfil criada!"))
+        else:
+            self.stdout.write(self.style.WARNING("Já existe um perfil com esse nome"))
+        return perfil
+
+    def create_user(self, empresa):
         user, created = User.objects.get_or_create(
-            username='admin',
+            username=f'admin_{empresa.subdominio}',
             defaults={
                 "email": "admin@email.com",
                 "is_staff": True,
@@ -50,14 +70,26 @@ class Command(BaseCommand):
         if created:
             user.first_name = "Administrador"
             user.last_name = ""
-            user.set_password = "admin123"
+            user.set_password("admin123")
             user.save()
             self.stdout.write(self.style.SUCCESS(f"{user.first_name} criado com sucesso!"))
         else:
-            self.stdout.write(self.style.ERROR(f"{user.username} já existe!"))
+            self.stdout.write(self.style.WARNING(f"{user.username} já existe!"))
+        return user
 
+    def create_agente(self, user, perfil):
+        agente, created = Agente.objects.get_or_create(
+            usuario=user,
+            defaults={
+                "perfil":perfil,
+                "email":user.email,
+                "nascimento": '1987-03-15',
+            }
+        )
 
-    def create_equipe(self, user):
-        # Cria equipe pq precisa da empresa
-        pass
+        if not created:
+            agente.perfil = perfil
+            agente.email = user.email
+            agente.save()
 
+        self.stdout.write(self.style.SUCCESS("Agente pronto!"))
