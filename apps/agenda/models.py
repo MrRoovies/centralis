@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 from ..usuarios.models import Carteira, Perfil, Equipe
 from ..clientes.models import Cliente
+from apps.core.models import Empresa
 
 # ========================
 # MODEL AGENDA
@@ -163,7 +164,7 @@ class Situacao(models.Model):
     from apps.core.choices import TipoSituacao
     nome = models.CharField('Situacao', max_length=50, blank=False, null=False)
     tipo = models.CharField('Tipo', max_length=15, choices=TipoSituacao.choices, blank=False, null=False)
-    # carteira = models.ForeignKey(Carteira, on_delete=models.SET_NULL, null=True, blank=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.SET_NULL, null=True, blank=True)
     ativo = models.BooleanField(default=True)
 
     class Meta:
