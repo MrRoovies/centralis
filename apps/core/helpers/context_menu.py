@@ -58,6 +58,7 @@ def get_menu(agente):
             "icon": "⚙️",
             "children": [
                 {"label": "Agentes", "url_name": "usuarios:lista_agentes"},
+                {"label": "Situações", "url_name": "agenda:lista_situacoes"},
                 {"label": "Perfis e Equipes", "url_name": "usuarios:lista_configuracoes"},
                 {"label": "Campanhas Admin", "url_name": "campanhas:admin_campanhas"},
                 {"label": "Importar Clientes", "url_name": "clientes:importar_clientes"},

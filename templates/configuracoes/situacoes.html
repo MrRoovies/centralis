@@ -1,0 +1,272 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/situacoes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div class="sit-header">
+        <div>
+            <h2 class="sit-title">Situações</h2>
+            <span class="sit-subtitle">Gerencie as situações disponíveis no sistema</span>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+            <!-- Counters -->
+            <div class="sit-counters">
+                <div class="sit-counter sit-counter--total">
+                    <span class="sit-counter__num" id="sitCntTotal">{{ situacoes|length }}</span>
+                    <span class="sit-counter__label">Total</span>
+                </div>
+                <div class="sit-counter sit-counter--ativa">
+                    <span class="sit-counter__num" id="sitCntAtivas">{{ total_ativas }}</span>
+                    <span class="sit-counter__label">Ativas</span>
+                </div>
+                <div class="sit-counter sit-counter--inativa">
+                    <span class="sit-counter__num" id="sitCntInativas">{{ total_inativas }}</span>
+                    <span class="sit-counter__label">Inativas</span>
+                </div>
+            </div>
+
+            <button class="sit-btn-novo" onclick="abrirDrawer(null)">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Nova Situação
+            </button>
+        </div>
+    </div>
+
+    <!-- ══ TABELA ═══════════════════════════════════════════ -->
+    <div class="sit-table-wrap">
+        {% if situacoes %}
+        <table class="sit-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Cor</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for situacao in situacoes %}
+                <tr class="sit-row {% if not situacao.ativo %}sit-row--inativa{% endif %}"
+                    id="sit-row-{{ situacao.id }}">
+
+                    <td><span class="sit-mono">#{{ situacao.id }}</span></td>
+
+                    <td><span class="sit-nome">{{ situacao.nome }}</span></td>
+
+                    <td>
+                        <span style="font-size:13px; color:#666;">
+                            {{ situacao.descricao|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="sit-cor-cell">
+                            <span class="sit-cor-dot"
+                                  style="background-color: {{ situacao.cor|default:'#cccccc' }};"></span>
+                            {{ situacao.cor|default:"—" }}
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="sit-status sit-status--{% if situacao.ativo %}ativa{% else %}inativa{% endif %}">
+                            {{ situacao.ativo|yesno:"Ativa,Inativa" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="sit-actions">
+                            <button class="sit-btn-action sit-btn-action--edit" title="Editar"
+                                    onclick="abrirDrawer({{ situacao.id }})">
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.4"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <button class="sit-btn-action sit-btn-action--toggle"
+                                    title="{{ situacao.ativo|yesno:'Desativar,Ativar' }}"
+                                    onclick="toggleItem({{ situacao.id }}, this)">
+                                {% if situacao.ativo %}
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                    <path d="M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                </svg>
+                                {% else %}
+                                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                                    <rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/>
+                                    <path d="M4 7l2.5 2.5L10 4.5" stroke="currentColor" stroke-width="1.4"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {% endif %}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="sit-empty">
+            <div class="sit-empty__icon">🏷️</div>
+            <p class="sit-empty__title">Nenhuma situação cadastrada</p>
+            <p class="sit-empty__sub">Adicione situações para utilizá-las nas carteiras e agendamentos.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</main>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     DRAWER LATERAL
+══════════════════════════════════════════════════════════ -->
+<div class="sit-overlay" id="sitOverlay" onclick="fecharDrawer()"></div>
+
+<aside class="sit-drawer" id="sitDrawer">
+
+    <!-- Header -->
+    <div class="sit-drawer__header">
+        <div class="sit-drawer__header-left">
+            <div class="sit-drawer__header-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M3 5h14M3 10h10M3 15h6" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                    <circle cx="16" cy="14" r="3" stroke="white" stroke-width="1.4"/>
+                    <path d="M14.5 14h3M16 12.5v3" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="sit-drawer__title" id="sitDrawerTitle">Nova Situação</h3>
+                <span class="sit-drawer__subtitle" id="sitDrawerSubtitle">
+                    Preencha os dados abaixo
+                </span>
+            </div>
+        </div>
+        <button class="sit-drawer__close" onclick="fecharDrawer()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Feedback -->
+    <div class="sit-drawer__feedback" id="sitFeedback" style="display:none"></div>
+
+    <!-- Body -->
+    <div class="sit-drawer__body">
+
+        <!-- Spinner -->
+        <div class="sit-drawer__spinner" id="sitSpinner">
+            <div class="sit-spinner"></div>
+            <span>Carregando...</span>
+        </div>
+
+        <!-- Formulário -->
+        <div id="sitForm" style="display:none">
+
+            <!-- ── IDENTIFICAÇÃO ── -->
+            <div class="sit-form__section">Identificação</div>
+
+            <div class="sit-form__row sit-form__row--single">
+                <div class="sit-form__group">
+                    <label class="sit-form__label">
+                        Nome <span class="req">*</span>
+                    </label>
+                    <input type="text"
+                           name="nome"
+                           id="sit_nome"
+                           class="sit-form__input"
+                           placeholder="ex: Em Análise, Aprovado, Cancelado..."
+                           autocomplete="off"
+                           required>
+                    <span class="sit-form__error" id="err-sit-nome"></span>
+                </div>
+            </div>
+
+            <div class="sit-form__row sit-form__row--single">
+                <div class="sit-form__group">
+                    <label class="sit-form__label">Tipo</label>
+                    <select class="sit-form__input" id="sit_tipo">
+
+                    </select>
+                    <span class="sit-form__error" id="err-sit-descricao"></span>
+                </div>
+            </div>
+
+            <!-- ── APARÊNCIA ── -->
+            <div class="sit-form__section" style="margin-top:8px">Aparência</div>
+
+            <div class="sit-form__row sit-form__row--single">
+                <div class="sit-form__group">
+                    <label class="sit-form__label">Cor de identificação</label>
+                    <div class="sit-color-wrap">
+                        <input type="color"
+                               id="sit_cor_picker"
+                               value="#5E35B1"
+                               oninput="syncColorFromPicker(this)"
+                               title="Escolha a cor">
+                        <input type="text"
+                               name="cor"
+                               id="sit_cor_text"
+                               class="sit-form__input sit-color-text"
+                               value="#5E35B1"
+                               maxlength="7"
+                               placeholder="#RRGGBB"
+                               oninput="syncColorFromText(this)">
+                    </div>
+                    <span class="sit-form__hint">Formato hexadecimal, ex: #E74C3C</span>
+                    <span class="sit-form__error" id="err-sit-cor"></span>
+                </div>
+            </div>
+
+            <!-- ── STATUS ── -->
+            <div class="sit-form__section" style="margin-top:8px">Status</div>
+
+            <div class="sit-form__row">
+                <div class="sit-form__group">
+                    <label class="sit-form__label">Situação ativa</label>
+                    <div class="sit-toggle-wrap">
+                        <input type="checkbox" id="sit_ativo" name="ativo"
+                               class="sit-toggle-input" checked>
+                        <label class="sit-toggle-label" for="sit_ativo">
+                            <span class="sit-toggle-knob"></span>
+                        </label>
+                        <span class="sit-toggle-text" id="sit_ativo_text">Ativa</span>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /sitForm -->
+    </div><!-- /body -->
+
+    <!-- Footer -->
+    <div class="sit-drawer__footer">
+        <button class="sit-drawer__btn-cancel" onclick="fecharDrawer()">
+            Cancelar
+        </button>
+        <button class="sit-drawer__btn-save" id="sitBtnSalvar" onclick="salvarDrawer()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l4 4 6-6" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="sitBtnLabel">Criar</span>
+        </button>
+    </div>
+</aside>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/situacoes.js' %}" defer></script>
+{% endblock %}

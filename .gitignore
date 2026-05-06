@@ -1,7 +1,5 @@
-/config
 /venv
 /staticfiles
 **/__pycache__/
-manage.py
 *.pdf
 *.sqlite3
