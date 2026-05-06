@@ -2,16 +2,17 @@ from apps.core.responses.pattern import ResponsePattern
 from apps.usuarios.models import Perfil
 from django.contrib.auth.models import User, Group
 from django.db import transaction
-from django.db.models import Value
+from django.db.models import Value, Q
 from django.db.models.functions import Concat
 from apps.usuarios.models import Equipe, Agente, Carteira
+from apps.agenda.models import Situacao, CarteiraSituacao
 
 
 def campos_obrigatorios(data, local, campos):
     for k, v in data.items():
         if not k in campos:
             continue
-        if not v:
+        if not v and k != 'ativo':
             return ResponsePattern.error(f'{local}', [f"{k.title()} não pode ser vazio."])
     return ResponsePattern.success(f'{local}', ['Ok'])
 
@@ -156,17 +157,44 @@ class EquipeService:
 class CarteiraService:
     @staticmethod
     def detalhes(carteira_id, empresa):
+        situacoes = (
+            Situacao.objects
+            .filter(empresa=empresa, ativo=True)
+            .order_by('nome')
+        )
+
         if carteira_id:
             carteira = Carteira.objects.get(empresa=empresa, pk=carteira_id)
+
+            situacoes_ativas = set(
+                CarteiraSituacao.objects
+                .filter(carteira=carteira)
+                .values_list('situacao_id', flat=True)
+            )
+
+            situacoes_list = [
+                {
+                    'id': sit.id,
+                    'nome': sit.nome,
+                    'ativo_carteira': 'checked' if sit.id in situacoes_ativas else ''
+                }
+                for sit in situacoes
+            ]
+
             data = {
                 'id': carteira.id,
                 'nome': carteira.nome,
                 'ativo': carteira.ativo,
+                'situacoes': situacoes_list,
             }
 
             return ResponsePattern.success_data({'carteira': data})
 
-        return ResponsePattern.success_data({'carteira': {}})
+        data = {
+            'situacoes': list(situacoes.values('id', 'nome'))
+        }
+
+        return ResponsePattern.success_data({'carteira': data})
 
 
     @staticmethod
@@ -180,12 +208,36 @@ class CarteiraService:
                     carteira.save()
                     msg = ['Carteira atualizada com sucesso!']
                 else:
-                    Carteira.objects.create(
+                    carteira = Carteira.objects.create(
                         empresa=empresa,
                         nome=data.get('nome').strip(),
                         ativo=data.get('ativo'),
                     )
                     msg = ['Carteira criada com sucesso!']
+
+                if 'situacoes' in data:
+                    ids = set(map(int, data.get('situacoes', [])))
+
+                    atuais = set(
+                        CarteiraSituacao.objects
+                        .filter(carteira=carteira)
+                        .values_list('situacao_id', flat=True)
+                    )
+
+                    novos = ids - atuais
+
+                    CarteiraSituacao.objects.bulk_create([
+                        CarteiraSituacao(carteira=carteira, situacao_id=sid)
+                        for sid in novos
+                    ])
+
+                    remover = atuais - ids
+
+                    CarteiraSituacao.objects.filter(
+                        carteira=carteira,
+                        situacao_id__in=remover
+                    ).delete()
+
 
             return ResponsePattern.success('carteira', msg)
 

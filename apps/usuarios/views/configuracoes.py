@@ -175,7 +175,7 @@ def carteira_detail(request, carteira_id=None):
                 {'success': False, 'messages': {'carteira': {'__all__': ['JSON inválido']}}},
                 status=400
             )
-        print(data)
+
         campos = ['nome', 'ativo']
         validacao = campos_obrigatorios(data, 'carteira', campos)
         if not validacao.get('success'):

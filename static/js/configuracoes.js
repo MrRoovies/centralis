@@ -114,6 +114,19 @@ function _preencherForm(tipo, data) {
         const carteira = data.carteira || {};
         _setVal('ct_nome', carteira.nome || '');
 
+        const situacoes = data.carteira.situacoes;
+
+        const html = situacoes.map(sit => `
+            <div class="cfg-toggle-sits">
+                <input type="checkbox" value="${sit.id}" id="sit_ativo_${sit.id}" ${sit.ativo_carteira} name="sit_ativo" class="cfg-toggle-input">
+                <label class="cfg-toggle-label" for="sit_ativo_${sit.id}">
+                    <span class="cfg-toggle-knob"></span>
+                </label>
+                <span class="cfg-toggle-text">${sit.nome}</span>
+            </div>
+        `).join('');
+        document.getElementById('situacoes').innerHTML = html;
+
         const chk = document.getElementById('ct_ativo');
         chk.checked = carteira.ativo !== false;
         _updateToggleText('ct_ativo_text', chk.checked, 'Ativa', 'Inativa');
@@ -278,9 +291,15 @@ function setGroupMode(mode) {
 // ── Helpers ───────────────────────────────────────────────────
 function _coletarPayload(tipo) {
     if (tipo === 'carteira') {
+
+        const list_sits = Array.from(
+            document.querySelectorAll('input[name="sit_ativo"]:checked')
+        ).map(el => el.value);
+
         return {
             nome:  document.getElementById('ct_nome').value.trim(),
             ativo: document.getElementById('ct_ativo').checked,
+            situacoes: list_sits
         };
     }
     if (tipo === 'perfil') {

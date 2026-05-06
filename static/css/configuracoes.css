@@ -492,9 +492,9 @@
 
 .cfg-form__row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /*grid-template-columns: 1fr 1fr;*/
     gap: 14px;
-    margin-bottom: 14px;
+    margin-bottom: 50px;
 }
 
 .cfg-form__row--single { grid-template-columns: 1fr; }
@@ -625,6 +625,13 @@
     font-size: 13px;
     font-weight: 600;
     color: #555;
+}
+
+.cfg-toggle-sits{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+    gap: 14px;
 }
 
 /* ── Footer ── */
