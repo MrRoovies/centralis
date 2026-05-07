@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-nv5q_%9u6x4csk&mnvh-kux^(!^#=lw9#xl4eyqwzvwa5k&uxs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = [".praticoapp.com.br", "praticoapp.com.br"]
 # não usar em localhost
 # CSRF_TRUSTED_ORIGINS = ["http://*.localhost"]
@@ -58,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-'apps.core.middleware.RolePermissionMiddleware',
+    'apps.core.middleware.RolePermissionMiddleware',
     'apps.core.middleware.EmpresaMiddleware',
 ]
 
@@ -88,8 +89,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'saas',
+        'USER': 'crm_user',
+        'PASSWORD': 'Caidamoto125@#',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
