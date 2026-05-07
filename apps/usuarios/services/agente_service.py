@@ -38,6 +38,11 @@ class AgenteService:
         equipe = get_object_or_404(Equipe, pk=data['equipe_id'], empresa=empresa, ativo=True)
         perfil = get_object_or_404(Perfil, pk=data['perfil_id'], empresa=empresa, ativo=True)
 
+        if not perfil.codigo == 'ADM':
+            campos = AgenteService.campos_obrigatorios(data)
+            if not campos['success']:
+                return campos
+
         try:
             with transaction.atomic():
                 user = User.objects.create_user(
