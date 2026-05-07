@@ -24,11 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nv5q_%9u6x4csk&mnvh-kux^(!^#=lw9#xl4eyqwzvwa5k&uxs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [".local",
-    "127.0.0.1",
-    ".localhost",]
+ALLOWED_HOSTS = ["*.praticoapp.com.br", "praticoapp.com.br"]
 # não usar em localhost
 # CSRF_TRUSTED_ORIGINS = ["http://*.localhost"]
 # CSRF_COOKIE_DOMAIN = ".localhost"
@@ -143,3 +141,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+SESSION_COOKIE_AGE = 3600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = False
