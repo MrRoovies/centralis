@@ -63,10 +63,6 @@ def novo_agente(request):
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'messages': {'__all__': ['JSON inválido']}}, status=400)
 
-        campos_obrigatorios = AgenteService.campos_obrigatorios(data)
-        if not campos_obrigatorios['success']:
-            return JsonResponse(campos_obrigatorios, status=400)
-
         registrar = AgenteService.registra_usuario(data, empresa)
         if not registrar['success']:
             return JsonResponse(registrar, status=400)
@@ -86,10 +82,18 @@ def novo_agente(request):
 def toggle_ativo_agente(request, agente_id):
     """Ativa ou desativa um agente."""
     agente = get_object_or_404(
-        Agente,
+        Agente.objects.select_related('usuario', 'perfil'),
         pk=agente_id,
-        carteira__empresa=request.empresa
+        perfil__empresa=request.empresa
     )
+
+    if agente.usuario_id == request.user.id:
+        return JsonResponse(
+            {
+            'success': False,
+            'messages': {'agente': ['Você não pode desativar seu próprio usuário.']}
+        }, status=403)
+
     agente.usuario.is_active = not agente.usuario.is_active
     agente.usuario.save(update_fields=['is_active'])
     status = 'ativado' if agente.usuario.is_active else 'desativado'
@@ -107,8 +111,9 @@ def editar_agente(request, agente_id):
     agente = get_object_or_404(
         Agente.objects.select_related('usuario', 'perfil', 'equipe', 'carteira'),
         pk=agente_id,
-        carteira__empresa=empresa
+        perfil__empresa=empresa
     )
+    equipe_id = agente.equipe.id if agente.equipe else None
 
     if request.method == 'POST':
         try:
@@ -130,7 +135,7 @@ def editar_agente(request, agente_id):
             'email': agente.email or '',
             'cpf': agente.cpf or '',
             'perfil_id': agente.perfil.id,
-            'equipe_id': agente.equipe.id,
+            'equipe_id': equipe_id,
         },
         'perfis': list(Perfil.objects.filter(ativo=True, empresa=empresa).values('id', 'codigo')),
         'equipes': list(Equipe.objects.filter(ativo=True, empresa=empresa).values('id', 'nome')),

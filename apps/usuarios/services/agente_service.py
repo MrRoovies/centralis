@@ -31,20 +31,49 @@ class AgenteService:
 
     @staticmethod
     def registra_usuario(data, empresa):
+
         if User.objects.filter(username=data['username']).exists():
             return ResponsePattern.error('usuario', ['Usuário já existe.'])
 
-        carteira = get_object_or_404(Carteira, pk=data['carteira_id'], empresa=empresa, ativo=True)
-        equipe = get_object_or_404(Equipe, pk=data['equipe_id'], empresa=empresa, ativo=True)
-        perfil = get_object_or_404(Perfil, pk=data['perfil_id'], empresa=empresa, ativo=True)
+        try:
+            perfil = Perfil.objects.get(
+                pk=data['perfil_id'],
+                empresa=empresa,
+                ativo=True
+            )
+        except Perfil.DoesNotExist:
+            return ResponsePattern.error('perfil', ['Perfil inválido'])
 
-        if not perfil.codigo == 'ADM':
+        carteira = None
+        equipe = None
+
+        if perfil.codigo != 'ADM':
+
             campos = AgenteService.campos_obrigatorios(data)
             if not campos['success']:
                 return campos
 
+            carteira = Carteira.objects.filter(
+                pk=data.get('carteira_id'),
+                empresa=empresa,
+                ativo=True
+            ).first()
+
+            if not carteira:
+                return ResponsePattern.error('carteira', ['Carteira inválida'])
+
+            equipe = Equipe.objects.filter(
+                pk=data.get('equipe_id'),
+                empresa=empresa,
+                ativo=True
+            ).first()
+
+            if not equipe:
+                return ResponsePattern.error('equipe', ['Equipe inválida'])
+
         try:
             with transaction.atomic():
+
                 user = User.objects.create_user(
                     username=data['username'],
                     password=data['password'],
@@ -52,9 +81,9 @@ class AgenteService:
                     last_name=data['last_name'],
                     email=data['email'],
                 )
+
                 if perfil.grupo:
                     user.groups.add(perfil.grupo)
-                    user.save()
 
                 Agente.objects.create(
                     usuario=user,
@@ -65,31 +94,63 @@ class AgenteService:
                     nascimento=data['nascimento'],
                     email=data['email'],
                 )
+
             return ResponsePattern.success('agente', ['✓ Agente cadastrado com sucesso!'])
 
         except Exception as e:
-            return ResponsePattern.error('agente', [str(e)])
-
+            # ideal: logar isso aqui
+            return ResponsePattern.error('agente', ['Erro interno ao criar usuário'])
 
     @staticmethod
     def edita_usuario(dados, agente, empresa):
-        perfil = get_object_or_404(Perfil, pk=dados['perfil_id'], empresa=empresa, ativo=True)
-        equipe = get_object_or_404(Equipe, pk=dados['equipe_id'], empresa=empresa, ativo=True)
+
+        try:
+            perfil = Perfil.objects.get(
+                pk=dados['perfil_id'],
+                empresa=empresa,
+                ativo=True
+            )
+        except Perfil.DoesNotExist:
+            return ResponsePattern.error('perfil', ['Perfil inválido'])
+
+        equipe = None
+
+        if perfil.codigo != 'ADM':
+
+            campos = AgenteService.campos_obrigatorios(dados)
+            if not campos['success']:
+                return campos
+
+            equipe = Equipe.objects.filter(
+                pk=dados.get('equipe_id'),
+                empresa=empresa,
+                ativo=True
+            ).first()
+
+            if not equipe:
+                return ResponsePattern.error('equipe', ['Equipe inválida'])
+
         try:
             with transaction.atomic():
-                agente.usuario.first_name = dados['first_name']
-                agente.usuario.last_name = dados['last_name']
-                if dados['senha']:
-                    agente.usuario.set_password(dados['senha'])
-                agente.usuario.save()
 
-                agente.email = dados['email']
-                agente.cpf = dados['cpf']
+                user = agente.usuario
+                user.first_name = dados.get('first_name', user.first_name)
+                user.last_name = dados.get('last_name', user.last_name)
+
+                senha = dados.get('senha')
+                if senha:
+                    user.set_password(senha)
+
+                user.save()
+
+                agente.email = dados.get('email', agente.email)
+                agente.cpf = dados.get('cpf', agente.cpf)
                 agente.perfil = perfil
                 agente.equipe = equipe
                 agente.save()
 
             return ResponsePattern.success('agente', ['✓ Agente atualizado com sucesso!'])
 
-        except Exception as e:
-            return ResponsePattern.error('agente', [str(e)])
+        except Exception:
+            # ideal logar aqui
+            return ResponsePattern.error('agente', ['Erro interno ao atualizar agente'])
