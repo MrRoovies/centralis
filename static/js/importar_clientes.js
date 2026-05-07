@@ -61,9 +61,9 @@ function handleFileInput(input) {
 
 function processarArquivo(file) {
     if (!file.name.match(/\.(csv|txt)$/i)) {
-        mostrarErroRapido('Formato inválido. Use arquivos .csv'); return;
+        mostrarErroRapido('Formato inválido. Use arquivos .csv separados por ,'); return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
         mostrarErroRapido('Arquivo muito grande. Limite: 5 MB'); return;
     }
 
