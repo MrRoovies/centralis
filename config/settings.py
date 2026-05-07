@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-nv5q_%9u6x4csk&mnvh-kux^(!^#=lw9#xl4eyqwzvwa5k&uxs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*.praticoapp.com.br", "praticoapp.com.br"]
+ALLOWED_HOSTS = [".praticoapp.com.br", "praticoapp.com.br"]
 # não usar em localhost
 # CSRF_TRUSTED_ORIGINS = ["http://*.localhost"]
 # CSRF_COOKIE_DOMAIN = ".localhost"
