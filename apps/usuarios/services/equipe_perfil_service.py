@@ -159,7 +159,7 @@ class CarteiraService:
     def detalhes(carteira_id, empresa):
         situacoes = (
             Situacao.objects
-            .filter(empresa=empresa, ativo=True)
+            .filter(empresa=empresa)
             .order_by('nome')
         )
 
