@@ -239,3 +239,44 @@ class Endereco(models.Model):
             cep=cep,
             tipo=tipo
         ).first()
+
+class DadosBancarios(models.Model):
+    cliente = models.ForeignKey(
+        "Cliente",
+        on_delete=models.CASCADE,
+        related_name="dados_bancarios"
+    )
+    banco = models.ForeignKey('Bancos', on_delete=models.CASCADE)
+    agencia = models.CharField('Agencia', max_length=10, null=False, blank=False)
+    conta = models.CharField('Conta', max_length=10, null=False, blank=False)
+    empresa = models.ForeignKey('core.Empresa', on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['empresa', 'cliente', 'banco', 'agencia', 'conta'],
+                name='unique_empresa_cliente_banco_agencia_conta'
+            )
+        ]
+        indexes = [
+            models.Index(fields=['empresa', 'cliente', 'banco']),
+            models.Index(fields=['empresa', 'banco']),
+        ]
+
+    def clean(self):
+        self.agencia = self.agencia.strip().zfill(4)
+        self.conta = self.conta.strip()
+
+class Bancos(models.Model):
+    cod_banco = models.CharField('Código Banco', max_length=5, null=False, blank=False)
+    nome_banco = models.CharField('Nome Banco', max_length=50, null=False, blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['cod_banco', 'nome_banco'],
+                name='unique_cod_nome'
+            )
+        ]
+    def __str__(self):
+        return f"{self.cod_banco} - {self.nome_banco}"
