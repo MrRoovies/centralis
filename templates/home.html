@@ -1,36 +1,260 @@
 {% extends "menu.html" %}
 {% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
 {% block content %}
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <h2 class="page-title">Painel de Vendas - Resultado do Dia</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Vendas do Dia</h3>
-                    <div class="value" id="vendasDia">R$ 0,00</div>
-                    <div class="change">↑ +15% vs ontem</div>
-                </div>
-                
-                <div class="stat-card">
-                    <h3>Total de Vendas</h3>
-                    <div class="value" id="totalVendas">0</div>
-                    <div class="change">Meta: 50 vendas</div>
-                </div>
-                
-                <div class="stat-card">
-                    <h3>Ticket Médio</h3>
-                    <div class="value" id="ticketMedio">R$ 0,00</div>
-                    <div class="change">↑ +8% vs média</div>
-                </div>
-                
-                <div class="stat-card">
-                    <h3>Novos Clientes</h3>
-                    <div class="value" id="novosClientes">0</div>
-                    <div class="change">Hoje</div>
-                </div>
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ SAUDAÇÃO ═════════════════════════════════════════ -->
+    <div class="db-welcome">
+        <div>
+            <h2 class="db-welcome__title">
+                Olá, <span>{{ request.user.first_name|default:request.user.username }}</span> 👋
+            </h2>
+            <span class="db-welcome__sub">Aqui está o resumo do dia — {{ hoje }}</span>
+        </div>
+        <span class="db-welcome__date" id="dbRelogio">—</span>
+    </div>
+
+    <!-- ══ KPI CARDS ════════════════════════════════════════ -->
+    <div class="db-kpi-grid">
+
+        <div class="db-kpi db-kpi--blue">
+            <span class="db-kpi__label">Agendamentos Hoje</span>
+            <span class="db-kpi__value">{{ kpi.agendamentos_hoje }}</span>
+            <div class="db-kpi__footer">
+                <span class="db-kpi__badge db-kpi__badge--{% if kpi.agendamentos_delta >= 0 %}up{% else %}down{% endif %}">
+                    {% if kpi.agendamentos_delta >= 0 %}▲{% else %}▼{% endif %}
+                    {{ kpi.agendamentos_delta|default:"0" }}
+                </span>
+                vs. ontem
             </div>
         </div>
-    </main>
+
+        <div class="db-kpi db-kpi--teal">
+            <span class="db-kpi__label">Atendimentos Realizados</span>
+            <span class="db-kpi__value">{{ kpi.atendimentos_hoje }}</span>
+            <div class="db-kpi__footer">
+                <span class="db-kpi__badge db-kpi__badge--neu">hoje</span>
+                acionamentos registrados
+            </div>
+        </div>
+
+        <div class="db-kpi db-kpi--green">
+            <span class="db-kpi__label">Vendas do Mês</span>
+            <span class="db-kpi__value">{{ kpi.vendas_mes }}</span>
+            <div class="db-kpi__footer">
+                <span class="db-kpi__badge db-kpi__badge--{% if kpi.vendas_delta >= 0 %}up{% else %}down{% endif %}">
+                    {% if kpi.vendas_delta >= 0 %}▲{% else %}▼{% endif %}
+                    {{ kpi.vendas_delta|default:"0" }}
+                </span>
+                vs. mês anterior
+            </div>
+        </div>
+
+        <div class="db-kpi db-kpi--amber">
+            <span class="db-kpi__label">Campanhas Ativas</span>
+            <span class="db-kpi__value">{{ kpi.campanhas_ativas }}</span>
+            <div class="db-kpi__footer">
+                <span class="db-kpi__badge db-kpi__badge--neu">{{ kpi.agentes_online }}</span>
+                agentes ativos
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ GRID PRINCIPAL ═══════════════════════════════════ -->
+    <div class="db-grid">
+
+        <!-- ── COLUNA ESQUERDA ── -->
+        <div class="db-col-left">
+
+            <!-- Agendamentos do dia -->
+            <div class="db-card">
+                <div class="db-card__head">
+                    <span class="db-card__icon">📅</span>
+                    <h3 class="db-card__title">Agendamentos de Hoje</h3>
+                    {% if agendamentos_hoje %}
+                    <span class="db-card__badge">{{ agendamentos_hoje|length }}</span>
+                    {% endif %}
+                    <a href="" class="db-card__link">Ver todos →</a>
+                </div>
+                <div class="db-card__body db-card__body--no-pad">
+                    {% if agendamentos_hoje %}
+                    <div class="db-agenda-list">
+                        {% for agenda in agendamentos_hoje %}
+                        <a href="/clientes/cliente/{{ agenda.cliente_id }}" class="db-agenda-item">
+                            <span class="db-agenda-item__hora">
+                                {{ agenda.retorno|time:"H:i"|default:"—" }}
+                            </span>
+                            <span class="db-agenda-item__dot db-agenda-item__dot--{% if agenda.ativa %}ativa{% else %}fechada{% endif %}"></span>
+                            <div class="db-agenda-item__info">
+                                <span class="db-agenda-item__nome">{{ agenda.cliente_nome }}</span>
+                                <span class="db-agenda-item__meta">
+                                    {{ agenda.agente_nome }} · {{ agenda.canal }}
+                                </span>
+                            </div>
+                            <span class="db-agenda-item__badge db-agenda-item__badge--{{ agenda.situacao_slug }}">
+                                {{ agenda.situacao }}
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="db-empty">
+                        <div class="db-empty__icon">📭</div>
+                        <p class="db-empty__text">Nenhum agendamento para hoje.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Últimas Vendas -->
+            <div class="db-card">
+                <div class="db-card__head">
+                    <span class="db-card__icon">💰</span>
+                    <h3 class="db-card__title">Últimas Vendas</h3>
+                    <a href="" class="db-card__link">Ver todas →</a>
+                </div>
+                <div class="db-card__body db-card__body--no-pad">
+                    {% if ultimas_vendas %}
+                    <div class="db-vendas-list">
+                        {% for venda in ultimas_vendas %}
+                        <a href="/vendas/{{ venda.id }}/" class="db-venda-item">
+                            <span class="db-venda-item__contrato">{{ venda.contrato }}</span>
+                            <div class="db-venda-item__info">
+                                <span class="db-venda-item__nome">{{ venda.cliente_nome }}</span>
+                                <span class="db-venda-item__meta">
+                                    {{ venda.produto }} · {{ venda.parceiro }} · {{ venda.data|date:"d/m/Y" }}
+                                </span>
+                            </div>
+                            <span class="db-venda-item__valor">
+                                R$ {{ venda.valor|floatformat:2 }}
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="db-empty">
+                        <div class="db-empty__icon">🛒</div>
+                        <p class="db-empty__text">Nenhuma venda registrada ainda.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div><!-- /col-left -->
+
+        <!-- ── COLUNA DIREITA ── -->
+        <div class="db-col-right">
+
+            <!-- Campanhas ativas -->
+            <div class="db-card">
+                <div class="db-card__head">
+                    <span class="db-card__icon">📣</span>
+                    <h3 class="db-card__title">Campanhas Ativas</h3>
+                    <a href="" class="db-card__link">Ver →</a>
+                </div>
+                <div class="db-card__body db-card__body--no-pad">
+                    {% if campanhas_ativas %}
+                    <div class="db-campanha-list">
+                        {% for campanha in campanhas_ativas %}
+                        <a href="/campanhas/atender/{{ campanha.id }}/" class="db-campanha-item">
+                            <div class="db-campanha-item__icon db-campanha-item__icon--{{ campanha.modo|lower }}">
+                                {% if campanha.modo == 'MANUAL' %}📋
+                                {% elif campanha.modo == 'RECEPTIVO' %}📞
+                                {% else %}🤖{% endif %}
+                            </div>
+                            <div class="db-campanha-item__info">
+                                <span class="db-campanha-item__nome">{{ campanha.nome }}</span>
+                                <span class="db-campanha-item__meta">
+                                    {{ campanha.carteira }} · {{ campanha.modo }}
+                                </span>
+                            </div>
+                            <span class="db-campanha-item__pill">{{ campanha.total_fila }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="db-empty">
+                        <div class="db-empty__icon">📭</div>
+                        <p class="db-empty__text">Nenhuma campanha ativa.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Ranking de agentes (vendas no mês) -->
+            <div class="db-card">
+                <div class="db-card__head">
+                    <span class="db-card__icon">🏆</span>
+                    <h3 class="db-card__title">Top Agentes — Mês</h3>
+                </div>
+                <div class="db-card__body db-card__body--no-pad">
+                    {% if ranking_agentes %}
+                    <div class="db-ranking-list">
+                        {% for agente in ranking_agentes %}
+                        {% with pos=forloop.counter %}
+                        <div class="db-ranking-item">
+                            <span class="db-ranking-item__pos db-ranking-item__pos--{% if pos <= 3 %}{{ pos }}{% else %}n{% endif %}">
+                                {{ pos }}
+                            </span>
+                            <div class="db-ranking-item__avatar">
+                                {{ agente.iniciais }}
+                            </div>
+                            <div class="db-ranking-item__info">
+                                <span class="db-ranking-item__nome">{{ agente.nome }}</span>
+                            </div>
+                            <div class="db-ranking-item__bar-wrap">
+                                <div class="db-ranking-item__bar"
+                                     style="width: {{ agente.pct }}%"></div>
+                            </div>
+                            <span class="db-ranking-item__count">{{ agente.vendas }}</span>
+                        </div>
+                        {% endwith %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="db-empty">
+                        <div class="db-empty__icon">🏅</div>
+                        <p class="db-empty__text">Sem dados de vendas este mês.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div><!-- /col-right -->
+    </div><!-- /grid -->
+
+</div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Relógio em tempo real no header do dashboard
+(function () {
+    const el = document.getElementById('dbRelogio');
+    if (!el) return;
+
+    const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+    function atualizar() {
+        const now = new Date();
+        const dia = dias[now.getDay()];
+        const d   = String(now.getDate()).padStart(2, '0');
+        const mes = meses[now.getMonth()];
+        const h   = String(now.getHours()).padStart(2, '0');
+        const m   = String(now.getMinutes()).padStart(2, '0');
+        el.textContent = `${dia}, ${d} ${mes} · ${h}:${m}`;
+    }
+
+    atualizar();
+    setInterval(atualizar, 30000);
+})();
+</script>
 {% endblock %}
