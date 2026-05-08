@@ -25,12 +25,13 @@ def situacoes_view(request):
 @login_required
 @require_http_methods(['GET', 'POST'])
 def situacao_detail(request, situacao_id=None):
+    empresa = request.empresa
 
     # ── GET: carrega dados para o drawer ──────────────────────
     if request.method == 'GET':
         if situacao_id:
             try:
-                s = Situacao.objects.get(pk=situacao_id)
+                s = Situacao.objects.get(pk=situacao_id, empresa=empresa)
                 data = {
                     'situacao': {
                         'id': s.id,
@@ -75,7 +76,7 @@ def situacao_detail(request, situacao_id=None):
     # Persistência
     if situacao_id:
         try:
-            situacao = Situacao.objects.get(pk=situacao_id)
+            situacao = Situacao.objects.get(pk=situacao_id, empresa=empresa)
         except Situacao.DoesNotExist:
             return JsonResponse(
                 {'messages': {'situacao': {'__all__': ['Situação não encontrada.']}}},
@@ -84,12 +85,14 @@ def situacao_detail(request, situacao_id=None):
         situacao.nome = nome
         situacao.ativo = ativo
         situacao.tipo = tipo
+        situacao.empresa = empresa
         situacao.save()
         msg = 'Situação atualizada com sucesso!'
     else:
         situacao = Situacao.objects.create(
             nome=nome,
             tipo=tipo,
+            empresa=empresa,
                 # descricao=descricao,
                 # cor=cor,
             ativo=ativo,
