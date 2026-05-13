@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Cliente, Email, Telefone, Endereco
+from .models import Cliente, Email, Telefone, Endereco, Bancos
 
 class ClienteAdmin(admin.ModelAdmin):
     list_display = ['id', 'empresa',
@@ -27,3 +27,7 @@ class EnderecoAdmin(admin.ModelAdmin):
         'logradouro', 'numero', 'bairro', 'cidade',
         'uf', 'cep', 'tipo']
 admin.site.register(Endereco, EnderecoAdmin)
+
+class BancosAdmin(admin.ModelAdmin):
+    list_display = ['id', 'cod_banco', 'nome_banco']
+admin.site.register(Bancos, BancosAdmin)

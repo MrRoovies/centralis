@@ -25,7 +25,14 @@ const COLUNAS_EMAIL = [
     'email2', 'email2_tipo',
     'email3', 'email3_tipo',
 ];
-const TODAS_COLUNAS = [...COLUNAS_CLIENTE, ...COLUNAS_TELEFONE, ...COLUNAS_EMAIL];
+
+const COLUNAS_BANCO = [
+    'banco1_cod', 'banco1_agencia', 'banco1_conta',
+    'banco2_cod', 'banco2_agencia', 'banco2_conta',
+    'banco3_cod', 'banco3_agencia', 'banco3_conta',
+];
+
+const TODAS_COLUNAS = [...COLUNAS_CLIENTE, ...COLUNAS_TELEFONE, ...COLUNAS_EMAIL, ...COLUNAS_BANCO];
 
 const ESTADOS_CIVIS_VALIDOS = ['SOLTEIRO','CASADO','DIVORCIADO','VIUVO','UNIAO_ESTAVEL'];
 const TIPOS_PESSOA_VALIDOS  = ['PF','PJ'];
@@ -34,15 +41,16 @@ const TIPOS_EMAIL_VALIDOS    = ['PESSOAL','CORPORATIVO'];
 
 // Modelo para download
 const MODELO_CSV = [
-    'nome,documento,tipo_pessoa,data_nascimento,nome_mae,estado_civil,' +
+    'nome,documento,tipo_pessoa,data_nascimento,nome_mae,estado_civil,'+
     'telefone1,telefone1_tipo,telefone2,telefone2_tipo,telefone3,telefone3_tipo,'+
-    'email1,email1_tipo,email2,email2_tipo',
+    'email1,email1_tipo,email2,email2_tipo,banco1_cod,banco1_agencia,banco1_conta,'+
+    'banco2_cod,banco2_agencia,banco2_conta',
 
     'João Silva,12345678901,PF,15/06/1990,Maria Silva,SOLTEIRO,'+
-    '11987654321,CELULAR,1133334444,FIXO,,,joao@email.com,PESSOAL,,',
+    '11987654321,CELULAR,1133334444,FIXO,,,joao@email.com,PESSOAL,,,1,1,12345-6,,,',
 
-    'Empresa LTDA,12774041000165,PJ,,,,1133334444,FIXO,11988887777,CORPORATIVO,,,'+
-    'contato@empresa.com,CORPORATIVO,financeiro@empresa.com,CORPORATIVO',
+    'Empresa LTDA,SomenteNumeros(14),PJ,,,,1133334444,FIXO,11988887777,CORPORATIVO,,,'+
+    'contato@empresa.com,CORPORATIVO,financeiro@empresa.com,CORPORATIVO,33,23,98765-4,,,',                          // ← novo
 ].join('\n');
 
 // ── Upload ─────────────────────────────────────────────────
@@ -178,7 +186,6 @@ function validarRegistros(registros) {
     registros.forEach(r => {
         const linha = r._linha;
 
-        // Obrigatórios básicos
         if (!r.nome?.trim()) {
             erros.push({ linha, msg: 'Campo "nome" vazio.', tipo: 'erro' }); return;
         }
@@ -202,12 +209,10 @@ function validarRegistros(registros) {
             erros.push({ linha, msg: `CNPJ deve ter 14 dígitos (encontrado: ${doc.length}).`, tipo: 'erro' }); return;
         }
 
-        // Data de nascimento
         if (r.data_nascimento && !r.data_nascimento.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
             erros.push({ linha, msg: `data_nascimento inválida: "${r.data_nascimento}". Use DD/MM/AAAA.`, tipo: 'warn' });
         }
 
-        // Estado civil
         if (r.estado_civil) {
             const ec = r.estado_civil.toUpperCase().trim();
             if (!ESTADOS_CIVIS_VALIDOS.includes(ec)) {
@@ -239,6 +244,24 @@ function validarRegistros(registros) {
                 erros.push({ linha, msg: `email${i} inválido: "${mail}".`, tipo: 'warn' });
             if (tipo && !TIPOS_EMAIL_VALIDOS.includes(tipo))
                 erros.push({ linha, msg: `email${i}_tipo inválido: "${tipo}". Use PESSOAL ou CORPORATIVO.`, tipo: 'warn' });
+        }
+
+        // Dados bancários (1–3) ← novo
+        for (let i = 1; i <= 3; i++) {
+            const cod     = (r[`banco${i}_cod`]     || '').trim();
+            const agencia = (r[`banco${i}_agencia`] || '').trim();
+            const conta   = (r[`banco${i}_conta`]   || '').trim();
+
+            if (!cod && !agencia && !conta) continue; // nenhum campo → ok, pula
+
+            if (!cod)
+                erros.push({ linha, msg: `banco${i}_cod vazio (agência/conta informados).`, tipo: 'warn' });
+            if (!agencia)
+                erros.push({ linha, msg: `banco${i}_agencia vazio (cod/conta informados).`, tipo: 'warn' });
+            if (!conta)
+                erros.push({ linha, msg: `banco${i}_conta vazia (cod/agência informados).`, tipo: 'warn' });
+            if (cod && !/^\d{1,5}$/.test(cod))
+                erros.push({ linha, msg: `banco${i}_cod inválido: "${cod}" (somente dígitos, até 5).`, tipo: 'warn' });
         }
     });
 
