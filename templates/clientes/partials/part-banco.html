@@ -1,0 +1,26 @@
+<!-- DADOS BANCÁRIOS -->
+<section class="ci-section">
+    <h4 class="ci-section__title">
+        <span class="ci-section__icon">🏦</span>
+        Dados Bancários
+    </h4>
+    {% if cliente.dados_bancarios.all %}
+    <div class="ci-bank-list">
+        {% for db in cliente.dados_bancarios.all %}
+        <div class="ci-bank-item">
+            <div class="ci-bank-item__icon">
+                {{ db.banco.cod_banco }}
+            </div>
+            <div class="ci-bank-item__info">
+                <span class="ci-bank-item__nome">{{ db.banco.nome_banco }}</span>
+                <span class="ci-bank-item__detalhe">
+                    Ag. {{ db.agencia }} · Conta {{ db.conta }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="ci-empty-hint">Nenhum dado bancário cadastrado.</p>
+    {% endif %}
+</section>

@@ -1,19 +1,42 @@
-<div class="clientes-lista" id="clientesLista">
-    <div class="cliente-card">
+{% load static %}
+<div class="clientes-lista">
 
+    <!-- ── Card de informações do cliente ─────────────────── -->
+    <div class="ci-header">
+        <div class="ci-header__left">
+            <div class="ci-avatar">{{ cliente.nome|first|upper }}</div>
+            <div class="ci-header__info">
+                <h3 class="ci-nome">{{ cliente.nome }}</h3>
+                <span class="ci-doc">
+                    {{ cliente.get_tipo_pessoa_display }} · {{ cliente.documento }}
+                </span>
+            </div>
+        </div>
+        <div class="ci-header__actions">
+            <button class="btn-small btn-edit"
+                    onclick="SystemModal.open('/clientes/cliente/{{ cliente.id }}/edit')">
+                Editar
+            </button>
+        </div>
+    </div>
+
+    <div class="ci-card">
         {% include 'clientes/partials/dados-gerais.html' %}
-
-        {% include 'clientes/partials/part-mail.html' %}
-
+        {% include 'clientes/partials/part-banco.html' %}
         {% include 'clientes/partials/part-fones.html' %}
-
+        {% include 'clientes/partials/part-mail.html' %}
         {% include 'clientes/partials/part-endereco.html' %}
+    </div>
 
+    <!-- ── Registros de venda e atendimento ───────────────── -->
+    <div class="cliente-card">
         {% include 'vendas/registrar_venda.html' %}
-
         {% include 'clientes/partials/registrar_atendimento.html' %}
     </div>
+
+    <!-- ── Histórico de agendas ───────────────────────────── -->
     <div class="cliente-card">
         <div id="historico-agendas" data-cliente-id="{{ cliente.id }}"></div>
     </div>
+
 </div>

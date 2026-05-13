@@ -1,0 +1,355 @@
+/* ============================================================
+   CARD_INFO_CLIENTE.CSS
+   Card unificado de informações do cliente.
+   Depende de: base.css, styles.css
+   ============================================================ */
+
+/* ── Card container ── */
+.ci-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+/* ── Cabeçalho ── */
+.ci-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    background: linear-gradient(90deg, #04375F 0%, #007AAA 100%);
+    gap: 14px;
+}
+
+.ci-header__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.ci-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.ci-header__info {
+    min-width: 0;
+}
+
+.ci-nome {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ci-doc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Courier New', monospace;
+}
+
+.ci-header__actions {
+    flex-shrink: 0;
+}
+
+/* ── Body ── */
+.ci-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+/* ── Seção genérica ── */
+.ci-section {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+}
+
+/* Remove borda direita das colunas da direita */
+.ci-section:nth-child(even) {
+    border-right: none;
+}
+
+/* Seção de largura total (dados pessoais) */
+.ci-section:first-child {
+    grid-column: 1 / -1;
+    border-right: none;
+}
+
+/* Última seção: sem borda inferior */
+.ci-section:last-child,
+.ci-section:nth-last-child(2):nth-child(odd) {
+    border-bottom: none;
+}
+
+.ci-section__title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #007AAA;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8f4f8;
+}
+
+.ci-section__icon {
+    font-size: 13px;
+}
+
+/* ── Botão "+ Adicionar" inline no título ── */
+.ci-btn-add {
+    margin-left: auto;
+    padding: 3px 10px;
+    border: 1px solid #007AAA;
+    border-radius: 5px;
+    background: white;
+    color: #007AAA;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.ci-btn-add:hover {
+    background: #007AAA;
+    color: white;
+}
+
+/* ── Grid de dados pessoais ── */
+.ci-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.ci-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ci-info-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.ci-info-value {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* ── Lista de contatos (telefones / e-mails) ── */
+.ci-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ci-contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    background: #f7fafd;
+    border: 1px solid #e0eaf5;
+    border-radius: 7px;
+    gap: 8px;
+}
+
+.ci-contact-item__info {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+}
+
+.ci-whats-icon {
+    flex-shrink: 0;
+}
+
+.ci-contact-item__value {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ci-contact-item__badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: #e8f4f8;
+    color: #007AAA;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ── Lista de endereços ── */
+.ci-address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ci-address-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 12px;
+    background: #f7fafd;
+    border: 1px solid #e0eaf5;
+    border-radius: 7px;
+    gap: 10px;
+}
+
+.ci-address-item__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.ci-address-tipo {
+    margin-bottom: 2px;
+    display: inline-flex;
+}
+
+.ci-address-item__linha1 {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    margin: 0;
+}
+
+.ci-address-item__linha2 {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+}
+
+/* ── Dados bancários ── */
+.ci-bank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ci-bank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #f7fafd;
+    border: 1px solid #e0eaf5;
+    border-radius: 7px;
+    border-left: 3px solid #007AAA;
+}
+
+.ci-bank-item__icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #04375F, #007AAA);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.ci-bank-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.ci-bank-item__nome {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2e3b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ci-bank-item__detalhe {
+    font-size: 12px;
+    color: #888;
+    font-family: 'Courier New', monospace;
+}
+
+/* ── Empty hint ── */
+.ci-empty-hint {
+    font-size: 12px;
+    color: #bbb;
+    font-style: italic;
+    margin: 0;
+    padding: 4px 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .ci-body {
+        grid-template-columns: 1fr;
+    }
+
+    .ci-section {
+        border-right: none;
+    }
+
+    .ci-section:nth-last-child(2):nth-child(odd) {
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .ci-section:last-child {
+        border-bottom: none;
+    }
+
+    .ci-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ci-nome {
+        font-size: 15px;
+    }
+}

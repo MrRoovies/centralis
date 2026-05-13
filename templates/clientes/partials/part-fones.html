@@ -1,25 +1,38 @@
 {% load static %}
-<div class="btn-actions">
-    <button class="btn-small btn-edit" onclick="SystemModal.open('/clientes/telefone/{{ cliente.id }}/create')">
-        Novo Telefone
-    </button>
-</div>
-<div class="cliente-info fones">
-    <div class="info-item">
-        <span class="info-label">Telefone</span>
-        <form id="form_del_telefone">
-            {% csrf_token %}
+<!-- TELEFONES -->
+<section class="ci-section">
+    <h4 class="ci-section__title">
+        <span class="ci-section__icon">📞</span>
+        Telefones
+        <button class="ci-btn-add"
+                onclick="SystemModal.open('/clientes/telefone/{{ cliente.id }}/create')">
+            + Adicionar
+        </button>
+    </h4>
+    {% if cliente.telefones.all %}
+    <form id="form_del_telefone">
+        {% csrf_token %}
+        <div class="ci-contact-list">
             {% for telefone in cliente.telefones.all %}
-            <div class="fone-row">
-                <span class="info-value">
+            <div class="ci-contact-item">
+                <div class="ci-contact-item__info">
                     {% if telefone.whats_app %}
-                    <img src="{% static 'img/whatsapp16x16.png' %}">
+                    <img src="{% static 'img/whatsapp16x16.png' %}" alt="WhatsApp" class="ci-whats-icon">
                     {% endif %}
-                    {{ telefone.telefone }}
-                </span>
-                <button class="action-btn btn-small btn-delete" data-type="telefone" data-action="delete" data-cliente="{{ telefone.id }}">Excluir</button>
+                    <span class="ci-contact-item__value">{{ telefone.telefone }}</span>
+                    <span class="ci-contact-item__badge">{{ telefone.get_tipo_display }}</span>
+                </div>
+                <button class="action-btn btn-small btn-delete"
+                        data-type="telefone"
+                        data-action="delete"
+                        data-cliente="{{ telefone.id }}">
+                    Excluir
+                </button>
             </div>
             {% endfor %}
-        </form>
-    </div>
-</div>
+        </div>
+    </form>
+    {% else %}
+    <p class="ci-empty-hint">Nenhum telefone cadastrado.</p>
+    {% endif %}
+</section>

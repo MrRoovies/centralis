@@ -4,11 +4,12 @@
    ============================================================ */
 
 /* ========== LISTA DE CLIENTES ========== */
+
 .clientes-lista {
     margin-top: 30px;
 }
 
-.clientes-lista h3 {
+h3 {
     margin-bottom: 20px;
     color: #646464;
 }

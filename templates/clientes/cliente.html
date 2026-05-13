@@ -3,26 +3,44 @@
 {% load admin_urls %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/cliente.css' %}">
+    <link rel="stylesheet" href="{% static 'css/card_info_cliente.css' %}">
 {% endblock %}
 
 {% block content %}
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Lista de Clientes -->
-            <div class="clientes-lista" id="clientesLista">
-                <div class="cliente-card">
-
-                    {% include 'clientes/partials/dados-gerais.html' %}
-
-                    {% include 'clientes/partials/part-mail.html' %}
-
-                    {% include 'clientes/partials/part-fones.html' %}
-
-                    {% include 'clientes/partials/part-endereco.html' %}
-
-                    <div id="historico-agendas" data-cliente-id="{{ cliente.id }}"></div>
+            <!-- ── Cabeçalho ──────────────────────────────────────── -->
+            <div class="ci-header">
+                <div class="ci-header__left">
+                    <div class="ci-avatar">
+                        {{ cliente.nome|first|upper }}
+                    </div>
+                    <div class="ci-header__info">
+                        <h3 class="ci-nome">{{ cliente.nome }}</h3>
+                        <span class="ci-doc">{{ cliente.get_tipo_pessoa_display }} · {{ cliente.documento }}</span>
+                    </div>
                 </div>
+                <div class="ci-header__actions">
+                    <button class="btn-small btn-edit"
+                            onclick="SystemModal.open('/clientes/cliente/{{ cliente.id }}/edit')">
+                        Editar
+                    </button>
+                </div>
+            </div>
+            <!-- Lista de Clientes -->
+            <div class="ci-card">
+                {% include 'clientes/partials/dados-gerais.html' %}
+
+                {% include 'clientes/partials/part-banco.html' %}
+
+                {% include 'clientes/partials/part-mail.html' %}
+
+                {% include 'clientes/partials/part-fones.html' %}
+
+                {% include 'clientes/partials/part-endereco.html' %}
+
+                <div id="historico-agendas" data-cliente-id="{{ cliente.id }}"></div>
             </div>
         </div>
     </main>

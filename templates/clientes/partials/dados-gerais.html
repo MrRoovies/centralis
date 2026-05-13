@@ -1,26 +1,29 @@
-<div class="cliente-header">
-    <div class="cliente-nome">{{cliente.nome}}</div>
-</div>
-<div class="btn-actions">
-    <button class="btn-small btn-edit" onclick="SystemModal.open('/clientes/cliente/{{ cliente.id }}/edit')">
-    Edita Cliente
-    </button>
-</div>
-<div class="cliente-info">
-    <div class="info-item">
-        <span class="info-label">CPF</span>
-        <span class="info-value">{{cliente.documento}}</span>
+<!-- DADOS PESSOAIS -->
+<section class="ci-section">
+    <h4 class="ci-section__title">
+        <span class="ci-section__icon">👤</span>
+        Dados Pessoais
+    </h4>
+    <div class="ci-info-grid">
+        <div class="ci-info-item">
+            <span class="ci-info-label">Data de Nascimento</span>
+            <span class="ci-info-value">{{ cliente.data_nascimento|date:"d/m/Y"|default:"—" }}</span>
+        </div>
+        <div class="ci-info-item">
+            <span class="ci-info-label">Idade</span>
+            <span class="ci-info-value">{{ cliente.idade|default:"—" }}</span>
+        </div>
+        <div class="ci-info-item">
+            <span class="ci-info-label">Estado Civil</span>
+            <span class="ci-info-value">{{ cliente.get_estado_civil_display|default:"—" }}</span>
+        </div>
+        <div class="ci-info-item">
+            <span class="ci-info-label">Nome da Mãe</span>
+            <span class="ci-info-value">{{ cliente.nome_mae|default:"—" }}</span>
+        </div>
+        <div class="ci-info-item">
+            <span class="ci-info-label">Cadastrado em</span>
+            <span class="ci-info-value">{{ cliente.criado_em|date:"d/m/Y H:i" }}</span>
+        </div>
     </div>
-    <div class="info-item">
-        <span class="info-label">Data de Nascimento</span>
-        <span class="info-value">{{cliente.data_nascimento|date:"d/m/Y"}}</span>
-    </div>
-    <div class="info-item">
-        <span class="info-label">Idade</span>
-        <span class="info-value">{{cliente.idade}}</span>
-    </div>
-    <div class="info-item">
-        <span class="info-label">Data de Cadastro</span>
-        <span class="info-value">{{cliente.criado_em}}</span>
-    </div>
-</div>
+</section>
