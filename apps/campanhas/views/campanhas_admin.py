@@ -78,6 +78,7 @@ def campanha_detail(request, campanha_id=None):
         carteira_id = data.get('carteira_id')
         modo_atendimento = data.get('modo_atendimento')
         metodo_distribuicao = data.get('metodo_distribuicao')
+        msg_whatsapp = data.get('msg_whatsapp')
         distribuicao_ativa = data.get('distribuicao_ativa', True)
 
         if not all([nome, carteira_id, modo_atendimento, metodo_distribuicao]):
@@ -92,6 +93,7 @@ def campanha_detail(request, campanha_id=None):
             modo_atendimento,
             metodo_distribuicao,
             distribuicao_ativa,
+            msg_whatsapp,
             empresa
         )
         if not save_campanha.get('success'):

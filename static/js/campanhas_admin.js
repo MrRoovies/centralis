@@ -98,10 +98,12 @@ function _carregarFormCampanha(campanhaId) {
             document.getElementById('formCampanha').style.display = 'block';
 
             const c = data.campanha;
+            console.log(c);
             document.getElementById('cp_nome').value   = c.nome    || '';
             _setVal('cp_carteira', c.carteira_id);
             _setVal('cp_modo',     c.modo_atendimento);
             _setVal('cp_metodo',   c.metodo_distribuicao);
+            _setVal('cp_msg_whats',   c.texto_whatsapp);
 
             const chk = document.getElementById('cp_ativo');
             chk.checked = c.distribuicao_ativa !== false;
@@ -128,6 +130,7 @@ function salvarDrawer() {
         carteira_id:          document.getElementById('cp_carteira').value,
         modo_atendimento:     document.getElementById('cp_modo').value,
         metodo_distribuicao:  document.getElementById('cp_metodo').value,
+        msg_whatsapp:  document.getElementById('cp_msg_whats').value,
         distribuicao_ativa:   chk.checked,
     };
 

@@ -6,8 +6,7 @@ from apps.core.choices import ModoAtendimento, OrdemSorteio
 # Create your models here.
 class Campanha(models.Model):
     empresa = models.ForeignKey("core.Empresa", on_delete=models.CASCADE)
-
-
+    texto_whatsapp = models.TextField("Mensagem ao Cliente", max_length=240, null=True, blank=True)
     nome = models.CharField("Nome Campanha", max_length=80, null=False, blank=False)
     modo_atendimento = models.CharField("Modo Atendimento", choices=ModoAtendimento.choices, max_length=10, null=False, blank=False)
     distribuicao_ativa = models.BooleanField(default=True)

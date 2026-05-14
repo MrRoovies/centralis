@@ -22,6 +22,11 @@
                     <span class="ci-contact-item__value">{{ telefone.telefone }}</span>
                     <span class="ci-contact-item__badge">{{ telefone.get_tipo_display }}</span>
                 </div>
+                {% if whats_app_message %}
+                    <span class="ci-contact-item__badge">
+                        <a target="_blank" href="https://api.whatsapp.com/send?phone=55{{ telefone.telefone }}&text={{whats_app_message}}">Enviar Mensagem</a>
+                    </span>
+                {% endif %}
                 <button class="action-btn btn-small btn-delete"
                         data-type="telefone"
                         data-action="delete"

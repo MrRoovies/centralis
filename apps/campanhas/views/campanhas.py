@@ -10,7 +10,7 @@ from apps.campanhas.models import Campanha, CampanhaCliente, CampanhaAgente
 from apps.campanhas.services.campanha_services import CampanhaService
 from apps.clientes.services.cliente_service import ClienteService
 
-from apps.clientes.models import Cliente, Email, Telefone, Endereco
+from apps.clientes.models import Cliente, Email, Telefone, Endereco, DadosBancarios
 from apps.agenda.models import Situacao
 from apps.agenda.services.agenda_services import AgendamentoService
 from apps.vendas.forms import VendaForm
@@ -137,11 +137,14 @@ def proximo_cliente(request, id_campanha):
             Prefetch('emails',    queryset=Email.objects.filter(ativo=True)),
             Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
             Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True)),
+            Prefetch('dados_bancarios', queryset=DadosBancarios.objects.select_related('banco').filter()
+            ),
         ),
         pk=proximo.cliente.id,
         empresa=request.empresa,
     )
     restantes = CampanhaService.restantes_mailing(campanha)
+    whats_app_message = service.mensagemWhats_app(campanha, cliente)
 
     html = render_to_string(
         "clientes/partials/card_atendimento_cliente.html",
@@ -149,6 +152,7 @@ def proximo_cliente(request, id_campanha):
             "cliente":     cliente,
             "situacoes":   situacoes_tela,
             "nova_agenda": resultado,
+            "whats_app_message": whats_app_message,
             "venda_form":  VendaForm(prefix="venda", empresa=request.empresa),
         },
         request=request,

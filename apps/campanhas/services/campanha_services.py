@@ -4,7 +4,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from apps.core.responses.pattern import ResponsePattern
 from apps.usuarios.models import Carteira
-
+import re
 
 class CampanhaService:
     @staticmethod
@@ -43,6 +43,21 @@ class CampanhaService:
             campanha=campanha,
             situacao__tipo="INICIAL",
         ).count())
+
+
+    @staticmethod
+    def mensagemWhats_app(campanha, cliente):
+        contexto = {
+            '[nome]': cliente.nome.title(),
+            '[documento]': cliente.documento,
+            '[razao_social]': cliente.emails.first(),
+            '[margem_consig]': cliente.telefones.first(),
+        }
+        mensagem = campanha.texto_whatsapp
+        for tag, valor in contexto.items():
+            mensagem = mensagem.replace(tag, str(valor or ''))
+
+        return mensagem
 
 
     @staticmethod
@@ -118,13 +133,14 @@ class CampanhasAdmin:
                     'modo_atendimento': campanha.modo_atendimento,
                     'metodo_distribuicao': campanha.metodo_distribuicao,
                     'distribuicao_ativa': campanha.distribuicao_ativa,
+                    'texto_whatsapp': campanha.texto_whatsapp,
                 }}
             )
         else:
             return ResponsePattern.success_data({'campanha': {}})
 
     @staticmethod
-    def cria_ou_edita(carteira_id, campanha_id, nome, modo_atendimento, metodo_distribuicao, distribuicao_ativa, empresa):
+    def cria_ou_edita(carteira_id, campanha_id, nome, modo_atendimento, metodo_distribuicao, distribuicao_ativa, msg_whatsapp, empresa):
         try:
             with transaction.atomic():
                 carteira = Carteira.objects.get(pk=carteira_id, empresa=empresa, ativo=True)
@@ -135,6 +151,7 @@ class CampanhasAdmin:
                     campanha.modo_atendimento = modo_atendimento
                     campanha.metodo_distribuicao = metodo_distribuicao
                     campanha.distribuicao_ativa = distribuicao_ativa
+                    campanha.texto_whatsapp = msg_whatsapp
                     campanha.save()
                     msg = '✓ Campanha atualizada com sucesso!'
                 else:

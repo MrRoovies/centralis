@@ -30,7 +30,7 @@ class CampanhaClienteInline(admin.TabularInline):
 # ========================
 @admin.register(Campanha)
 class CampanhaAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'empresa', 'carteira', 'modo_atendimento', 'metodo_distribuicao', 'distribuicao_ativa', 'created_at')
+    list_display = ('nome', 'empresa', 'carteira', 'modo_atendimento', 'metodo_distribuicao', 'distribuicao_ativa', 'texto_whatsapp', 'created_at')
     list_filter = ('empresa', 'carteira', 'modo_atendimento', 'metodo_distribuicao', 'distribuicao_ativa')
     search_fields = ('nome', 'carteira__nome', 'empresa__nome')
     readonly_fields = ('created_at',)
