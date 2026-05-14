@@ -1,4 +1,5 @@
 /venv
+config/settings_sand.py
 /staticfiles
 **/__pycache__/
 *.pdf
