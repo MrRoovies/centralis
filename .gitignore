@@ -4,4 +4,3 @@ config/settings_sand.py
 **/__pycache__/
 *.pdf
 *.sqlite3
-/manage.py
