@@ -270,7 +270,8 @@ class DadosBancarios(models.Model):
 class Bancos(models.Model):
     cod_banco = models.CharField('Código Banco', max_length=5, null=False, blank=False)
     nome_banco = models.CharField('Nome Banco', max_length=50, null=False, blank=False)
-    # cor_banco = models.CharField('Nome Banco', max_length=50, null=False, blank=False)
+    cor_primaria = models.CharField('Cor 1', max_length=7, null=True, blank=True)
+    cor_secundaria = models.CharField('Cor 2', max_length=7, null=True, blank=True)
 
     class Meta:
         constraints = [

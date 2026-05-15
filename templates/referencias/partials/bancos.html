@@ -1,0 +1,130 @@
+<!-- ═══════════════════════════════════════════
+     PARTIAL: Bancos
+     Incluído por: referencias/principal.html
+     ═══════════════════════════════════════════ -->
+
+<div class="bk-panel-header">
+    <div>
+        <h3 class="bk-panel-title">Bancos Cadastrados</h3>
+        <p class="bk-panel-desc">Gerencie os bancos disponíveis para dados bancários de clientes.</p>
+    </div>
+    <button class="bk-btn-novo" onclick="bkAbrirDrawer(null)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Novo Banco
+    </button>
+</div>
+
+<div class="bk-table-wrap">
+    <table class="bk-table">
+        <thead>
+            <tr>
+                <th style="width:100px">Código</th>
+                <th>Nome</th>
+                <th style="width:80px">Ações</th>
+            </tr>
+        </thead>
+        <tbody id="bkTbody">
+            {% for banco in bancos %}
+            <tr id="bk-row-{{ banco.id }}">
+                <td><span class="bk-cod">{{ banco.cod_banco }}</span></td>
+                <td class="bk-nome-cell">{{ banco.nome_banco }}</td>
+                <td>
+                    <button class="bk-btn-icon bk-btn-icon--edit"
+                            title="Editar"
+                            onclick="bkAbrirDrawer({{ banco.id }})">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr id="bk-row-empty">
+                <td colspan="3" class="bk-empty">
+                    <div class="bk-empty__inner">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M4 15L20 6l16 9v3H4v-3z" stroke="#ccc" stroke-width="2" stroke-linejoin="round"/>
+                            <rect x="7" y="18" width="5" height="12" rx="1" stroke="#ccc" stroke-width="1.6"/>
+                            <rect x="17.5" y="18" width="5" height="12" rx="1" stroke="#ccc" stroke-width="1.6"/>
+                            <rect x="28" y="18" width="5" height="12" rx="1" stroke="#ccc" stroke-width="1.6"/>
+                            <path d="M4 30h32" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <p>Nenhum banco cadastrado ainda.</p>
+                        <button class="bk-btn-novo" onclick="bkAbrirDrawer(null)">
+                            Cadastrar primeiro banco
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Overlay -->
+<div class="bk-overlay" id="bkOverlay" onclick="bkFecharDrawer()"></div>
+
+<!-- Drawer -->
+<aside class="bk-drawer" id="bkDrawer">
+
+    <div class="bk-drawer__header">
+        <div class="bk-drawer__header-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M2 7.5L10 3l8 4.5v2H2v-2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                <rect x="3.5" y="9.5" width="3" height="7" rx=".6" stroke="white" stroke-width="1.4"/>
+                <rect x="8.5" y="9.5" width="3" height="7" rx=".6" stroke="white" stroke-width="1.4"/>
+                <rect x="13.5" y="9.5" width="3" height="7" rx=".6" stroke="white" stroke-width="1.4"/>
+                <path d="M2 16.5h16" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="bk-drawer__header-text">
+            <h4 id="bkDrawerTitle">Novo Banco</h4>
+            <p id="bkDrawerSubtitle">Preencha os dados abaixo</p>
+        </div>
+        <button class="bk-drawer__close" onclick="bkFecharDrawer()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 3l10 10M13 3L3 13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="bk-drawer__body">
+
+        <div class="bk-spinner-wrap" id="bkSpinner">
+            <div class="bk-spinner"></div>
+        </div>
+
+        <form class="bk-form" id="bkForm" style="display:none">
+
+            <p class="bk-form__section">Identificação</p>
+
+            <div class="bk-form__row">
+                <div class="bk-form__group">
+                    <label class="bk-form__label">Código <span class="req">*</span></label>
+                    <input id="bk_cod" class="bk-form__input" type="text"
+                           placeholder="001" maxlength="5" autocomplete="off">
+                    <span class="bk-form__error" id="err_cod_banco"></span>
+                </div>
+                <div class="bk-form__group">
+                    <label class="bk-form__label">Nome <span class="req">*</span></label>
+                    <input id="bk_nome" class="bk-form__input" type="text"
+                           placeholder="Banco do Brasil" maxlength="50" autocomplete="off">
+                    <span class="bk-form__error" id="err_nome_banco"></span>
+                </div>
+            </div>
+
+            <div class="bk-feedback" id="bkFeedback" style="display:none"></div>
+
+        </form>
+    </div>
+
+    <div class="bk-drawer__footer">
+        <button class="bk-btn-cancelar" onclick="bkFecharDrawer()">Cancelar</button>
+        <button class="bk-btn-salvar" id="bkBtnSalvar" onclick="bkSalvar()">
+            <span id="bkBtnLabel">Criar</span>
+        </button>
+    </div>
+
+</aside>

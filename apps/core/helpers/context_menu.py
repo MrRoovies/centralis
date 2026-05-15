@@ -57,11 +57,13 @@ def get_menu(agente):
             "subgroup": "admin",
             "icon": "⚙️",
             "children": [
+
                 {"label": "Agentes", "url_name": "usuarios:lista_agentes"},
-                {"label": "Situações", "url_name": "agenda:lista_situacoes"},
                 {"label": "Perfis e Equipes", "url_name": "usuarios:lista_configuracoes"},
-                {"label": "Campanhas Admin", "url_name": "campanhas:admin_campanhas"},
+                {"label": "Situações", "url_name": "agenda:lista_situacoes"},
                 {"label": "Importar Clientes", "url_name": "clientes:importar_clientes"},
+                {"label": "Bancos e Convenios", "url_name": "clientes:referencias"},
+                {"label": "Campanhas Admin", "url_name": "campanhas:admin_campanhas"},
                 {"label": "Vendas Admin", "url_name": "vendas:lista_vendas_admin"},
                 {"label": "Permissioes Admin", "url_name": "usuarios:view_permissions_list"}
             ],

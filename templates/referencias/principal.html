@@ -1,0 +1,51 @@
+{% extends "menu.html" %}
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/referencias.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+<div class="container">
+
+    <!-- ══ PAGE HEADER ══════════════════════════════════════ -->
+    <div class="bk-page-header">
+        <div>
+            <h2 class="page-title" style="margin-bottom:4px">Configurações de Referências</h2>
+            <span class="bk-page-subtitle">Tabelas auxiliares utilizadas em todo o sistema</span>
+        </div>
+    </div>
+
+    <!-- ══ TABS ═════════════════════════════════════════════ -->
+    <div class="bk-tabs" id="bkTabsBar">
+
+        <button class="bk-tab active" data-tab="bancos" onclick="bkSetTab('bancos')">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <path d="M1 5.5L7.5 2 14 5.5v1H1v-1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                <rect x="2.5" y="6.5" width="2" height="5" rx=".5" stroke="currentColor" stroke-width="1.2"/>
+                <rect x="6.5" y="6.5" width="2" height="5" rx=".5" stroke="currentColor" stroke-width="1.2"/>
+                <rect x="10.5" y="6.5" width="2" height="5" rx=".5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M1 11.5h13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            Bancos
+            <span class="bk-tab__count" id="bkCountBancos">{{ bancos|length }}</span>
+        </button>
+
+        <!-- Novas tabs: copie o bloco acima e aponte para o novo partial -->
+
+    </div>
+
+    <!-- ══ PAINÉIS ══════════════════════════════════════════ -->
+
+    <div class="bk-panel active" id="panel-bancos">
+        {% include 'referencias/partials/bancos.html' %}
+    </div>
+
+
+</div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/referencias.js' %}" defer></script>
+{% endblock %}

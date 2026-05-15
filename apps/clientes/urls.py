@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import cliente, email, telefone, endereco, importar
+from .views import cliente, email, telefone, endereco, importar, referencias
 
 app_name = 'clientes'
 
@@ -17,6 +17,10 @@ urlpatterns = [
 
     path('endereco/<int:id>/delete', endereco.delete_endereco, name='delete-endereco'),
     path('endereco/<int:cliente_id>/create', endereco.novo_endereco, name='novo-endereco'),
+
+    path('referencias/', referencias.referencias, name='referencias'),
+    path('banco/', referencias.banco_detail, name='banco_novo'),
+    path('banco/<int:banco_id>/', referencias.banco_detail, name='banco_detail'),
 
     # ── Novas rotas: Importação CSV ──
     path('importar/', importar.importar_clientes_view, name='importar_clientes'),
