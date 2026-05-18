@@ -240,6 +240,7 @@ class Endereco(models.Model):
             tipo=tipo
         ).first()
 
+
 class DadosBancarios(models.Model):
     cliente = models.ForeignKey(
         "Cliente",
@@ -267,6 +268,7 @@ class DadosBancarios(models.Model):
         self.agencia = self.agencia.strip().zfill(4)
         self.conta = self.conta.strip()
 
+
 class Bancos(models.Model):
     cod_banco = models.CharField('Código Banco', max_length=5, null=False, blank=False)
     nome_banco = models.CharField('Nome Banco', max_length=50, null=False, blank=False)
@@ -282,3 +284,68 @@ class Bancos(models.Model):
         ]
     def __str__(self):
         return f"{self.cod_banco} - {self.nome_banco}"
+
+
+class Vinculo(models.Model):
+    empresa = models.ForeignKey("core.Empresa", on_delete=models.CASCADE)
+    cliente = models.ForeignKey(
+        "Cliente",
+        on_delete=models.CASCADE,
+        related_name="financeiro"
+    )
+    matricula = models.CharField("Matricula", max_length=15, null=True, blank=True)
+    instituidor = models.CharField("Instituidor", max_length=15, null=True, blank=True)
+    convenio = models.CharField("Convenio", max_length=150, null=True, blank=True)
+    orgao = models.CharField("Orgao", max_length=150, null=True, blank=True)
+    sit_func = models.CharField("Sit. Funcional", max_length=100, null=True, blank=True)
+    created_at = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['empresa', 'cliente', 'matricula'],
+                name='unique_vinculo'
+            )
+        ]
+        indexes = [
+            models.Index(fields=['empresa', 'cliente', 'matricula', 'convenio', 'sit_func']),
+        ]
+    
+    def clean(self):
+        if self.convenio.lower() == "siape":
+            self.matricula = self.matricula.strip().zfill(7)
+            self.instituidor = self.instituidor.strip().zfill(8)
+
+
+class Financeiro(models.Model):
+    empresa = models.ForeignKey("core.Empresa", on_delete=models.CASCADE)
+    vinculo = models.ForeignKey(
+        Vinculo,
+        on_delete=models.CASCADE,
+        related_name="dados_financeiros"
+    )
+    salario = models.DecimalField("Salário Bruto", max_digits=12, decimal_places=2)
+    margem_consig = models.DecimalField("Margem Livre", max_digits=12, decimal_places=2)
+    margem_ct = models.DecimalField("Margem CT", max_digits=12, decimal_places=2)
+    margem_ct_bn = models.DecimalField("Margem CT Beneficio", max_digits=12, decimal_places=2)
+    created_at = models.DateField(auto_now_add=True)
+    referencia = models.DateField("Data ref.")
+
+
+class Divida(models.Model):
+    empresa = models.ForeignKey("core.Empresa", on_delete=models.CASCADE)
+    vinculo = models.ForeignKey(
+        Vinculo,
+        on_delete=models.CASCADE,
+        related_name="dividas_financeiras"
+    )
+    banco = models.CharField("Banco divida", max_length=100, null=True, blank=True)
+    rubrica = models.CharField("Nr. Rubrica", max_length=10, null=True, blank=True)
+    Tipo = models.CharField("Tipo divida", max_length=10, null=True, blank=True)
+    saldo_devedor = models.DecimalField("Saldo Devedor", max_digits=12, decimal_places=2)
+    prazo_faltante = models.PositiveIntegerField("Prazo")
+    parcela = models.DecimalField("Parcela", max_digits=12, decimal_places=2)
+    contrato = models.CharField("Nr. Contrato", max_length=12, null=True, blank=True)
+    taxa = models.DecimalField("Taxa", max_digits=5, decimal_places=2)
+    created_at = models.DateField(auto_now_add=True)
+    referencia = models.DateField("Data ref.")
