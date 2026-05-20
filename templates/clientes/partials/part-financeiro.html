@@ -1,0 +1,200 @@
+{% load static %}
+
+
+
+{% with vinculos=cliente.financeiro.all %}
+<section class="ci-section ci-section--full">
+
+    <!-- ── Cabeçalho da seção ── -->
+    <h4 class="ci-section__title ci-section__title--fin">
+        <span class="ci-section__icon">💼</span>
+        Vínculo, Financeiro e Dívidas
+    </h4>
+
+    {% if not vinculos %}
+        <p class="ci-empty-hint">Nenhum vínculo cadastrado.</p>
+    {% else %}
+
+    <!-- ── Tabs por vínculo (se houver mais de um) ── -->
+    {% if vinculos|length > 1 %}
+    <div class="cfin-vinc-selector">
+        {% for v in vinculos %}
+        <button class="cfin-vinc-btn {% if forloop.first %}active{% endif %}"
+                onclick="cfinSetVinculo('{{ v.id }}', this)">
+            <span class="cfin-vinc-btn__mat">{{ v.matricula }}</span>
+            <span class="cfin-vinc-btn__conv">{{ v.convenio|default:"—" }}</span>
+        </button>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ── Painel por vínculo ── -->
+    {% for vinculo in vinculos %}
+    <div class="cfin-vinc-panel {% if forloop.first %}active{% endif %}"
+         id="cfin-vinc-{{ vinculo.id }}">
+
+        <!-- Info rápida do vínculo -->
+        <div class="cfin-vinc-meta">
+            <span class="cfin-meta-item">
+                <span class="cfin-meta-label">Matrícula</span>
+                <span class="cfin-meta-value cfin-mono">{{ vinculo.matricula|default:"—" }}</span>
+            </span>
+            <span class="cfin-meta-item">
+                <span class="cfin-meta-label">Convênio</span>
+                <span class="cfin-meta-value">{{ vinculo.convenio|default:"—" }}</span>
+            </span>
+            <span class="cfin-meta-item">
+                <span class="cfin-meta-label">Órgão</span>
+                <span class="cfin-meta-value">{{ vinculo.orgao|default:"—" }}</span>
+            </span>
+            <span class="cfin-meta-item">
+                <span class="cfin-meta-label">Instituidor</span>
+                <span class="cfin-meta-value cfin-mono">{{ vinculo.instituidor|default:"—" }}</span>
+            </span>
+            <span class="cfin-meta-item">
+                <span class="cfin-meta-label">Situação</span>
+                <span class="cfin-meta-value">
+                    <span class="cfin-badge cfin-badge--sit">{{ vinculo.sit_func|default:"—" }}</span>
+                </span>
+            </span>
+        </div>
+
+        <!-- ── Tabs internas: Financeiro / Dívidas ── -->
+        <div class="cfin-tabs" id="cfin-tabs-{{ vinculo.id }}">
+
+            <button class="cfin-tab cfin-tab--fin active"
+                    data-vinculo="{{ vinculo.id }}" data-panel="financeiro"
+                    onclick="cfinSetTab('{{ vinculo.id }}', 'financeiro', this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M6.5 1v11M3.5 3.5h4a2 2 0 010 4H3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                Financeiro
+                <span class="cfin-tab__count cfin-tab__count--fin">
+                    {{ vinculo.dados_financeiros.all|length }}
+                </span>
+            </button>
+
+            <button class="cfin-tab cfin-tab--div"
+                    data-vinculo="{{ vinculo.id }}" data-panel="dividas"
+                    onclick="cfinSetTab('{{ vinculo.id }}', 'dividas', this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <rect x="1" y="2.5" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M3.5 6h6M3.5 8h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+                Dívidas
+                <span class="cfin-tab__count cfin-tab__count--div">
+                    {{ vinculo.dividas_financeiras.all|length }}
+                </span>
+            </button>
+
+        </div><!-- /cfin-tabs -->
+
+        <!-- ─── PAINEL: FINANCEIRO ──────────────────────── -->
+        <div class="cfin-panel cfin-panel--fin active"
+             id="cfin-{{ vinculo.id }}-financeiro">
+
+            {% with fins=vinculo.dados_financeiros.all %}
+            {% if not fins %}
+                <p class="ci-empty-hint cfin-empty">Nenhum registro financeiro cadastrado.</p>
+            {% else %}
+                <div class="cfin-fin-list">
+                    {% for f in fins %}
+                    <div class="cfin-fin-card">
+
+                        <!-- Data de referência como destaque -->
+                        <div class="cfin-fin-card__ref">
+                            <span class="cfin-fin-ref-label">Ref.</span>
+                            <span class="cfin-fin-ref-val">{{ f.referencia|date:"m/Y" }}</span>
+                        </div>
+
+                        <div class="cfin-fin-card__grid">
+                            <div class="cfin-fin-item">
+                                <span class="cfin-fin-label">Salário Bruto</span>
+                                <span class="cfin-fin-value cfin-fin-value--salario">
+                                    R$ {{ f.salario|floatformat:2 }}
+                                </span>
+                            </div>
+                            <div class="cfin-fin-item">
+                                <span class="cfin-fin-label">Margem Consig.</span>
+                                <span class="cfin-fin-value cfin-fin-value--margem">
+                                    R$ {{ f.margem_consig|floatformat:2 }}
+                                </span>
+                            </div>
+                            <div class="cfin-fin-item">
+                                <span class="cfin-fin-label">Margem CT</span>
+                                <span class="cfin-fin-value cfin-fin-value--margem">
+                                    R$ {{ f.margem_ct|floatformat:2 }}
+                                </span>
+                            </div>
+                            <div class="cfin-fin-item">
+                                <span class="cfin-fin-label">Margem CT Benef.</span>
+                                <span class="cfin-fin-value cfin-fin-value--margem">
+                                    R$ {{ f.margem_ct_bn|floatformat:2 }}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+
+        </div><!-- /cfin-panel financeiro -->
+
+        <!-- ─── PAINEL: DÍVIDAS ─────────────────────────── -->
+        <div class="cfin-panel cfin-panel--div"
+             id="cfin-{{ vinculo.id }}-dividas">
+
+            {% with dividas=vinculo.dividas_financeiras.all %}
+            {% if not dividas %}
+                <p class="ci-empty-hint cfin-empty">Nenhuma dívida cadastrada.</p>
+            {% else %}
+                <div class="cfin-div-table-wrap">
+                    <table class="cfin-div-table">
+                        <thead>
+                            <tr>
+                                <th>Ref.</th>
+                                <th>Banco</th>
+                                <th>Tipo</th>
+                                <th>Rubrica</th>
+                                <th>Contrato</th>
+                                <th class="cfin-th-num">Saldo</th>
+                                <th class="cfin-th-num">Parcela</th>
+                                <th class="cfin-th-num">Prazo</th>
+                                <th class="cfin-th-num">Taxa %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in dividas %}
+                            <tr>
+                                <td class="cfin-mono">{{ d.referencia|date:"m/Y" }}</td>
+                                <td>{{ d.banco|default:"—" }}</td>
+                                <td>
+                                    {% if d.Tipo %}
+                                    <span class="cfin-badge cfin-badge--tipo">{{ d.Tipo }}</span>
+                                    {% else %}—{% endif %}
+                                </td>
+                                <td class="cfin-mono">{{ d.rubrica|default:"—" }}</td>
+                                <td class="cfin-mono">{{ d.contrato|default:"—" }}</td>
+                                <td class="cfin-td-num">R$ {{ d.saldo_devedor|floatformat:2 }}</td>
+                                <td class="cfin-td-num">R$ {{ d.parcela|floatformat:2 }}</td>
+                                <td class="cfin-td-num">{{ d.prazo_faltante }}x</td>
+                                <td class="cfin-td-num">{{ d.taxa|floatformat:2 }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            {% endwith %}
+
+        </div><!-- /cfin-panel dividas -->
+
+    </div><!-- /cfin-vinc-panel -->
+    {% endfor %}
+
+    {% endif %}{% comment %}vinculos{% endcomment %}
+
+</section>
+{% endwith %}

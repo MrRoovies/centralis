@@ -330,6 +330,354 @@
     padding: 4px 0;
 }
 
+/* ============================================================
+   PART-FINANCEIRO — Acrescentar ao final de card_info_cliente.css
+   ============================================================ */
+
+/* ── Seção full-width (override do grid 2 colunas) ── */
+.ci-section--full {
+    grid-column: 1 / -1 !important;
+    border-right: none !important;
+}
+
+/* Título com acento diferenciado para seção financeira */
+.ci-section__title--fin {
+    color: #1A7A42;
+    border-bottom-color: #d0f0dc;
+}
+
+/* ── Seletor de vínculo (quando há mais de 1) ── */
+.cfin-vinc-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.cfin-vinc-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 6px 14px;
+    border: 1px solid #E8EDF2;
+    border-radius: 8px;
+    background: #f8fafc;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .18s;
+    min-width: 110px;
+}
+.cfin-vinc-btn:hover { background: #f0faf4; border-color: #27ae60; }
+.cfin-vinc-btn.active {
+    background: #f0faf4;
+    border-color: #27ae60;
+    border-bottom: 2px solid #27ae60;
+}
+.cfin-vinc-btn__mat {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1A7A42;
+    font-family: 'Courier New', monospace;
+}
+.cfin-vinc-btn__conv {
+    font-size: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ── Painel do vínculo ── */
+.cfin-vinc-panel { display: none; }
+.cfin-vinc-panel.active { display: block; }
+
+/* ── Meta-info do vínculo ── */
+.cfin-vinc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    background: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.cfin-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 16px;
+    border-right: 1px solid #e8edf2;
+    flex: 1;
+    min-width: 110px;
+}
+.cfin-meta-item:last-child { border-right: none; }
+
+.cfin-meta-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.cfin-meta-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+.cfin-mono { font-family: 'Courier New', monospace !important; }
+
+/* ── Tabs internas (Financeiro / Dívidas) ── */
+.cfin-tabs {
+    display: flex;
+    gap: 0;
+    background: white;
+    border: 1px solid #E8EDF2;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+    overflow: hidden;
+    width: fit-content;
+}
+
+.cfin-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border: none;
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .18s;
+    border-right: 1px solid #E8EDF2;
+    position: relative;
+}
+.cfin-tab:last-child { border-right: none; }
+
+/* Tab Financeiro — azul/teal */
+.cfin-tab--fin:hover:not(.active) { background: #f0f6fa; color: #007AAA; }
+.cfin-tab--fin.active {
+    color: #007AAA;
+    background: #f0f6fa;
+    font-weight: 700;
+}
+.cfin-tab--fin.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: #007AAA;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Tab Dívidas — vermelho/laranja */
+.cfin-tab--div:hover:not(.active) { background: #fff5f5; color: #c0392b; }
+.cfin-tab--div.active {
+    color: #c0392b;
+    background: #fff5f5;
+    font-weight: 700;
+}
+.cfin-tab--div.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: #c0392b;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Contador nas tabs */
+.cfin-tab__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: 700;
+}
+.cfin-tab__count--fin {
+    background: #e8f4f8;
+    color: #007AAA;
+}
+.cfin-tab:not(.active) .cfin-tab__count--fin { background: #f0f0f0; color: #aaa; }
+
+.cfin-tab__count--div {
+    background: #fde8e8;
+    color: #c0392b;
+}
+.cfin-tab:not(.active) .cfin-tab__count--div { background: #f0f0f0; color: #aaa; }
+
+/* ── Painéis internos ── */
+.cfin-panel {
+    display: none;
+    border: 1px solid #E8EDF2;
+    border-radius: 0 8px 8px 8px;
+    padding: 16px;
+    background: white;
+    margin-bottom: 4px;
+}
+.cfin-panel.active { display: block; }
+
+.cfin-empty { padding: 8px 0 4px; }
+
+/* ── Cards financeiros ── */
+.cfin-fin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cfin-fin-card {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border: 1px solid #e0eaf5;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f7fafd;
+}
+
+.cfin-fin-card__ref {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background: linear-gradient(160deg, #007AAA, #04375F);
+    color: white;
+    min-width: 68px;
+    flex-shrink: 0;
+}
+.cfin-fin-ref-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+    margin-bottom: 2px;
+}
+.cfin-fin-ref-val {
+    font-size: 14px;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+}
+
+.cfin-fin-card__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0;
+    flex: 1;
+}
+
+.cfin-fin-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 14px;
+    border-right: 1px solid #e0eaf5;
+}
+.cfin-fin-item:last-child { border-right: none; }
+
+.cfin-fin-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.cfin-fin-value {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+.cfin-fin-value--salario { color: #04375F; }
+.cfin-fin-value--margem  { color: #1A7A42; }
+
+/* ── Tabela de dívidas ── */
+.cfin-div-table-wrap {
+    overflow-x: auto;
+}
+
+.cfin-div-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.cfin-div-table thead tr {
+    background: #fff5f5;
+    border-bottom: 2px solid #f5b8b8;
+}
+
+.cfin-div-table th {
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #c0392b;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.cfin-div-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f5e6e6;
+    color: #333;
+    vertical-align: middle;
+}
+
+.cfin-div-table tbody tr:last-child td { border-bottom: none; }
+
+.cfin-div-table tbody tr:hover td {
+    background: #fff8f8;
+}
+
+.cfin-th-num,
+.cfin-td-num {
+    text-align: right !important;
+    font-family: 'Courier New', monospace;
+}
+
+/* ── Badges ── */
+.cfin-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.cfin-badge--sit {
+    background: #e8f4f8;
+    color: #007AAA;
+}
+.cfin-badge--tipo {
+    background: #fde8e8;
+    color: #c0392b;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+    .cfin-vinc-meta { flex-direction: column; }
+    .cfin-meta-item { border-right: none; border-bottom: 1px solid #e8edf2; }
+    .cfin-meta-item:last-child { border-bottom: none; }
+    .cfin-fin-card { flex-direction: column; }
+    .cfin-fin-card__ref { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 8px 14px; }
+    .cfin-fin-card__grid { grid-template-columns: 1fr 1fr; }
+    .cfin-tabs { width: 100%; }
+    .cfin-tab { flex: 1; justify-content: center; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
     .ci-body {

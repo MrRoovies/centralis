@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.db import transaction
-from ..models import Cliente, Email, Telefone, Endereco
+from ..models import Cliente, Email, Telefone, Endereco, Vinculo, Financeiro, Divida 
 from ..forms import ClienteForm, EmailForm, TelefoneForm
 from ..services.cliente_service import ClienteService
 import json
@@ -89,14 +89,28 @@ def cliente(request, id):
     cliente = get_object_or_404(
         Cliente.objects.for_request(request)
         .prefetch_related(
-            Prefetch('emails', queryset=Email.objects.filter(ativo=True)),
+            Prefetch('emails',    queryset=Email.objects.filter(ativo=True)),
             Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
-            Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True))
+            Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True)),
+ 
+            # Vínculos com dados financeiros e dívidas aninhados
+            Prefetch(
+                'financeiro',          # related_name do Vinculo → Cliente
+                queryset=Vinculo.objects.prefetch_related(
+                    Prefetch(
+                        'dados_financeiros',
+                        queryset=Financeiro.objects.order_by('-referencia'),
+                    ),
+                    Prefetch(
+                        'dividas_financeiras',
+                        queryset=Divida.objects.order_by('-referencia', 'banco'),
+                    ),
+                )
+            ),
         ),
         id=id
     )
-    context = { "cliente": cliente }
-    return render(request, 'clientes/cliente.html', context)
+    return render(request, 'clientes/cliente.html', {'cliente': cliente})
 
 
 @login_required

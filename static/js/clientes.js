@@ -79,3 +79,50 @@ function dropdownhandler(headerId, bodyId){
     document.getElementById(headerId).classList.toggle('active');
     document.getElementById(bodyId).classList.toggle('active');
 }
+
+// ─── part-financeiro.html ────────────────────────────────────
+// Acrescentar ao static/js/clientes.js
+
+/**
+ * Alterna entre os painéis Financeiro / Dívidas dentro de um vínculo.
+ * @param {string} vinculoId  — id do Vinculo
+ * @param {string} panel      — 'financeiro' | 'dividas'
+ * @param {Element} tabEl     — elemento <button> clicado
+ */
+function cfinSetTab(vinculoId, panel, tabEl) {
+    // Desativa todas as tabs do vínculo
+    const tabsBar = document.getElementById(`cfin-tabs-${vinculoId}`);
+    tabsBar.querySelectorAll('.cfin-tab').forEach(t => t.classList.remove('active'));
+
+    // Oculta todos os painéis do vínculo
+    ['financeiro', 'dividas'].forEach(p => {
+        const el = document.getElementById(`cfin-${vinculoId}-${p}`);
+        if (el) el.classList.remove('active');
+    });
+
+    // Ativa a tab e o painel selecionados
+    tabEl.classList.add('active');
+    const painelEl = document.getElementById(`cfin-${vinculoId}-${panel}`);
+    if (painelEl) painelEl.classList.add('active');
+}
+
+/**
+ * Alterna entre vínculos do mesmo cliente (quando há mais de um).
+ * @param {string}  vinculoId — id do Vinculo
+ * @param {Element} btnEl     — elemento <button> clicado
+ */
+function cfinSetVinculo(vinculoId, btnEl) {
+    // Desativa todos os botões seletores
+    btnEl.closest('.cfin-vinc-selector')
+         .querySelectorAll('.cfin-vinc-btn')
+         .forEach(b => b.classList.remove('active'));
+
+    // Oculta todos os painéis de vínculo
+    document.querySelectorAll('.cfin-vinc-panel')
+            .forEach(p => p.classList.remove('active'));
+
+    // Ativa o selecionado
+    btnEl.classList.add('active');
+    const painel = document.getElementById(`cfin-vinc-${vinculoId}`);
+    if (painel) painel.classList.add('active');
+}
