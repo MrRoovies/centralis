@@ -18,7 +18,7 @@ function abrirDrawerEditar(agenteId, nomeAgente) {
 
     // Reset visual
     _limparDrawer();
-
+ 
     // Carrega dados do agente
     fetch(`/usuarios/agente/${agenteId}/editar/`)
         .then(r => r.json())
@@ -43,7 +43,7 @@ function fecharDrawerEditar() {
 
 // ── Preencher formulário com dados recebidos ────────────────
 function _preencherFormulario(data) {
-    const { agente, perfis, equipes } = data;
+    const { agente, perfis, equipes, carteiras } = data;
 
     // Campos simples
     document.getElementById('edit_first_name').value = agente.first_name || '';
@@ -74,6 +74,17 @@ function _preencherFormulario(data) {
         selEquipe.appendChild(opt);
     });
 
+    // Select de Carteiras
+    const selCarteira = document.getElementById('edit_carteira_id');
+    selCarteira.innerHTML = '<option value="">Selecione...</option>';
+    carteiras.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.nome;
+        if (e.id === agente.carteira_id) opt.selected = true;
+        selCarteira.appendChild(opt);
+    });
+
     // Exibe formulário, oculta spinner
     document.getElementById('drawerSpinner').style.display = 'none';
     document.getElementById('editarAgenteForm').style.display = 'block';
@@ -96,6 +107,7 @@ function salvarEdicaoAgente() {
         cpf:        document.getElementById('edit_cpf').value.trim(),
         perfil_id:  document.getElementById('edit_perfil_id').value,
         equipe_id:  document.getElementById('edit_equipe_id').value,
+        carteira_id:  document.getElementById('edit_carteira_id').value,
         senha:      document.getElementById('edit_senha').value,
     };
 

@@ -44,7 +44,6 @@ class AgenteService:
         except Perfil.DoesNotExist:
             return ResponsePattern.error('perfil', ['Perfil inválido'])
 
-        carteira = None
         equipe = None
 
         if perfil.codigo != 'ADM':
@@ -113,7 +112,16 @@ class AgenteService:
         except Perfil.DoesNotExist:
             return ResponsePattern.error('perfil', ['Perfil inválido'])
 
-        equipe = None
+        try:
+            carteira = Carteira.objects.filter(
+                pk=dados.get('carteira_id'),
+                empresa=empresa,
+                ativo=True
+            ).first()
+        except:
+            carteira = None
+
+        equipe = None        
 
         if perfil.codigo != 'ADM':
 
@@ -147,6 +155,7 @@ class AgenteService:
                 agente.cpf = dados.get('cpf', agente.cpf)
                 agente.perfil = perfil
                 agente.equipe = equipe
+                agente.carteira = carteira
                 agente.save()
 
             return ResponsePattern.success('agente', ['✓ Agente atualizado com sucesso!'])

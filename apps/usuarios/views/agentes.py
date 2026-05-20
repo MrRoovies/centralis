@@ -114,6 +114,7 @@ def editar_agente(request, agente_id):
         perfil__empresa=empresa
     )
     equipe_id = agente.equipe.id if agente.equipe else None
+    carteira_id = agente.carteira.id if agente.carteira else None
 
     if request.method == 'POST':
         try:
@@ -136,9 +137,11 @@ def editar_agente(request, agente_id):
             'cpf': agente.cpf or '',
             'perfil_id': agente.perfil.id,
             'equipe_id': equipe_id,
+            'carteira_id': carteira_id,
         },
         'perfis': list(Perfil.objects.filter(ativo=True, empresa=empresa).values('id', 'codigo')),
         'equipes': list(Equipe.objects.filter(ativo=True, empresa=empresa).values('id', 'nome')),
+        'carteiras': list(Carteira.objects.filter(ativo=True, empresa=empresa).values('id', 'nome')),
     }
     return JsonResponse(context)
 
