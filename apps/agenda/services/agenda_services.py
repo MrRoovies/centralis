@@ -139,7 +139,7 @@ class AgendamentoService:
             with transaction.atomic():
                 agenda = (
                     Agenda.objects
-                    .select_for_update()
+                    .select_for_update(of=('self',))
                     .select_related('situacao', 'usuario')
                     .filter(
                         pk=id_agenda,
