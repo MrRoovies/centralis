@@ -24,7 +24,7 @@ class AgendamentoService:
 
                 agenda = (
                     Agenda.objects
-                    .select_for_update()
+                    .select_for_update(of=('self',))
                     .select_related('situacao', 'usuario', 'carteira')
                     .filter(
                         cliente=cliente,
@@ -100,7 +100,7 @@ class AgendamentoService:
             return {
                 "success": False,
                 "messages": {
-                    "agenda": {"success": [f"{str(e)}"]},
+                    "agenda": {"error": [f"{str(e)}"]},
                 }
             }
 
