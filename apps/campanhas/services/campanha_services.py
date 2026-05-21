@@ -54,10 +54,11 @@ class CampanhaService:
             '[margem_consig]': cliente.telefones.first(),
         }
         mensagem = campanha.texto_whatsapp
-        for tag, valor in contexto.items():
-            mensagem = mensagem.replace(tag, str(valor or ''))
+        if mensagem:
+            for tag, valor in contexto.items():
+                mensagem = mensagem.replace(tag, str(valor or ''))
 
-        return mensagem
+            return mensagem
 
 
     @staticmethod
