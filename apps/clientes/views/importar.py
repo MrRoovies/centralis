@@ -6,7 +6,7 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 import json
 import re
-from apps.clientes.models import Cliente, Vinculo, Financeiro, Divida
+from apps.clientes.models import Cliente, Vinculo, Financeiro, Divida, Veiculo
 from apps.clientes.services.importacao_service import Extrator, CriarouAtualizar
 from apps.clientes.helpers.helpers import (
     _parse_data, _msg_erro, _decimal, 
