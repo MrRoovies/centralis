@@ -30,4 +30,5 @@ urlpatterns = [
     path('importar_vinculo_csv/',   importar.importar_vinculo_csv,   name='importar_vinculo_csv'),
     path('importar_financeiro_csv/', importar.importar_financeiro_csv, name='importar_financeiro_csv'),
     path('importar_dividas_csv/',   importar.importar_dividas_csv,   name='importar_dividas_csv'),
+    path('importar_veiculos_csv/', importar.importar_veiculos_csv, name='importar_veiculos_csv')
 ]
