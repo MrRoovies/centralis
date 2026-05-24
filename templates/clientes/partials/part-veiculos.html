@@ -1,0 +1,90 @@
+<!-- VEÍCULOS -->
+<section class="ci-section">
+    <h4 class="ci-section__title">
+        <span class="ci-section__icon">🚗</span>
+        Veículos
+        
+    </h4>
+
+    {% if cliente.veiculo.all %}
+    <form id="form_del_veiculo">
+        {% csrf_token %}
+        <div class="ci-veiculo-list">
+
+            {% for v in cliente.veiculo.all %}
+            <div class="ci-veiculo-item">
+
+                <!-- Ícone / categoria -->
+                <div class="ci-veiculo-item__icon">
+                    {% if v.cat == 'MOTO' %}🏍️
+                    {% elif v.cat == 'CAMINHOES' %}🚛
+                    {% else %}🚗
+                    {% endif %}
+                </div>
+
+                <!-- Informações principais -->
+                <div class="ci-veiculo-item__body">
+
+                    <!-- Linha 1: marca + modelo + ano -->
+                    <div class="ci-veiculo-item__titulo">
+                        <span class="ci-veiculo-marca">
+                            {{ v.marca|default:"—" }}
+                        </span>
+                        <span class="ci-veiculo-modelo">
+                            {{ v.modelo|default:"—" }}
+                        </span>
+                        {% if v.ano_fab or v.ano_mod %}
+                        <span class="ci-veiculo-ano">
+                            {{ v.ano_fab|default:"—" }}/{{ v.ano_mod|default:"—" }}
+                        </span>
+                        {% endif %}
+                        {% if v.cat %}
+                        <span class="ci-contact-item__badge">
+                            {{ v.get_cat_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Linha 2: placa / chassi / renavan -->
+                    <div class="ci-info-grid" style="margin-top:6px; gap:8px">
+                        <div class="ci-info-item">
+                            <span class="ci-info-label">Placa</span>
+                            <span class="ci-info-value ci-veiculo-mono">
+                                {{ v.placa|default:"—" }}
+                            </span>
+                        </div>
+                        <div class="ci-info-item">
+                            <span class="ci-info-label">Chassi</span>
+                            <span class="ci-info-value ci-veiculo-mono">
+                                {{ v.chassi|default:"—" }}
+                            </span>
+                        </div>
+                        <div class="ci-info-item">
+                            <span class="ci-info-label">Renavan</span>
+                            <span class="ci-info-value ci-veiculo-mono">
+                                {{ v.renavan|default:"—" }}
+                            </span>
+                        </div>
+                    </div>
+
+                </div><!-- /body -->
+
+                <!-- Ação excluir -->
+                <button class="action-btn btn-small btn-delete"
+                        data-type="veiculo"
+                        data-action="delete"
+                        data-cliente="{{ v.id }}">
+                    Excluir
+                </button>
+
+            </div><!-- /ci-veiculo-item -->
+            {% endfor %}
+
+        </div>
+    </form>
+
+    {% else %}
+    <p class="ci-empty-hint">Nenhum veículo cadastrado.</p>
+    {% endif %}
+
+</section>

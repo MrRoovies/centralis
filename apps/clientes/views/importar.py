@@ -15,6 +15,7 @@ from apps.clientes.helpers.helpers import (
 
 ESTADOS_CIVIS_VALIDOS = ['SOLTEIRO', 'CASADO', 'DIVORCIADO', 'VIUVO', 'UNIAO_ESTAVEL']
 CAMPOS_UPSERT = ['nome', 'nome_mae', 'data_nascimento', 'estado_civil']
+CHOICE_CAT_VALIDOS = {'CARROS', 'MOTO', 'CAMINHOES'}
 
 
 @login_required
@@ -461,6 +462,120 @@ def importar_dividas_csv(request):
         except Exception as exc:
             erros += 1
             log_erros.append({'documento': doc_raw, 'erro': str(exc)})
+            if not pular_erros: break
+ 
+    return JsonResponse({'criados': criados, 'atualizados': atualizados,
+                         'erros': erros, 'log_erros': log_erros})
+
+
+
+@login_required
+@require_POST
+def importar_veiculos_csv(request):
+    """
+    Payload: { "registros": [...], "pular_erros": true }
+ 
+    Colunas CSV:
+        obrigatório: documento
+        opcionais:   placa, chassi, renavan, marca, modelo,
+                     ano_fab, ano_mod, cat
+ 
+    Lógica:
+        - Se placa informada → update_or_create por (empresa, cliente, placa)
+        - Sem placa          → create sempre
+    """
+    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {'messages': {'importacao': {'__all__': ['JSON inválido']}}}, status=400
+        )
+ 
+    registros   = data.get('registros', [])
+    pular_erros = data.get('pular_erros', True)
+    empresa     = request.empresa
+ 
+    if not registros:
+        return JsonResponse(
+            {'messages': {'importacao': {'__all__': ['Nenhum registro recebido.']}}}, status=400
+        )
+ 
+    criados = 0; atualizados = 0; erros = 0; log_erros = []
+ 
+    for reg in registros:
+        doc_raw = re.sub(r'\D', '', str(reg.get('documento', '')))
+ 
+        if not doc_raw:
+            erros += 1
+            log_erros.append({'documento': '?', 'erro': 'Campo documento ausente.'})
+            if not pular_erros: break
+            continue
+ 
+        cliente = _achar_cliente(empresa, doc_raw)
+        if not cliente:
+            erros += 1
+            log_erros.append({'documento': doc_raw,
+                               'erro': 'Cliente não encontrado. Importe o cadastro primeiro.'})
+            if not pular_erros: break
+            continue
+ 
+        placa   = str(reg.get('placa',   '') or '').strip().upper() or None
+        chassi  = str(reg.get('chassi',  '') or '').strip().upper() or None
+        renavan = str(reg.get('renavan', '') or '').strip()         or None
+        marca   = str(reg.get('marca',   '') or '').strip().upper() or None
+        modelo  = str(reg.get('modelo',  '') or '').strip()         or None
+        ano_fab = str(reg.get('ano_fab', '') or '').strip()         or None
+        ano_mod = str(reg.get('ano_mod', '') or '').strip()         or None
+        cat_raw = str(reg.get('cat',     '') or '').strip().upper() or None
+ 
+        # Normaliza categoria
+        cat = cat_raw if cat_raw in CHOICE_CAT_VALIDOS else None
+        if cat_raw and not cat:
+            # tenta match parcial: "carro" → CARROS, "moto" → MOTO, "caminhao" → CAMINHOES
+            for key in CHOICE_CAT_VALIDOS:
+                if key.startswith(cat_raw[:4]):
+                    cat = key
+                    break
+ 
+        defaults = {
+            'chassi':  chassi,
+            'renavan': renavan,
+            'marca':   marca,
+            'modelo':  modelo,
+            'ano_fab': ano_fab,
+            'ano_mod': ano_mod,
+            'cat':     cat,
+        }
+ 
+        try:
+            with transaction.atomic():
+                if placa:
+                    obj, criado = Veiculo.objects.update_or_create(
+                        empresa=empresa,
+                        cliente=cliente,
+                        placa=placa,
+                        defaults=defaults,
+                    )
+                else:
+                    Veiculo.objects.create(
+                        empresa=empresa,
+                        cliente=cliente,
+                        placa=None,
+                        **defaults,
+                    )
+                    criado = True
+ 
+            if criado: criados += 1
+            else:      atualizados += 1
+ 
+        except (ValidationError, IntegrityError) as e:
+            erros += 1
+            log_erros.append({'documento': doc_raw, 'erro': _msg_erro(e)})
+            if not pular_erros: break
+        except Exception as e:
+            erros += 1
+            log_erros.append({'documento': doc_raw, 'erro': str(e)})
             if not pular_erros: break
  
     return JsonResponse({'criados': criados, 'atualizados': atualizados,

@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from django.db import transaction
-from ..models import Cliente, Email, Telefone, Endereco, Vinculo, Financeiro, Divida 
+from ..models import Cliente, Email, Telefone, Endereco, Vinculo, Financeiro, Divida, Veiculo
 from ..forms import ClienteForm, EmailForm, TelefoneForm
 from ..services.cliente_service import ClienteService
 import json
@@ -92,6 +92,7 @@ def cliente(request, id):
             Prefetch('emails',    queryset=Email.objects.filter(ativo=True)),
             Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
             Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True)),
+            Prefetch('veiculo', queryset=Veiculo.objects.all()),
  
             # Vínculos com dados financeiros e dívidas aninhados
             Prefetch(

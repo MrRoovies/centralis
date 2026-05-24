@@ -190,3 +190,73 @@ h3 {
         justify-content: space-between;
     }
 }
+
+/* ============================================================
+   VEÍCULOS — Acrescentar ao final de card_info_cliente.css
+   ============================================================ */
+
+.ci-veiculo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ci-veiculo-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #f7fafd;
+    border: 1px solid #e0eaf5;
+    border-radius: 7px;
+    border-left: 3px solid #007AAA;
+}
+
+.ci-veiculo-item__icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #04375F, #007AAA);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.ci-veiculo-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.ci-veiculo-item__titulo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 2px;
+}
+
+.ci-veiculo-marca {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2e3b;
+    text-transform: uppercase;
+}
+
+.ci-veiculo-modelo {
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+}
+
+.ci-veiculo-ano {
+    font-size: 12px;
+    color: #888;
+    font-family: 'Courier New', monospace;
+}
+
+.ci-veiculo-mono {
+    font-family: 'Courier New', monospace !important;
+    text-transform: uppercase;
+}

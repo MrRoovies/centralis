@@ -39,6 +39,15 @@
             </svg>
             Financeiro
         </button>
+
+        <button class="ic-tab" data-tab="veiculos" onclick="icSetTab('veiculos')">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path d="M1.5 9.5h12M3 9.5L4.5 5h6L12 9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="4.5" cy="11" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="10.5" cy="11" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+            Veículos
+        </button>
     </div>
 
 
@@ -676,6 +685,166 @@
         </div><!-- /subpanel-dividas -->
 
     </div><!-- /panel-financeiro -->
+
+
+    <div class="ic-panel" id="panel-veiculos">
+        <div class="ic-grid">
+    
+            <!-- ─── COLUNA ESQUERDA ───────────────────────────── -->
+            <div class="ic-left">
+                <div class="ic-card ic-card--vei">
+                    <div class="ic-card__head">
+                        <span class="ic-card__icon">🚗</span>
+                        <h3 class="ic-card__title">Formato do CSV — Veículos</h3>
+                        <a href="#" class="ic-link-download ic-link-download--vei"
+                        onclick="finBaixarModelo(event,'veiculos')">
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 2v7M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Baixar modelo
+                        </a>
+                    </div>
+                    <div class="ic-card__body">
+                        <p class="ic-secao-label">Uma linha por veículo</p>
+                        <div class="ic-colunas-grid">
+    
+                            <div class="ic-coluna-item ic-coluna-item--required">
+                                <span class="ic-coluna-nome">documento</span>
+                                <span class="ic-coluna-desc">CPF/CNPJ do cliente já cadastrado</span>
+                                <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                            </div>
+    
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">placa</span>
+                                <span class="ic-coluna-desc">Placa do veículo (ex: ABC1D23)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">chassi</span>
+                                <span class="ic-coluna-desc">Número do chassi (até 15 car.)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">renavan</span>
+                                <span class="ic-coluna-desc">Código Renavan</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">marca</span>
+                                <span class="ic-coluna-desc">Fabricante (ex: FIAT, HONDA)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">modelo</span>
+                                <span class="ic-coluna-desc">Modelo do veículo (ex: ARGO, CB 500)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">ano_fab</span>
+                                <span class="ic-coluna-desc">Ano de fabricação (ex: 2021)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">ano_mod</span>
+                                <span class="ic-coluna-desc">Ano do modelo (ex: 2022)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">cat</span>
+                                <span class="ic-coluna-desc">CARROS · MOTO · CAMINHOES</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+    
+                        </div>
+                        <p class="ic-nota">
+                            <span>ℹ️</span>
+                            O cliente deve estar previamente cadastraado.
+                            <code>
+                                O critério para criação 
+                                de um novo veículo é 
+                                cliente + placa
+                            </code>
+                        </p>
+                    </div>
+                </div>
+            </div><!-- /ic-left -->
+    
+            <!-- ─── COLUNA DIREITA ────────────────────────────── -->
+            <div class="ic-right" id="vei-right">
+    
+                <div class="ic-placeholder fin-placeholder" id="vei-placeholder">
+                    <div class="ic-placeholder__icon">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                            <path d="M6 36h44M10 36L15 20h26l5 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="17" cy="41" r="5" stroke="currentColor" stroke-width="1.8"/>
+                            <circle cx="39" cy="41" r="5" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M15 20l3-6h20l3 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".4"/>
+                        </svg>
+                    </div>
+                    <p class="ic-placeholder__titulo">Selecione um CSV de veículos</p>
+                    <p class="ic-placeholder__sub">Cada linha representa um veículo vinculado a um cliente.</p>
+                </div>
+    
+                <div id="vei-cards"></div>
+    
+                <!-- Card upload -->
+                <div class="ic-card">
+                    <div class="ic-card__head">
+                        <span class="ic-card__icon">📂</span>
+                        <h3 class="ic-card__title">Selecionar Arquivo</h3>
+                    </div>
+                    <div class="ic-card__body">
+                        <div class="ic-drop fin-drop" id="vei-drop"
+                            ondragover="event.preventDefault(); this.classList.add('ic-drop--over')"
+                            ondragleave="this.classList.remove('ic-drop--over')"
+                            ondrop="finHandleDrop(event,'veiculos')">
+                            <div class="ic-drop__ilustracao">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                    <path d="M4 32h40M8 32L14 16h20l6 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="14" cy="37" r="4" stroke="currentColor" stroke-width="1.8"/>
+                                    <circle cx="34" cy="37" r="4" stroke="currentColor" stroke-width="1.8"/>
+                                </svg>
+                            </div>
+                            <p class="ic-drop__titulo">Arraste o arquivo CSV aqui</p>
+                            <p class="ic-drop__sub">ou</p>
+                            <label class="ic-btn ic-btn--outline ic-btn--vei" style="cursor:pointer">
+                                Selecionar arquivo
+                                <input type="file" id="vei-file" accept=".csv,.txt"
+                                    style="display:none" onchange="finHandleFile(this,'veiculos')">
+                            </label>
+                            <p class="ic-drop__hint">Apenas .csv — máx. 5 MB</p>
+                        </div>
+    
+                        <div class="ic-arquivo-selecionado" id="vei-arquivo" style="display:none">
+                            <div class="ic-arquivo-info">
+                                <span class="ic-arquivo-icone">📄</span>
+                                <div>
+                                    <span class="ic-arquivo-nome" id="vei-arquivo-nome"></span>
+                                    <span class="ic-arquivo-tamanho" id="vei-arquivo-tam"></span>
+                                </div>
+                            </div>
+                            <button class="ic-btn-remover" onclick="finRemover('veiculos')" title="Remover">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+    
+                <button class="ic-btn ic-btn--vei-primary ic-btn--full" id="vei-btn-importar"
+                        style="display:none" onclick="finImportar('veiculos')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    Importar Veículos
+                </button>
+    
+            </div><!-- /ic-right -->
+        </div><!-- /ic-grid -->
+    </div><!-- /panel-veiculos -->
 
 </div>
 </main>

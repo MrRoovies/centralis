@@ -31,15 +31,11 @@
             <!-- Lista de Clientes -->
             <div class="ci-card">
                 {% include 'clientes/partials/dados-gerais.html' %}
-
                 {% include 'clientes/partials/part-banco.html' %}
-
                 {% include 'clientes/partials/part-financeiro.html' %}
-
+                {% include 'clientes/partials/part-veiculos.html' %}
                 {% include 'clientes/partials/part-mail.html' %}
-
                 {% include 'clientes/partials/part-fones.html' %}
-
                 {% include 'clientes/partials/part-endereco.html' %}
 
                 <div id="historico-agendas" data-cliente-id="{{ cliente.id }}"></div>

@@ -349,3 +349,32 @@ class Divida(models.Model):
     taxa = models.DecimalField("Taxa", max_digits=5, decimal_places=2)
     created_at = models.DateField(auto_now_add=True)
     referencia = models.DateField("Data ref.")
+
+
+class Veiculo(models.Model):
+    CHOICE_CAT = [('CARROS','Carros, Vans e Utilitarios'),('MOTO','Moto'),('CAMINHOES','Caminhoes')]
+    empresa = models.ForeignKey("core.Empresa", on_delete=models.CASCADE)
+    cliente = models.ForeignKey(
+        "Cliente",
+        on_delete=models.CASCADE,
+        related_name="veiculo"
+    )
+    placa = models.CharField('Placa', max_length=10, null=True, blank=True)
+    chassi = models.CharField('Chassi', max_length=15, null=True, blank=True)
+    renavan = models.CharField('Renavan', max_length=20, null=True, blank=True)
+    ano_mod = models.CharField('Ano mod', max_length=4, null=True, blank=True)
+    ano_fab = models.CharField('Ano Fab', max_length=4, null=True, blank=True)
+    marca = models.CharField('Marca', max_length=20, null=True, blank=True)
+    modelo = models.CharField('Modelo', max_length=200, null=True, blank=True)
+    cat = models.CharField('Categoria', choices=CHOICE_CAT, max_length=20, null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['empresa', 'cliente', 'placa'],
+                name='unique_veiculo'
+            )
+        ]
+        indexes = [
+            models.Index(fields=['empresa', 'cliente', 'placa'])
+        ]

@@ -37,6 +37,18 @@ const FIN_CONFIG = {
         ],
         modelo_nome: 'modelo_dividas.csv',
     },
+
+    veiculos: {
+        url:          '/clientes/importar_veiculos_csv/',
+        obrigatorios: ['documento'],
+        modelo_header: 'documento,placa,chassi,renavan,marca,modelo,ano_fab,ano_mod,cat',
+        modelo_linhas: [
+            '12345678901,ABC1D23,9BWZZZ377VT004251,00123456789,FIAT,ARGO,2021,2022,CARROS',
+            '12345678901,XYZ9A01,,00987654321,HONDA,CB 500,2020,2020,MOTO',
+            '98765432100,DEF4G56,9BWZZZ377VT009999,,VOLKSWAGEN,DELIVERY,2019,2019,CAMINHOES',
+        ],
+        modelo_nome: 'modelo_veiculos.csv',
+    },
 };
 
 // Prefixo → tipo
