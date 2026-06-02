@@ -52,7 +52,7 @@ const FIN_CONFIG = {
 };
 
 // Prefixo → tipo
-const FIN_PREFIXO = { vinculo: 'vinc', financeiro: 'fin', dividas: 'div' };
+const FIN_PREFIXO = { vinculo: 'vinc', financeiro: 'fin', dividas: 'div', veiculos:   'vei' };
 
 // Estado por tipo
 const FIN_ESTADO = {
