@@ -26,6 +26,9 @@ urlpatterns = [
     path('importar/', importar.importar_clientes_view, name='importar_clientes'),
     path('importar_csv/', importar.importar_csv, name='importar_csv'),
 
+    # ── Importação CSV: Endereços ──
+    path('importar_enderecos_csv/', importar.importar_enderecos_csv, name='importar_enderecos_csv'),
+
     # ── Importação CSV: Financeiro ──
     path('importar_vinculo_csv/',   importar.importar_vinculo_csv,   name='importar_vinculo_csv'),
     path('importar_financeiro_csv/', importar.importar_financeiro_csv, name='importar_financeiro_csv'),

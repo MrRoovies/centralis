@@ -32,6 +32,13 @@
             </svg>
             Cliente e Banco
         </button>
+        <button class="ic-tab" data-tab="enderecos" onclick="icSetTab('enderecos')">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <path d="M7.5 1.5C5.015 1.5 3 3.515 3 6c0 3.75 4.5 7.5 4.5 7.5S12 9.75 12 6c0-2.485-2.015-4.5-4.5-4.5z" stroke="currentColor" stroke-width="1.3"/>
+                <circle cx="7.5" cy="6" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+            Endereços
+        </button>
         <button class="ic-tab" data-tab="financeiro" onclick="icSetTab('financeiro')">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                 <rect x="1.5" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
@@ -334,6 +341,156 @@
             </div><!-- /ic-right -->
         </div><!-- /ic-grid -->
     </div><!-- /panel-clientes -->
+
+    <!-- ══════════════════════════════════════════════════════════
+     PAINEL: ENDEREÇOS
+    ══════════════════════════════════════════════════════════════ -->
+    <div class="ic-panel" id="panel-enderecos">
+        <div class="ic-grid">
+    
+            <!-- ─── COLUNA ESQUERDA ───────────────────────────── -->
+            <div class="ic-left">
+                <div class="ic-card ic-card--end">
+                    <div class="ic-card__head">
+                        <span class="ic-card__icon">📍</span>
+                        <h3 class="ic-card__title">Formato do CSV — Endereços</h3>
+                        <a href="#" class="ic-link-download ic-link-download--end"
+                        onclick="finBaixarModelo(event,'enderecos')">
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                                <path d="M7 2v7M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Baixar modelo
+                        </a>
+                    </div>
+                    <div class="ic-card__body">
+                        <p class="ic-secao-label">Uma linha por endereço</p>
+                        <div class="ic-colunas-grid">
+    
+                            <div class="ic-coluna-item ic-coluna-item--required">
+                                <span class="ic-coluna-nome">documento</span>
+                                <span class="ic-coluna-desc">CPF/CNPJ do cliente já cadastrado</span>
+                                <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">logradouro</span>
+                                <span class="ic-coluna-desc">Nome da rua, avenida, etc.</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">numero</span>
+                                <span class="ic-coluna-desc">Número do imóvel (somente dígitos)</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">bairro</span>
+                                <span class="ic-coluna-desc">Nome do bairro</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">cidade</span>
+                                <span class="ic-coluna-desc">Nome da cidade</span>
+                                <span class="ic-coluna-badge">opcional</span>   
+                            </div>
+                            <div class="ic-coluna-item">
+                                <span class="ic-coluna-nome">uf</span>
+                                <span class="ic-coluna-desc">Sigla do estado — SP · RJ · MG · etc.</span>
+                                <span class="ic-coluna-badge">opcional</span>
+                            </div>
+                            <div class="ic-coluna-item ic-coluna-item--required">
+                                <span class="ic-coluna-nome">cep</span>
+                                <span class="ic-coluna-desc">CEP com 8 dígitos (sem traço)</span>
+                                <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                            </div>
+                            <div class="ic-coluna-item ic-coluna-item--required">
+                                <span class="ic-coluna-nome">tipo</span>
+                                <span class="ic-coluna-desc">RESIDENCIAL · COMERCIAL</span>
+                                <span class="ic-coluna-badge ic-coluna-badge--req">obrigatório</span>
+                            </div>
+    
+                        </div>
+                        <p class="ic-nota">
+                            <span>ℹ️</span>
+                            O CEP será normalizado (traço removido automaticamente).
+                            Chave única: <code>cliente + logradouro + numero + cep + tipo</code> —
+                            duplicatas são atualizadas. Um cliente pode ter múltiplos endereços.
+                        </p>
+                    </div>
+                </div>
+            </div><!-- /ic-left -->
+    
+            <!-- ─── COLUNA DIREITA ────────────────────────────── -->
+            <div class="ic-right" id="end-right">
+    
+                <div class="ic-placeholder fin-placeholder" id="end-placeholder">
+                    <div class="ic-placeholder__icon">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                            <path d="M28 6C19.163 6 12 13.163 12 22c0 13.5 16 28 16 28s16-14.5 16-28c0-8.837-7.163-16-16-16z" stroke="currentColor" stroke-width="1.8"/>
+                            <circle cx="28" cy="22" r="5" stroke="currentColor" stroke-width="1.8"/>
+                        </svg>
+                    </div>
+                    <p class="ic-placeholder__titulo">Selecione um CSV de endereços</p>
+                    <p class="ic-placeholder__sub">Cada linha representa um endereço de um cliente.</p>
+                </div>
+    
+                <div id="end-cards"></div>
+    
+                <!-- Card upload -->
+                <div class="ic-card">
+                    <div class="ic-card__head">
+                        <span class="ic-card__icon">📂</span>
+                        <h3 class="ic-card__title">Selecionar Arquivo</h3>
+                    </div>
+                    <div class="ic-card__body">
+                        <div class="ic-drop fin-drop" id="end-drop"
+                            ondragover="event.preventDefault(); this.classList.add('ic-drop--over')"
+                            ondragleave="this.classList.remove('ic-drop--over')"
+                            ondrop="finHandleDrop(event,'enderecos')">
+                            <div class="ic-drop__ilustracao">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                    <path d="M24 4C15.163 4 8 11.163 8 20c0 12 16 24 16 24S40 32 40 20c0-8.837-7.163-16-16-16z" stroke="currentColor" stroke-width="1.8"/>
+                                    <circle cx="24" cy="20" r="5" stroke="currentColor" stroke-width="1.8"/>
+                                </svg>
+                            </div>
+                            <p class="ic-drop__titulo">Arraste o arquivo CSV aqui</p>
+                            <p class="ic-drop__sub">ou</p>
+                            <label class="ic-btn ic-btn--outline ic-btn--end" style="cursor:pointer">
+                                Selecionar arquivo
+                                <input type="file" id="end-file" accept=".csv,.txt"
+                                    style="display:none" onchange="finHandleFile(this,'enderecos')">
+                            </label>
+                            <p class="ic-drop__hint">Apenas .csv — máx. 5 MB</p>
+                        </div>
+    
+                        <div class="ic-arquivo-selecionado" id="end-arquivo" style="display:none">
+                            <div class="ic-arquivo-info">
+                                <span class="ic-arquivo-icone">📄</span>
+                                <div>
+                                    <span class="ic-arquivo-nome" id="end-arquivo-nome"></span>
+                                    <span class="ic-arquivo-tamanho" id="end-arquivo-tam"></span>
+                                </div>
+                            </div>
+                            <button class="ic-btn-remover" onclick="finRemover('enderecos')" title="Remover">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+    
+                <button class="ic-btn ic-btn--end-primary ic-btn--full" id="end-btn-importar"
+                        style="display:none" onclick="finImportar('enderecos')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2v9M5 8l3 3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    Importar Endereços
+                </button>
+    
+            </div><!-- /ic-right -->
+        </div><!-- /ic-grid -->
+    </div><!-- /panel-enderecos -->
 
 
     <!-- ══════════════════════════════════════════════════════

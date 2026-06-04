@@ -49,10 +49,22 @@ const FIN_CONFIG = {
         ],
         modelo_nome: 'modelo_veiculos.csv',
     },
+
+    enderecos: {
+        url:          '/clientes/importar_enderecos_csv/',
+        obrigatorios: ['documento', 'logradouro', 'numero', 'bairro', 'cidade', 'uf', 'cep', 'tipo'],
+        modelo_header: 'documento,logradouro,numero,bairro,cidade,uf,cep,tipo',
+        modelo_linhas: [
+            '12345678901,Rua das Flores,123,Centro,São Paulo,SP,01310100,RESIDENCIAL',
+            '12345678901,Av. Paulista,1000,Bela Vista,São Paulo,SP,01310200,COMERCIAL',
+            '98765432100,Rua XV de Novembro,500,Centro,Curitiba,PR,80020310,RESIDENCIAL',
+        ],
+        modelo_nome: 'modelo_enderecos.csv',
+    },
 };
 
 // Prefixo → tipo
-const FIN_PREFIXO = { vinculo: 'vinc', financeiro: 'fin', dividas: 'div', veiculos:   'vei' };
+const FIN_PREFIXO = { vinculo: 'vinc', financeiro: 'fin', dividas: 'div', veiculos:   'vei', enderecos: 'end' };
 
 // Estado por tipo
 const FIN_ESTADO = {

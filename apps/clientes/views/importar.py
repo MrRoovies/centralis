@@ -6,7 +6,7 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 import json
 import re
-from apps.clientes.models import Cliente, Vinculo, Financeiro, Divida, Veiculo
+from apps.clientes.models import Cliente, Vinculo, Financeiro, Divida, Veiculo, Endereco
 from apps.clientes.services.importacao_service import Extrator, CriarouAtualizar
 from apps.clientes.helpers.helpers import (
     _parse_data, _msg_erro, _decimal, 
@@ -578,5 +578,145 @@ def importar_veiculos_csv(request):
             log_erros.append({'documento': doc_raw, 'erro': str(e)})
             if not pular_erros: break
  
+    return JsonResponse({'criados': criados, 'atualizados': atualizados,
+                         'erros': erros, 'log_erros': log_erros})
+
+
+"""
+Acrescentar ao final de apps/clientes/views/importar.py
+
+Adicionar ao import existente:
+    from apps.clientes.models import Cliente, Endereco
+"""
+
+UF_VALIDAS = {
+    'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS',
+    'MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC',
+    'SP','SE','TO',
+}
+
+TIPO_ENDERECO_VALIDOS = {'RESIDENCIAL', 'COMERCIAL'}
+
+
+@login_required
+@require_POST
+def importar_enderecos_csv(request):
+    """
+    Payload: { "registros": [...], "pular_erros": true }
+
+    Colunas CSV (todas obrigatórias):
+        documento, logradouro, numero, bairro, cidade, uf, cep, tipo
+
+    Lógica:
+        update_or_create por (cliente, logradouro, numero, cep, tipo)
+        — mesma chave única do model.
+        CEP normalizado (remove traço/pontos antes de salvar).
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {'messages': {'importacao': {'__all__': ['JSON inválido']}}}, status=400
+        )
+
+    registros   = data.get('registros', [])
+    pular_erros = data.get('pular_erros', True)
+    empresa     = request.empresa
+
+    if not registros:
+        return JsonResponse(
+            {'messages': {'importacao': {'__all__': ['Nenhum registro recebido.']}}}, status=400
+        )
+
+    OBRIG = ['documento', 'cep', 'tipo']
+
+    criados = 0; atualizados = 0; erros = 0; log_erros = []
+
+    for reg in registros:
+        doc_raw = re.sub(r'\D', '', str(reg.get('documento', '')))
+
+        # Campos obrigatórios
+        falta = [f for f in OBRIG if not str(reg.get(f, '')).strip()]
+        if falta:
+            erros += 1
+            log_erros.append({'documento': doc_raw or '?',
+                               'erro': f'Campos obrigatórios vazios: {", ".join(falta)}'})
+            if not pular_erros: break
+            continue
+
+        # Normaliza campos
+        logradouro = str(reg['logradouro']).strip()
+        numero     = re.sub(r'\D', '', str(reg['numero']).strip())
+        bairro     = str(reg['bairro']).strip()
+        cidade     = str(reg['cidade']).strip()
+        uf         = str(reg['uf']).strip().upper()
+        cep        = re.sub(r'\D', '', str(reg['cep']).strip())
+        tipo       = str(reg['tipo']).strip().upper()
+
+        # Validações de domínio
+        if uf not in UF_VALIDAS:
+            erros += 1
+            log_erros.append({'documento': doc_raw,
+                               'erro': f'UF inválida: "{uf}". Use a sigla de 2 letras (ex: SP, RJ).'})
+            if not pular_erros: break
+            continue
+
+        if len(cep) != 8:
+            erros += 1
+            log_erros.append({'documento': doc_raw,
+                               'erro': f'CEP inválido: "{reg["cep"]}". Informe 8 dígitos sem traço.'})
+            if not pular_erros: break
+            continue
+
+        if tipo not in TIPO_ENDERECO_VALIDOS:
+            erros += 1
+            log_erros.append({'documento': doc_raw,
+                               'erro': f'Tipo inválido: "{tipo}". Use RESIDENCIAL ou COMERCIAL.'})
+            if not pular_erros: break
+            continue
+
+        if not numero:
+            erros += 1
+            log_erros.append({'documento': doc_raw,
+                               'erro': 'Número do imóvel inválido (deve conter dígitos).'})
+            if not pular_erros: break
+            continue
+
+        # Busca o cliente
+        cliente = _achar_cliente(empresa, doc_raw)
+        if not cliente:
+            erros += 1
+            log_erros.append({'documento': doc_raw,
+                               'erro': 'Cliente não encontrado. Importe o cadastro primeiro.'})
+            if not pular_erros: break
+            continue
+
+        try:
+            with transaction.atomic():
+                _, criado = Endereco.objects.update_or_create(
+                    cliente=cliente,
+                    logradouro=logradouro,
+                    numero=numero,
+                    cep=cep,
+                    tipo=tipo,
+                    defaults={
+                        'bairro': bairro,
+                        'cidade': cidade,
+                        'uf':     uf,
+                        'ativo':  True,
+                    }
+                )
+            if criado: criados += 1
+            else:      atualizados += 1
+
+        except (ValidationError, IntegrityError) as e:
+            erros += 1
+            log_erros.append({'documento': doc_raw, 'erro': _msg_erro(e)})
+            if not pular_erros: break
+        except Exception as e:
+            erros += 1
+            log_erros.append({'documento': doc_raw, 'erro': str(e)})
+            if not pular_erros: break
+
     return JsonResponse({'criados': criados, 'atualizados': atualizados,
                          'erros': erros, 'log_erros': log_erros})
