@@ -360,7 +360,7 @@ class Veiculo(models.Model):
         related_name="veiculo"
     )
     placa = models.CharField('Placa', max_length=10, null=True, blank=True)
-    chassi = models.CharField('Chassi', max_length=15, null=True, blank=True)
+    chassi = models.CharField('Chassi', max_length=20, null=True, blank=True)
     renavan = models.CharField('Renavan', max_length=20, null=True, blank=True)
     ano_mod = models.CharField('Ano mod', max_length=4, null=True, blank=True)
     ano_fab = models.CharField('Ano Fab', max_length=4, null=True, blank=True)
