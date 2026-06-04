@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Campanha, CampanhaAgente, CampanhaCliente
+from .models import Campanha, CampanhaAgente, CampanhaCliente, TagMessageWp
 
 
 # ========================
@@ -36,6 +36,14 @@ class CampanhaAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at',)
     ordering = ('-created_at',)
     inlines = [CampanhaAgenteInline, CampanhaClienteInline]
+
+
+# ========================
+# Admin Campanha
+# ========================
+@admin.register(TagMessageWp)
+class TagMessageWpAdmin(admin.ModelAdmin):
+    list_display = ('tag', 'content_type', 'campo')
 
 
 # ========================

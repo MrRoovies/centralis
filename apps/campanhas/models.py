@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.db.models.functions import Lower
+from django.contrib.contenttypes.models import ContentType
 from apps.core.choices import ModoAtendimento, OrdemSorteio
+
 
 # Create your models here.
 class Campanha(models.Model):
@@ -27,6 +29,14 @@ class Campanha(models.Model):
 
     def __str__(self):
          return f"{self.carteira.nome} - {self.nome}"
+
+class TagMessageWp(models.Model):
+    tag = models.CharField(max_length=100, unique=True)
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE
+    )
+    campo = models.CharField(max_length=100)
 
 class CampanhaAgente(models.Model):
     campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE)
