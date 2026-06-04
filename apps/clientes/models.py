@@ -205,13 +205,13 @@ class Endereco(models.Model):
         on_delete=models.CASCADE,
         related_name="enderecos"
     )
-    logradouro = models.CharField('Logra.', max_length=100)
-    numero = models.CharField('Numero', max_length=10)
-    bairro = models.CharField('Bairro', max_length=255)
-    cidade = models.CharField('Cidade', max_length=100)
-    uf = models.CharField('UF', max_length=2, choices=Estado.choices)
-    cep = models.CharField('Cep', max_length=10)
-    tipo = models.CharField('Tipo Endereco', max_length=15, choices=ENDERECO_CHOICES)
+    logradouro = models.CharField('Logra.', max_length=100, null=True, blank=True)
+    numero = models.CharField('Numero', max_length=10, null=True, blank=True)
+    bairro = models.CharField('Bairro', max_length=255, null=True, blank=True)
+    cidade = models.CharField('Cidade', max_length=100, null=True, blank=True)
+    uf = models.CharField('UF', max_length=2, choices=Estado.choices, null=True, blank=True)
+    cep = models.CharField('Cep', max_length=10, null=False, blank=False)
+    tipo = models.CharField('Tipo Endereco', max_length=15, choices=ENDERECO_CHOICES, null=True, blank=True)
     ativo = models.BooleanField(default=True)
 
     class Meta:
