@@ -159,8 +159,9 @@
                     </td>
 
                     <td>
+
                         {{ agenda.carteira_nome|default:agenda.carteira.nome }}
-                        <small>{{ agenda.equipe_nome|default:agenda.equipe.nome }}</small>
+                        <small>{{ agenda.equipe.nome if agenda.equipe else '' }}</small>
                     </td>
 
                     <td>
