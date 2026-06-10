@@ -161,7 +161,7 @@
                     <td>
 
                         {{ agenda.carteira_nome|default:agenda.carteira.nome }}
-                        <small>{{ agenda.equipe.nome if agenda.equipe else '' }}</small>
+                        {% if agenda.equipe %}<small>{{ agenda.equipe.nome }}</small>{% endif %}
                     </td>
 
                     <td>
