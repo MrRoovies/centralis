@@ -62,7 +62,9 @@ class AgendamentoService:
                             "messages": {
                                 "agenda": {"success": ["Retomando Atendimento!"]}
                             },
-                            "agenda": agenda
+                            "agenda": agenda,
+                            "agente": "self",
+                            "canal": agenda.canal
                         }
 
                     # Outro usuário da mesma carteira
@@ -94,7 +96,8 @@ class AgendamentoService:
                     "messages": {
                         "agenda": {"success": "Novo atendimento iniciado!"},
                     },
-                    "agenda": nova_agenda
+                    "agenda": nova_agenda,
+                    "agente": "new"
                 }
         except Exception as e:
             return {

@@ -302,13 +302,17 @@ def atender_receptivo(request):
 
     if not resultado["success"]:
         return JsonResponse({"fim_da_fila": False, "messages": resultado["messages"]}, status=400)
-
+    
     situacao_curso = Situacao.objects.filter(
         carteira=usuario.agente.carteira,
         tipo="CURSO"
     ).first()
 
     try:
+        agente = resultado.get("agente")
+        if agente == "self":
+            raise Exception(f"Cliente agendado em campanha {resultado.get('canal')}")    
+
         obj, created = CampanhaCliente.objects.get_or_create(
             campanha=campanha_receptiva.campanha, cliente=cliente,
             defaults={
@@ -349,6 +353,6 @@ def atender_receptivo(request):
         return JsonResponse({
             "success": False,
             "messages": {
-                "campanha": {"success": [str(e)]}
+                "campanha": {"warning": [str(e)]}
             }
         }, status=500)
