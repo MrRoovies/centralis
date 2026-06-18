@@ -41,6 +41,9 @@ class RegrasAcesso:
         if escopo == 'CARTEIRA':
             return qs.filter(carteira_nome=self.agente.carteira.nome)
 
+        if escopo == 'EQUIPE':
+            return qs.filter(equipe_nome=self.agente.equipe.nome)
+        
         if escopo == 'GLOBAL':
             return qs
 
