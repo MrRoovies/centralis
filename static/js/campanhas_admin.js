@@ -110,6 +110,8 @@ function _carregarFormCampanha(campanhaId) {
             _atualizarToggleText('cp_ativo_text', chk.checked);
         })
         .catch(() => _mostrarFeedback('Erro ao carregar dados da campanha.', 'error'));
+    
+    _iniciarAutocompleteTags('cp_msg_whats');
 }
 
 function salvarDrawer() {
@@ -648,3 +650,90 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 });
+
+// ── Autocomplete de Tags no textarea ────────────────────────
+let _tags = [];
+
+async function _carregarTags() {
+    if (_tags.length) return;
+    const res = await fetch('/campanhas/admin/tags/');
+    const data = await res.json();
+    _tags = data.tags.map(t => t.tag);
+}
+
+function _iniciarAutocompleteTags(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    if (!textarea) return;
+
+    // Cria o dropdown
+    const dropdown = document.createElement('ul');
+    dropdown.id = 'tag-dropdown';
+    dropdown.style.cssText = `
+        position: absolute; background: #1e1e1e; border: 1px solid #444;
+        border-radius: 6px; list-style: none; margin: 0; padding: 4px 0;
+        z-index: 9999; display: none; min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    `;
+    document.body.appendChild(dropdown);
+
+    let digitando = false;
+
+    textarea.addEventListener('keyup', async (e) => {
+        const val = textarea.value;
+        const cursor = textarea.selectionStart;
+        const anteCursor = val.slice(0, cursor);
+        const match = anteCursor.match(/\[([^\]]*)$/);
+
+        if (match) {
+            await _carregarTags();
+            digitando = true;
+            const filtro = match[1].toLowerCase();
+            const filtradas = _tags.filter(t => t.toLowerCase().includes(filtro));
+            _mostrarDropdown(textarea, dropdown, filtradas);
+        } else {
+            _fecharDropdown(dropdown);
+            digitando = false;
+        }
+    });
+
+    textarea.addEventListener('blur', () => {
+        setTimeout(() => _fecharDropdown(dropdown), 150);
+    });
+}
+
+function _mostrarDropdown(textarea, dropdown, tags) {
+    if (!tags.length) { _fecharDropdown(dropdown); return; }
+
+    // Posiciona abaixo do textarea
+    const rect = textarea.getBoundingClientRect();
+    dropdown.style.top  = `${window.scrollY + rect.bottom + 4}px`;
+    dropdown.style.left = `${window.scrollX + rect.left}px`;
+
+    dropdown.innerHTML = tags.map(tag => `
+        <li style="padding: 6px 12px; cursor: pointer; color: #e0e0e0; font-size: 13px;"
+            onmouseenter="this.style.background='#333'"
+            onmouseleave="this.style.background='transparent'"
+            data-tag="${tag}">${tag}</li>
+    `).join('');
+
+    dropdown.querySelectorAll('li').forEach(li => {
+        li.addEventListener('mousedown', () => _inserirTag(textarea, li.dataset.tag, dropdown));
+    });
+
+    dropdown.style.display = 'block';
+}
+
+function _inserirTag(textarea, tag, dropdown) {
+    const val = textarea.value;
+    const cursor = textarea.selectionStart;
+    const anteCursor = val.slice(0, cursor);
+    // Remove o [texto parcial e insere a tag completa
+    const novoAnte = anteCursor.replace(/\[[^\]]*$/, tag);
+    textarea.value = novoAnte + val.slice(cursor);
+    textarea.selectionStart = textarea.selectionEnd = novoAnte.length;
+    textarea.focus();
+    _fecharDropdown(dropdown);
+}
+
+function _fecharDropdown(dropdown) {
+    dropdown.style.display = 'none';
+}

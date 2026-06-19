@@ -7,10 +7,10 @@ from django.db.models import Prefetch, F
 from itertools import groupby
 
 from apps.campanhas.models import Campanha, CampanhaCliente, CampanhaAgente
-from apps.campanhas.services.campanha_services import CampanhaService
+from apps.campanhas.services.campanha_services import CampanhaService, TagMessageWp
 from apps.clientes.services.cliente_service import ClienteService
 
-from apps.clientes.models import Cliente, Email, Telefone, Endereco, DadosBancarios
+from apps.clientes.models import Cliente, Email, Telefone, Endereco, DadosBancarios, Vinculo, Financeiro, Divida, Veiculo
 from apps.agenda.models import Situacao
 from apps.agenda.services.agenda_services import AgendamentoService
 from apps.vendas.forms import VendaForm
@@ -135,17 +135,34 @@ def proximo_cliente(request, id_campanha):
 
     # Carregar cliente com prefetch para o template
     cliente = get_object_or_404(
-        Cliente.objects
+        Cliente.objects.for_request(request)
         .prefetch_related(
             Prefetch('emails',    queryset=Email.objects.filter(ativo=True)),
             Prefetch('telefones', queryset=Telefone.objects.filter(ativo=True)),
             Prefetch('enderecos', queryset=Endereco.objects.filter(ativo=True)),
-            Prefetch('dados_bancarios', queryset=DadosBancarios.objects.select_related('banco').filter()
+            Prefetch('dados_bancarios', queryset=DadosBancarios.objects.select_related('banco').filter()),
+            Prefetch('veiculo', queryset=Veiculo.objects.all()),
+ 
+            # Vínculos com dados financeiros e dívidas aninhados
+            Prefetch(
+                'financeiro',          # related_name do Vinculo → Cliente
+                queryset=Vinculo.objects.prefetch_related(
+                    Prefetch(
+                        'dados_financeiros',
+                        queryset=Financeiro.objects.order_by('-referencia'),
+                    ),
+                    Prefetch(
+                        'dividas_financeiras',
+                        queryset=Divida.objects.order_by('-referencia', 'banco'),
+                    ),
+                )
             ),
         ),
+        
         pk=proximo.cliente.id,
         empresa=request.empresa,
     )
+
     restantes = CampanhaService.restantes_mailing(campanha)
     whats_app_message = service.mensagemWhats_app(campanha, cliente)
 
@@ -356,3 +373,11 @@ def atender_receptivo(request):
                 "campanha": {"warning": [str(e)]}
             }
         }, status=500)
+    
+
+@login_required
+@require_GET
+def listar_tags(request):
+    tags = TagMessageWp.objects.values('tag')
+    return JsonResponse({'tags': list(tags)})
+

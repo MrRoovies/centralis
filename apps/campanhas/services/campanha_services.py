@@ -45,39 +45,6 @@ class CampanhaService:
         ).count())
 
 
-    @staticmethod
-    def mensagemWhats_app(campanha, cliente):
-        tags = TagMessageWp.objects.select_related('content_type').all()
-        instancias_cache = {}
-        contexto = {}
-        for tag_obj in tags:
-            ct = tag_obj.content_type
-
-            # Busca a instância do model correspondente (só uma vez por content_type)
-            if ct not in instancias_cache:
-                model_class = ct.model_class()
-                try:
-                    # Tenta achar a instância pelo cliente (FK direta ou OneToOne)
-                    instancias_cache[ct] = model_class.objects.filter(cliente=cliente).first()
-                except Exception:
-                    instancias_cache[ct] = None
-
-            instancia = instancias_cache[ct]
-
-            # Se a instância for o próprio Cliente, usa ele diretamente
-            if instancia is None and ct.model == 'cliente':
-                instancia = cliente
-
-            valor = getattr(instancia, tag_obj.campo, '') if instancia else ''
-            contexto[tag_obj.tag] = str(valor) if valor is not None else ''
-
-        mensagem = campanha.texto_whatsapp
-        if mensagem:
-            for tag, valor in contexto.items():
-                mensagem = mensagem.replace(tag, valor)
-
-            return mensagem
-
 
     @staticmethod
     def proximo_cliente_para_atendimento(campanha, usuario):
@@ -117,6 +84,52 @@ class CampanhaService:
         )
 
         return proximo
+    
+
+    @staticmethod
+    def _resolver_campo(obj, caminho):
+        atual = obj
+        for parte in caminho.split('__'):
+            if atual is None:
+                return ''
+            attr = getattr(atual, parte, None)
+            if hasattr(attr, 'all'):  # é um Manager (relacionamento reverso)
+                try:
+                    atual = attr.order_by('-referencia').first()
+                except Exception:
+                    atual = attr.first()
+            else:
+                atual = attr
+        return atual if atual is not None else ''
+
+    @staticmethod
+    def mensagemWhats_app(campanha, cliente):
+        tags = TagMessageWp.objects.select_related('content_type').all()
+        instancias_cache = {}
+        contexto = {}
+
+        for tag_obj in tags:
+            ct = tag_obj.content_type
+
+            if ct not in instancias_cache:
+                model_class = ct.model_class()
+                if ct.model == 'cliente':
+                    instancias_cache[ct] = cliente
+                else:
+                    try:
+                        instancias_cache[ct] = model_class.objects.filter(cliente=cliente).first()
+                    except Exception:
+                        instancias_cache[ct] = None
+
+            instancia = instancias_cache[ct]
+            valor = CampanhaService._resolver_campo(instancia, tag_obj.campo) if instancia else ''
+            contexto[tag_obj.tag] = str(valor) if valor is not None else ''
+
+        mensagem = campanha.texto_whatsapp
+        if mensagem:
+            for tag, valor in contexto.items():
+                mensagem = mensagem.replace(tag, valor)
+        return mensagem
 
 
 class CampanhasAdmin:
