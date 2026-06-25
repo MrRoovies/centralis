@@ -149,7 +149,6 @@
                     <th class="vl-table__num">Parcela</th>
                     <th class="vl-table__num">Valor</th>
                     <th class="vl-table__num">Taxa</th>
-                    <th class="vl-table__num">Comissão</th>
                     <th>Esteira</th>
                     <th>Carteira</th>
                     <th>Agente</th>
@@ -175,7 +174,6 @@
                     <td class="vl-table__num">R$ {{ venda.parcela|floatformat:2 }}</td>
                     <td class="vl-table__num vl-valor">R$ {{ venda.valor|floatformat:2 }}</td>
                     <td class="vl-table__num">{{ venda.taxa }}%</td>
-                    <td class="vl-table__num vl-comissao">R$ {{ venda.comissao_calculada|floatformat:2 }}</td>
                     <td>
                         <span class="vl-badge vl-badge--{{ venda.esteira.tipo|lower }}">
                             {{ venda.esteira.nome }}
