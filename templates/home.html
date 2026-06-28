@@ -80,13 +80,12 @@
                     {% if agendamentos_hoje %}
                     <span class="db-card__badge">{{ agendamentos_hoje|length }}</span>
                     {% endif %}
-                    <a href="" class="db-card__link">Ver todos →</a>
                 </div>
                 <div class="db-card__body db-card__body--no-pad">
                     {% if agendamentos_hoje %}
                     <div class="db-agenda-list">
                         {% for agenda in agendamentos_hoje %}
-                        <a href="/clientes/cliente/{{ agenda.cliente_id }}" class="db-agenda-item">
+                        <a class="db-agenda-item">
                             <span class="db-agenda-item__hora">
                                 {{ agenda.retorno|time:"H:i"|default:"—" }}
                             </span>
@@ -117,14 +116,12 @@
                 <div class="db-card__head">
                     <span class="db-card__icon">💰</span>
                     <h3 class="db-card__title">Últimas Vendas</h3>
-                    <a href="" class="db-card__link">Ver todas →</a>
                 </div>
                 <div class="db-card__body db-card__body--no-pad">
                     {% if ultimas_vendas %}
                     <div class="db-vendas-list">
                         {% for venda in ultimas_vendas %}
-                        <a href="/vendas/{{ venda.id }}/" class="db-venda-item">
-                            <span class="db-venda-item__contrato">{{ venda.contrato }}</span>
+                        <a class="db-venda-item">
                             <div class="db-venda-item__info">
                                 <span class="db-venda-item__nome">{{ venda.cliente_nome }}</span>
                                 <span class="db-venda-item__meta">
@@ -156,13 +153,12 @@
                 <div class="db-card__head">
                     <span class="db-card__icon">📣</span>
                     <h3 class="db-card__title">Campanhas Ativas</h3>
-                    <a href="" class="db-card__link">Ver →</a>
                 </div>
                 <div class="db-card__body db-card__body--no-pad">
                     {% if campanhas_ativas %}
                     <div class="db-campanha-list">
                         {% for campanha in campanhas_ativas %}
-                        <a href="/campanhas/atender/{{ campanha.id }}/" class="db-campanha-item">
+                        <a class="db-campanha-item">
                             <div class="db-campanha-item__icon db-campanha-item__icon--{{ campanha.modo|lower }}">
                                 {% if campanha.modo == 'MANUAL' %}📋
                                 {% elif campanha.modo == 'RECEPTIVO' %}📞
@@ -210,7 +206,7 @@
                             </div>
                             <div class="db-ranking-item__bar-wrap">
                                 <div class="db-ranking-item__bar"
-                                     style="width: {{ agente.pct }}%"></div>
+                                     style="width: {{ agente.pct }}"></div>
                             </div>
                             <span class="db-ranking-item__count">{{ agente.vendas }}</span>
                         </div>

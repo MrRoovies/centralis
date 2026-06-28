@@ -129,9 +129,9 @@ def home(request):
     try:
         qs = (
             Agenda.objects
-            .filter(retorno__date=hoje)
-            .select_related('cliente', 'agente__user', 'situacao_atual')
-            .order_by('retorno')
+            .filter(data_hora_retorno__date=hoje)
+            .select_related('cliente', 'usuario', 'situacao')
+            .order_by('data_hora_retorno')
             [:20]
         )
 
@@ -146,27 +146,28 @@ def home(request):
         for a in qs:
             agente_nome = '—'
             try:
-                agente_nome = a.agente.user.get_full_name() or a.agente.user.username
+                agente_nome = a.usuario.get_full_name() or a.usuario.username
             except Exception:
                 pass
 
-            situacao_str  = str(a.situacao_atual) if a.situacao_atual else '—'
+            situacao_str  = str(a.situacao) if a.situacao else '—'
             situacao_slug = SITUACAO_SLUG.get(
-                getattr(a.situacao_atual, 'tipo', ''), 'inicial'
+                getattr(a.situacao, 'tipo', ''), 'inicial'
             )
 
             agendamentos_list.append({
-                'cliente_id':   a.cliente.id,
-                'cliente_nome': a.cliente.nome,
-                'agente_nome':  agente_nome,
-                'canal':        getattr(a, 'canal', '—'),
-                'retorno':      a.retorno,
-                'situacao':     situacao_str,
+                'cliente_id':    a.cliente.id,
+                'cliente_nome':  a.cliente.nome,
+                'agente_nome':   agente_nome,
+                'canal':         getattr(a, 'canal', '—'),
+                'retorno':       a.retorno,
+                'situacao':      situacao_str,
                 'situacao_slug': situacao_slug,
-                'ativa':        a.ativa,
+                'ativa':         a.ativa,
             })
 
-    except Exception:
+    except Exception as e:
+        print(e)
         pass
 
     # ── Últimas vendas ────────────────────────────────────────
@@ -175,7 +176,7 @@ def home(request):
         qs = (
             Venda.objects
             .select_related('cliente', 'oferta__produto', 'oferta__parceiro')
-            .order_by('-data')
+            .order_by('-created_at')
             [:10]
         )
 
@@ -187,10 +188,10 @@ def home(request):
                 'produto':      v.oferta.produto.nome,
                 'parceiro':     v.oferta.parceiro.nome,
                 'valor':        v.valor,
-                'data':         v.data,
+                'data':         v.created_at,
             })
 
-    except Exception:
+    except Exception as e:
         pass
 
     # ── Campanhas ativas ──────────────────────────────────────
@@ -198,8 +199,8 @@ def home(request):
     try:
         for c in campanhas_ativas_qs[:8]:
             total_fila = Campanha.objects.filter(
-                campanha=c,
-                situacao='INICIAL'
+                
+                distribuicao_ativa=True
             ).count()
 
             campanhas_list.append({
@@ -218,18 +219,17 @@ def home(request):
     try:
         qs = (
             Venda.objects
-            .filter(data__gte=inicio_mes)
-            .values('agente__user__first_name', 'agente__user__last_name', 'agente__id')
+            .filter(created_at__gte=inicio_mes)
+            .values('usuario_id__first_name', 'usuario_id__last_name', 'usuario_id')
             .annotate(vendas=Count('id'))
             .order_by('-vendas')
             [:7]
         )
-
         maximo = qs[0]['vendas'] if qs else 1
 
         for row in qs:
             nome = (
-                f"{row['agente__user__first_name']} {row['agente__user__last_name']}".strip()
+                f"{row['usuario_id__first_name']} {row['usuario_id__last_name']}".strip()
                 or '—'
             )
             partes = nome.split()
