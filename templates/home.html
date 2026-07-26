@@ -111,38 +111,6 @@
                 </div>
             </div>
 
-            <!-- Últimas Vendas -->
-            <div class="db-card">
-                <div class="db-card__head">
-                    <span class="db-card__icon">💰</span>
-                    <h3 class="db-card__title">Últimas Vendas</h3>
-                </div>
-                <div class="db-card__body db-card__body--no-pad">
-                    {% if ultimas_vendas %}
-                    <div class="db-vendas-list">
-                        {% for venda in ultimas_vendas %}
-                        <a class="db-venda-item">
-                            <div class="db-venda-item__info">
-                                <span class="db-venda-item__nome">{{ venda.cliente_nome }}</span>
-                                <span class="db-venda-item__meta">
-                                    {{ venda.produto }} · {{ venda.parceiro }} · {{ venda.data|date:"d/m/Y" }}
-                                </span>
-                            </div>
-                            <span class="db-venda-item__valor">
-                                R$ {{ venda.valor|floatformat:2 }}
-                            </span>
-                        </a>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <div class="db-empty">
-                        <div class="db-empty__icon">🛒</div>
-                        <p class="db-empty__text">Nenhuma venda registrada ainda.</p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-
         </div><!-- /col-left -->
 
         <!-- ── COLUNA DIREITA ── -->
