@@ -4,13 +4,13 @@ from django.views.decorators.http import require_GET
 from django.utils import timezone
 from datetime import datetime, time
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from apps.agenda.models import Agenda, Acionamento
 from apps.vendas.models import Venda, Parceiro, Produto, Oferta, Esteira
 from ..services.relatorio_agendas import RelatorioAgendaService
 from ..services.relatorio_vendas import RelatorioVendasService
-
+import csv
 
 @require_GET
 @login_required
@@ -19,8 +19,9 @@ def relatorio_vendas(request):
     usuario = request.user
     service = RelatorioVendasService()
     params = request.GET.copy()
-    params.pop('page', None)
 
+    params.pop('page', None)
+    
     campos_permitidos = [
         'created_at__gte',
         'created_at__lte',
@@ -46,6 +47,26 @@ def relatorio_vendas(request):
         filtro["created_at__lte"] = fim
 
     queryset = service.gerar(request.empresa, filtro, usuario)
+    if 'bt-download' in params:
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="Vendas.csv"'
+        writer = csv.writer(response)
+
+        # Cabeçalho
+        writer.writerow(
+            ['Contrato','Cliente','Produto','Parceiro',
+             'Prazo','Parcela','Valor','Taxa','Esteira','Carteira','Agente','Data'])
+
+        for venda in queryset:
+            agente = f"{venda.usuario.first_name} {venda.usuario.last_name}"
+            writer.writerow([
+                venda.contrato, venda.cliente, venda.produto_nome, venda.parceiro_nome, 
+                venda.prazo, venda.valor, venda.taxa, venda.esteira, venda.carteira_nome, 
+                agente, venda.created_at
+            ])
+
+        return response
+
     totais = service.calcular_totais(queryset)
 
     paginator = Paginator(queryset, 20)
@@ -132,6 +153,28 @@ def agendas_list(request):
         filtro["data_entrada__lte"] = fim
 
     queryset = service.gerar(request.empresa, filtro, usuario)
+
+    if 'bt-download' in params:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename="Agendamentos.csv"'
+            writer = csv.writer(response)
+    
+            # Cabeçalho
+            writer.writerow(
+                ['Cliente','Agente','Carteira', 'Equipe','Situacao','Modo',
+                 'Canal','Telefone','Data entrada','Data finalizado'])
+    
+            for agenda in queryset:
+                agente = f"{agenda.usuario.first_name} {agenda.usuario.last_name}"
+                writer.writerow([
+                    agenda.cliente, agente, agenda.carteira_nome, 
+                    agenda.equipe_nome, agenda.situacao, agenda.modo, agenda.canal, 
+                    agenda.telefone, agenda.data_entrada, agenda.data_finalizado
+                ])
+                
+            return response
+
+    
     totais = service.calcular_totais(queryset)
 
     paginator = Paginator(queryset, 20)
