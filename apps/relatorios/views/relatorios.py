@@ -61,7 +61,7 @@ def relatorio_vendas(request):
             agente = f"{venda.usuario.first_name} {venda.usuario.last_name}"
             writer.writerow([
                 venda.contrato, venda.cliente, venda.produto_nome, venda.parceiro_nome, 
-                venda.prazo, venda.valor, venda.taxa, venda.esteira, venda.carteira_nome, 
+                venda.prazo, venda.parcela, venda.valor, venda.taxa, venda.esteira, venda.carteira_nome, 
                 agente, venda.created_at
             ])
 
