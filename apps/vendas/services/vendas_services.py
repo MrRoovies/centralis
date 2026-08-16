@@ -71,7 +71,7 @@ class VendasService:
                 novo.agenda = agenda
                 novo.carteira = usuario.agente.carteira
                 novo.carteira_nome = usuario.agente.carteira.nome
-                novo.equipe_nome = usuario.agente.equipe.nome
+                novo.equipe_nome = getattr(usuario.agente.equipe, "nome", "Master")
                 novo.empresa = usuario.agente.carteira.empresa
                 novo.usuario = usuario
                 novo.esteira = esteira
@@ -105,7 +105,7 @@ class VendasService:
                 "success": False,
                 "status": 400,
                 "messages": {
-                    "vendas": {"__all__": [f"Venda duplicada detectada."]}
+                    "vendas": {"__all__": [f"Venda duplicada detectada. {e}"]}
                 }
             }
 
