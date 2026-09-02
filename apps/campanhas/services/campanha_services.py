@@ -4,6 +4,8 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from apps.core.responses.pattern import ResponsePattern
 from apps.usuarios.models import Carteira
+from django.utils import timezone
+from apps.agenda.models import Situacao, Acionamento, CarteiraSituacao
 import re
 
 class CampanhaService:
@@ -101,6 +103,7 @@ class CampanhaService:
             else:
                 atual = attr
         return atual if atual is not None else ''
+
 
     @staticmethod
     def mensagemWhats_app(campanha, cliente):
@@ -201,3 +204,66 @@ class CampanhasAdmin:
 
         except Exception as e:
             return ResponsePattern.error('campanha', [str(e)])
+
+
+    @staticmethod
+    def finalizar_agendamentos_campanha(campanha):
+        """
+        Ao desativar a campanha, tabula automaticamente todo cliente que
+        estava com situação tipo AGENDA para "Agenda Finalizada",
+        finalizando também a Agenda e o Acionamento em aberto.
+        """
+        situacao_finalizada = Situacao.objects.filter(
+            carteirasituacao__carteira=campanha.carteira,
+            nome__iexact="Agenda Finalizada",
+            ativo=False
+        ).first()
+
+        if not situacao_finalizada:
+            return ResponsePattern.error(
+                'agendamentos',
+                ['Situação "Agenda Finalizada" não está cadastrada/vinculada a esta carteira.']
+            )
+
+        agendamentos = (
+            CampanhaCliente.objects
+            .select_related('agenda')
+            .filter(campanha=campanha, situacao__tipo="AGENDA")
+        )
+
+        agora = timezone.now()
+        total = 0
+
+        try:
+            with transaction.atomic():
+                for cc in agendamentos:
+                    cc.situacao = situacao_finalizada
+                    cc.ultima_tentativa = agora
+                    cc.save(update_fields=['situacao', 'ultima_tentativa'])
+
+                    agenda = cc.agenda
+                    if agenda and agenda.agenda_ativa:
+                        agenda.situacao = situacao_finalizada
+                        agenda.agenda_ativa = False
+                        agenda.data_finalizado = agora
+                        agenda.save(update_fields=[
+                            'situacao', 'agenda_ativa', 'data_finalizado'
+                        ])
+
+                        Acionamento.objects.filter(
+                            agenda=agenda,
+                            data_finalizado__isnull=True
+                        ).update(
+                            situacao=situacao_finalizada,
+                            data_finalizado=agora
+                        )
+
+                    total += 1
+
+            return ResponsePattern.success(
+                'agendamentos',
+                [f'{total} agendamento(s) finalizado(s) automaticamente.']
+            )
+
+        except Exception as e:
+            return ResponsePattern.error('agendamentos', [str(e)])

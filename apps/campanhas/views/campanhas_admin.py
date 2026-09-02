@@ -4,14 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.db import transaction
 import json
 from apps.clientes.models import Cliente
 from apps.campanhas.models import Campanha, CampanhaAgente, CampanhaCliente
-from apps.agenda.models import Situacao
+from apps.agenda.models import Situacao, Acionamento, CarteiraSituacao
 from apps.usuarios.models import Agente, Carteira
 from apps.core.choices import ModoAtendimento, OrdemSorteio
 from apps.campanhas.services.campanha_services import CampanhasAdmin
 from apps.core.responses.pattern import ResponsePattern
+from django.utils import timezone
 
 
 @login_required
@@ -106,6 +108,7 @@ def campanha_detail(request, campanha_id=None):
     return JsonResponse(get_campanha.get('data'), status=200)
 
 
+
 @login_required
 @require_POST
 def toggle_campanha(request, campanha_id):
@@ -113,14 +116,22 @@ def toggle_campanha(request, campanha_id):
     campanha = get_object_or_404(Campanha, pk=campanha_id, empresa=request.empresa)
     campanha.distribuicao_ativa = not campanha.distribuicao_ativa
     campanha.save(update_fields=['distribuicao_ativa'])
+
+    messages = {
+        'campanha': {'success': [
+            f'Campanha {"ativada" if campanha.distribuicao_ativa else "desativada"}!'
+        ]}
+    }
+
+    # Só finaliza agendamentos quando a campanha está sendo DESATIVADA
+    if not campanha.distribuicao_ativa:
+        resultado = CampanhasAdmin.finalizar_agendamentos_campanha(campanha)
+        messages['agendamentos'] = resultado['messages']['agendamentos']
+
     return JsonResponse({
         'success': True,
         'distribuicao_ativa': campanha.distribuicao_ativa,
-        'messages': {
-            'campanha': {'success': [
-                f'Campanha {"ativada" if campanha.distribuicao_ativa else "desativada"}!'
-            ]}
-        }
+        'messages': messages
     })
 
 
@@ -380,3 +391,4 @@ def resumo_mailing(request, campanha_id):
             situacao__tipo__in=['SEMCONTATO', 'OUTRO', 'INSUCESSO']
         ).count(),
     })
+
