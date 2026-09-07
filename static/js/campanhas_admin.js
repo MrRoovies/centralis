@@ -199,6 +199,8 @@ function toggleCampanha(campanhaId, btn) {
     .then(d => {
         const ativo    = d.distribuicao_ativa;
         const statusEl = row.querySelector('.ca-status');
+        
+        SystemModal.showMessage(d.messages);
 
         row.classList.toggle('ca-row--inativa', !ativo);
         statusEl.className = `ca-status ca-status--${ativo ? 'ativa' : 'inativa'}`;
