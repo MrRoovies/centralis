@@ -101,7 +101,7 @@ function atenderAgendamentoCampanha(id_campanha){
     })
     .catch(err => {
         //console.error('Erro ao buscar cliente:', err);
-        mostrarErro(err.messages || 'Erro ao buscar próximo cliente.');
+        SystemModal.showMessage(err.messages || 'Erro ao buscar próximo cliente.');
     });
 }
 
@@ -134,7 +134,7 @@ function buscarProximoCliente(id_campanha) {
     })
     .catch(err => {
         //console.error('Erro ao buscar cliente:', err);
-        SystemModal.showMessage(err.error || 'Erro em busca.');
+        SystemModal.showMessage(err.messages || 'Erro em busca.');
     });
 }
 
@@ -248,3 +248,4 @@ function registraSituacaoContato(id_campanha){
         renderFormMessage(form, allErrors);
     })
 }
+
