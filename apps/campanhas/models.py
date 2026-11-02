@@ -70,3 +70,59 @@ class CampanhaCliente(models.Model):
     def __str__(self):
         return f"{self.campanha} - {self.cliente} - {self.situacao}"
 
+
+
+class Chamada(models.Model):
+    STATUS_CHOICES = [
+        ("RINGING", "Tocando"),
+        ("CONNECTED", "Conectada"),
+        ("NO_ANSWER", "Não atendida"),
+        ("FAILED", "Falhou"),
+        ("COMPLETED", "Concluída"),
+        ("CANCELED", "Cancelada"),
+    ]
+    DIRECTION_CHOICES = [
+        ("OUTBOUND", "Saída"),
+        ("INBOUND", "Entrada"),
+    ]
+
+    # Identificadores da GoTo
+    call_id = models.CharField(max_length=100, unique=True)
+    leg_id = models.CharField(max_length=100, blank=True, null=True)
+    conversation_space_id = models.CharField(max_length=100, blank=True, null=True)
+    line_id = models.CharField(max_length=100)
+    userkey = models.CharField(max_length=100)
+
+    # Relação com o usuário Django
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    # Dados da chamada
+    numero = models.CharField(max_length=20)
+    direction = models.CharField(max_length=10, choices=DIRECTION_CHOICES, default="OUTBOUND")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="RINGING")
+    chamada_ativa = models.BooleanField(default=True)
+    hangup_originator_id = models.CharField(max_length=100, blank=True, null=True)
+
+    # Tempos
+    data_hora_inicio = models.DateTimeField()
+    data_hora_atendida = models.DateTimeField(blank=True, null=True)
+    data_hora_fim = models.DateTimeField(blank=True, null=True)
+
+    # Rede de segurança
+    raw_payload = models.JSONField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["userkey", "chamada_ativa"]),
+            models.Index(fields=["call_id"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["usuario"],
+                condition=models.Q(chamada_ativa=True),
+                name="unique_chamada_ativa_por_usuario",
+            )
+        ]

@@ -8,6 +8,7 @@ from itertools import groupby
 
 from apps.campanhas.models import Campanha, CampanhaCliente, CampanhaAgente
 from apps.campanhas.services.campanha_services import CampanhaService, TagMessageWp
+from apps.campanhas.services.discador_service import DiscadorService
 from apps.clientes.services.cliente_service import ClienteService
 
 from apps.clientes.models import Cliente, Email, Telefone, Endereco, DadosBancarios, Vinculo, Financeiro, Divida, Veiculo
@@ -65,7 +66,8 @@ def atender(request, id_campanha):
         "campanha": campanha,
         "restantes": restantes,
         "nao_tabulado": nao_tabulado,
-        "agendados": agendados
+        "agendados": agendados,
+        "modo_atendimento": campanha.modo_atendimento
     }
     return render(request, "campanhas/atendimento_campanha.html", context)
 
@@ -181,6 +183,7 @@ def proximo_cliente(request, id_campanha):
     return JsonResponse({
         "fim_da_fila": False,
         "html": html,
+        "cl_id": cliente.id,
         "restantes": restantes,
         "messages": resultado["messages"]
     })
@@ -381,3 +384,31 @@ def listar_tags(request):
     tags = TagMessageWp.objects.values('tag')
     return JsonResponse({'tags': list(tags)})
 
+
+@login_required
+@require_POST
+def discar(request):
+    # Em produção, estes dois valores vêm do seu CRM/integração,
+    # não de input() — aqui está assim só para teste manual.
+    if request.body:
+        discador = DiscadorService
+        data = json.loads(request.body)
+        user_email = request.user.email
+
+        dial_string = data.get("fone")
+ 
+        # 1. Autenticação (troca do PAT por access_token)
+        token_data = discador.exchange_pat_for_token()
+        access_token = token_data["access_token"]
+    
+        # 2. Conta
+        account_key = discador.get_account_key(access_token)
+    
+        # 3. Resolve o e-mail do CRM para o userKey do GoTo, depois para a lineId
+        user_key = discador.find_user_key_by_email(access_token, account_key, user_email)
+        line_id = discador.get_line_id_by_user_key(access_token, account_key, user_key)
+    
+        # 4. Discagem
+        result = discador.make_call(access_token, line_id, dial_string)
+        print(result)
+ 

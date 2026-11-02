@@ -49,6 +49,7 @@ PUBLIC_VIEWS = [
     'login_template',
     'login',
     'logout',
+    'ws_token'
 ]
 
 def get_permissions():

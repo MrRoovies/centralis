@@ -61,9 +61,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ─── Ações dos botões ─────────────────────────────────────────
-function iniciarFila(id_campanha) {
+function iniciarFila(id_campanha, modo_atendimento) {
     aplicarEstado(Estado.RODANDO);
-    buscarProximoCliente(id_campanha);
+    buscarProximoCliente(id_campanha, modo_atendimento);
 }
 
 function pausarFila() {
@@ -107,9 +107,9 @@ function atenderAgendamentoCampanha(id_campanha){
 
 
 // ─── Buscar próximo cliente da fila ───────────────────────────
-function buscarProximoCliente(id_campanha) {
+function buscarProximoCliente(id_campanha, modo_atendimento) {
     if (estadoAtual !== Estado.RODANDO) return;
-
+    
     mostrarLoading();
 
     fetch(`/campanhas/proximo_cliente/${id_campanha}/`, {
@@ -131,6 +131,12 @@ function buscarProximoCliente(id_campanha) {
         injetarCliente(data.html, data.restantes);
         initVendaForm();
         SystemModal.showMessage(data.messages);
+
+        if(modo_atendimento=="DISCADOR"){
+            disca_fones(data.cl_id);
+            alert("TESTE.");
+        }
+
     })
     .catch(err => {
         //console.error('Erro ao buscar cliente:', err);
@@ -249,3 +255,40 @@ function registraSituacaoContato(id_campanha){
     })
 }
 
+function disca_fones(cl_id){
+    // O DOM do partial já está populado aqui, pode buscar direto
+    const telefones = clienteInjetado.querySelectorAll('.ci-contact-item__value');
+
+    if (telefones.length === 0) {
+        console.warn(`Nenhum telefone encontrado no partial do cliente ${cl_id}`);
+        return;
+    }
+
+    telefones.forEach((tel) => {
+        const numero = tel.dataset.numero || tel.textContent.trim();
+        discar(numero, cl_id);
+    });
+}
+
+
+function discar(numero, cl_id) {
+    fetch('/discar/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ numero, cliente_id: cl_id }),
+    })
+    .then(async response => {
+        const r = await response.json();
+        if (!response.ok) { throw r; }
+        return r;
+    })
+    .then(r => {
+        console.log('Chamada iniciada:', r);
+    })
+    .catch(error => {
+        SystemModal.showMessage(error.messages || 'Erro ao discar.');
+    });
+}

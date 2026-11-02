@@ -29,4 +29,7 @@ urlpatterns = [
          name='importar_csv_mailing'),
     path('admin/<int:campanha_id>/mailing/resumo/', campanhas_admin.resumo_mailing, name='resumo_mailing'),
     path('admin/tags/', campanhas.listar_tags, name='listar_tags'),
+
+    # Discador
+    path('discador/', campanhas.discar, name='discar'),
 ]

@@ -15,6 +15,7 @@ from apps.campanhas.models import Campanha
 from apps.usuarios.models import Agente
 import datetime
 
+from ws_push import gerar_token
 
 
 # Create your views here.
@@ -256,3 +257,8 @@ def home(request):
     }
 
     return render(request, 'home.html', context)
+
+
+@login_required
+def ws_token(request):
+    return JsonResponse({"token": gerar_token(request.user.id, ttl=300)})
