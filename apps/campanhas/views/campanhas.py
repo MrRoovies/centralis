@@ -114,11 +114,15 @@ def proximo_cliente(request, id_campanha):
         if not resultado["success"]:
             mensagens = resultado.get("messages", {})
             agenda_warning = mensagens.get("agenda", {}).get("warning", [])
-
-            if "Cliente agendado com outro agente" in agenda_warning:
+            
+            if 'Cliente agendado com outro agente.' in agenda_warning:
                 situacao_outro = situacoes.filter(tipo="OUTRO").first()
+                proximo.agente_responsavel = usuario
+                proximo.tentativas = F('tentativas') + 1
                 proximo.situacao = situacao_outro
+                proximo.save()
             return JsonResponse({"fim_da_fila": False, "messages": mensagens}, status=400)
+
 
         situacao_curso = situacoes.filter(tipo="CURSO").first()
         proximo.agente_responsavel = usuario
