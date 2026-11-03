@@ -89,8 +89,12 @@ class AppSocket {
     }
 }
 
-  const ws = new AppSocket({
-    url: "ws://localhost:8765/ws",
-    getToken: async () => (await fetch('/api/ws-token/')).json().then(r => r.token),
-  });
-  ws.on('conectado', (d) => console.log('WS online', d));
+const local = ['localhost', '127.0.0.1'].includes(location.hostname);
+
+const ws = new AppSocket({
+  url: local
+    ? 'ws://localhost:8765/ws'
+    : `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`,
+  getToken: async () => (await fetch('/api/ws-token/')).json().then(r => r.token),
+});
+ws.on('conectado', (d) => console.log('WS online', d));
